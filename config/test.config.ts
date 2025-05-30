@@ -26,7 +26,7 @@ export default defineConfig({
     setupNodeEvents(on, config) {
       return plugin(on, config);
     },
-    specPattern: "Cypress/Tests/{E2E,API,Integ}/**/*.ts",
+    specPattern: "Cypress/Tests/{E2E,API,UI}/**/*.ts",
     supportFile: e2eOptions.supportFile,
   },
 });
