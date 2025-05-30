@@ -1,0 +1,7 @@
+﻿## don't lint .json files
+**/*.json
+**/*.js
+node_modules
+*.d.ts
+package.json
+package-lock.json

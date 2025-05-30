@@ -1,0 +1,25 @@
+﻿node_modules
+dist
+.tmp
+.sass-cache
+.DS_Store
+npm-debug.log
+tmp
+.projects
+*.orig
+
+screenshots
+videos
+snapshots.js
+.nyc_output
+coverage
+html-report.html
+
+*.bat
+
+*.mp4
+*.png
+*.xlsx
+
+# IDE specific
+.idea

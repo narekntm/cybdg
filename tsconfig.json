@@ -1,0 +1,71 @@
+{
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "strictNullChecks": false,
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "K6/*": [
+        "K6/*"
+      ],
+      "Controllers/*": [
+        "Cypress/Fixtures/Controllers/*"
+      ],
+      "EndPoints/*": [
+        "Cypress/Fixtures/EndPoints/*"
+      ],
+      "Generators/*": [
+        "Cypress/Fixtures/Generators/*"
+      ],
+      "Builders/*": [
+        "Cypress/Fixtures/Builders/*"
+      ],
+      "Models/*": [
+        "Cypress/Fixtures/Models/*"
+      ],
+      "Static/*": [
+        "Cypress/Fixtures/Static/*"
+      ],
+      "Elements/*": [
+        "Cypress/Fixtures/Elements/*"
+      ],
+      "Pages/*": [
+        "Cypress/Pages/*",
+      ],
+      "Helpers/*": [
+        "Cypress/Support/Helpers/*"
+      ],
+      "Plugins/*": [
+        "Cypress/Support/Plugins/*"
+      ],
+      "Results/*": [
+        "Cypress/Support/Results/*"
+      ]
+    },
+    "target": "es6",
+    "lib": [
+      "es6",
+      "dom",
+      "es2017.object",
+      "es2021.String",
+      "ES2016.Array.Include",
+      "ES2019.Object",
+      "ES2015"
+    ],
+    "types": [
+      "cypress",
+      "@testing-library/cypress",
+      "cypress-file-upload",
+      "cypress-real-events",
+      "@cypress/grep",
+      "node"
+    ],
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.js"
+  ]
+}

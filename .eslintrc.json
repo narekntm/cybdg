@@ -1,0 +1,194 @@
+﻿{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "plugins": [
+    "cypress",
+    "@typescript-eslint",
+    "no-only-tests"
+  ],
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:cypress/recommended",
+    "plugin:chai-friendly/recommended",
+    "plugin:import/recommended",
+    "prettier"
+  ],
+  "settings": {
+    "import/resolver": "typescript"
+  },
+  "rules": {
+    "eqeqeq": "error",
+    "cypress/assertion-before-screenshot": "warn",
+    "cypress/no-force": "warn",
+    "cypress/unsafe-to-chain-command": "off",
+    "linebreak-style": "off",
+    "newline-per-chained-call": "off",
+    "implicit-arrow-linebreak": "off",
+    "operator-linebreak": "off",
+    "no-use-before-define": "off",
+    "max-classes-per-file": "off",
+    "import/prefer-default-export": "off",
+    "import/no-unresolved": [
+      "error",
+      {
+        "ignore": [
+          "k6/*",
+          "k6",
+          "cypress/types/net-stubbing"
+        ]
+      }
+    ],
+    "import/extensions": [
+      "error",
+      {
+        "js": "always",
+        "json": "always"
+      }
+    ],
+    "import/no-duplicates": "error",
+    "import/first": "error",
+    "import/newline-after-import": "error",
+    "import/order": [
+      "warn",
+      {
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        },
+        "newlines-between": "never",
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index"
+        ]
+      }
+    ],
+    "sort-imports": [
+      "warn",
+      {
+        "ignoreCase": true,
+        "ignoreDeclarationSort": true,
+        "ignoreMemberSort": false,
+        "memberSyntaxSortOrder": [
+          "none",
+          "all",
+          "multiple",
+          "single"
+        ]
+      }
+    ],
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": [
+              ".*"
+            ],
+            "message": "Do not use relative paths, use absolute paths instead."
+          },
+          {
+            "group": [
+              "Fixtures/*"
+            ],
+            "message": "The 'Fixtures' path is coded in the base paths, and should be omitted on imports. E.g., instead of 'Fixtures/Builders/…' just use 'Builders/…'."
+          },
+          {
+            "group": [
+              "Support/*"
+            ],
+            "message": "The 'Support' path is coded in the base paths, and should be omitted on imports. E.g., instead of 'Support/Helpers/…' just use 'Helpers/…'."
+          }
+        ],
+        "paths": []
+      }
+    ],
+    "no-param-reassign": [
+      "error",
+      {
+        "props": false
+      }
+    ],
+    "@typescript-eslint/no-floating-promises": "off",
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "@typescript-eslint/no-unsafe-member-access": "off",
+    "@typescript-eslint/no-unsafe-call": "off",
+    "@typescript-eslint/no-unused-expressions": 0,
+    "@typescript-eslint/ban-types": "off",
+    "@typescript-eslint/no-unsafe-argument": "off",
+    "@typescript-eslint/no-loop-func": "off",
+    "chai-friendly/no-unused-expressions": 2,
+    "max-len": "off",
+    "comma-dangle": "off",
+    "@typescript-eslint/restrict-template-expressions": [
+      "error",
+      {
+        "allowAny": true,
+        "allowNullish": true
+      }
+    ],
+    "@typescript-eslint/no-use-before-define": [
+      "error",
+      {
+        "functions": false
+      }
+    ],
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "selector": "variableLike",
+        "format": [
+          "camelCase"
+        ]
+      },
+      {
+        "selector": "typeLike",
+        "format": [
+          "PascalCase"
+        ]
+      },
+      {
+        "selector": "variable",
+        "format": [
+          "camelCase",
+          "UPPER_CASE"
+        ]
+      },
+      {
+        "selector": "method",
+        "format": [
+          "camelCase"
+        ]
+      },
+      {
+        "selector": [
+          "objectLiteralProperty",
+          "objectLiteralMethod"
+        ],
+        "format": null
+      }
+    ],
+    "object-curly-newline": [
+      "error",
+      {
+        "ImportDeclaration": {
+          "consistent": true
+        }
+      }
+    ],
+    "@typescript-eslint/unbound-method": [
+      "error",
+      {
+        "ignoreStatic": true
+      }
+    ],
+    "no-only-tests/no-only-tests": "error"
+  }
+}
