@@ -15,10 +15,11 @@ export default defineConfig({
   videosFolder: "Cypress/Support/Results/Videos",
   trashAssetsBeforeRuns: true,
   reporterOptions: {
-    topLevelSuite: "CAT",
+    topLevelSuite: "Test",
   },
   retries: {
     runMode: 0,
+    openMode: 0,
   },
   env: {},
   e2e: {

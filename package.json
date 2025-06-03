@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npx cypress open --config-file config/test.config.ts --e2e -b electron", 
-    "test:run": "npx cypress run --config-file config/test.config.ts --e2e -b electron --spec Cypress/Tests/API/test.ts",
+    "test:run": "npx cypress run --config-file config/test.config.ts --e2e -b electron --spec Cypress/Tests/API/DemoApi.ts",
     
     "prettier": "prettier --config .prettierrc --ignore-path .prettierignore",
     "eslint": "eslint --config .eslintrc.json --ignore-path .eslintignore",
@@ -51,7 +51,6 @@
     "dotenv": "^16.4.7",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",
-    "moment-timezone": "^0.5.45",
-    "puppeteer": "^24.3.0"
+    "moment-timezone": "^0.5.45"
   }
 }
