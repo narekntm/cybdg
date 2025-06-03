@@ -30,9 +30,9 @@
       cy.log("This test is skipped");      
     });
 
-    it.only('Third test in Level 1 (only)', () => {
+    it.only('Third test in Level 1 (only)',() => {
       cy.log("third test in Level 1 (only)");
-    }).timeout(8000); // set custom timeout
+    })
   });
 
   context('Level 1 Nested Describe block 2', () => {
@@ -42,7 +42,7 @@
 
     it('First test in Level 2', () => {
       cy.log("first test in Level 2");
-    }).retries(2); // retry test up to 2 times on failure
+    }); 
 
     it('Second test in Level 2', () => {
       cy.log("second test in Level 2");
