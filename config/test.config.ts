@@ -23,7 +23,7 @@ export default defineConfig({
   },
   env: {},
   e2e: {
-    baseUrl: "https://example.cypress.io",
+    baseUrl:"https://example.cypress.io",
     experimentalRunAllSpecs: true,
     setupNodeEvents(on, config) {
       return plugin(on, config);
