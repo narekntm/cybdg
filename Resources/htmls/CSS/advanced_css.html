@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Real-World DOM Example</title>
+    <style>
+        .flex-grid, .row-item, .btn, .form-block, .random-123, .gen-abc987 { margin: 10px; }
+    </style>
+</head>
+<body>
+
+<section class="login-wrapper gen-abc987">
+    <div class="form-block">
+        <h2>Login</h2>
+        <form class="auth-form xyz-42">
+            <div class="input-group row-item">
+                <label>Email:</label>
+                <input type="text" class="input-field form-control" />
+            </div>
+            <div class="input-group row-item">
+                <label>Password:</label>
+                <input type="password" class="input-field form-control" />
+            </div>
+            <div class="row-item remember-block">
+                <input type="checkbox" id="remember-me" />
+                <label for="remember-me">Remember Me</label>
+            </div>
+            <div class="row-item">
+                <button class="btn primary-btn">Sign In</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<hr>
+
+<section class="dashboard-container flex-grid random-123">
+    <h2>User Preferences</h2>
+    <ul class="settings-list">
+        <li class="setting-row">Language: <select><option>EN</option><option>FR</option></select></li>
+        <li class="setting-row">Timezone: <select><option>GMT</option><option>UTC</option></select></li>
+        <li class="setting-row">
+            <div class="notifications">
+                <span>Email Notifications</span>
+                <input type="checkbox" checked />
+            </div>
+        </li>
+        <li class="setting-row">
+            <div class="notifications">
+                <span>Push Notifications</span>
+                <input type="checkbox" />
+            </div>
+        </li>
+    </ul>
+    <div class="actions">
+        <button class="btn save-btn secondary">Save Settings</button>
+    </div>
+</section>
+
+</body>
+</html>
