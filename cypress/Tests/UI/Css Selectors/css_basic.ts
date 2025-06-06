@@ -7,7 +7,7 @@ describe('CSS Selector Examples', () => {
    * Load the target HTML file before each test.
    */
   beforeEach(() => {
-    cy.visit('http://127.0.0.1:8080/Cypress/Tests/UI/Css%20Selectors/htmls/css.html') // Adjust path as needed
+    cy.visit('http://127.0.0.1:8080/Resources/htmls/CSS/css.html') // Adjust path as needed
   });
 
   /**
