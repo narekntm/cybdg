@@ -4,9 +4,11 @@
   "description": "Cypress Automation Project",
   "main": "index.js",
   "scripts": {
-    "test": "npx cypress open --config-file config/test.config.ts --e2e -b electron", 
+    "test": "npx cypress open --config-file config/test.config.ts --e2e -b electron",
     "test:run": "npx cypress run --config-file config/test.config.ts --e2e -b electron --spec Cypress/Tests/API/DemoApi.ts",
-    
+
+    "serve": "http-server -p 8080",
+
     "prettier": "prettier --config .prettierrc --ignore-path .prettierignore",
     "eslint": "eslint --config .eslintrc.json --ignore-path .eslintignore",
     "tsc": "tsc --project ./tsconfig.json --noEmit",
@@ -20,11 +22,11 @@
   "license": "ISC",
   "devDependencies": {
     "@testing-library/cypress": "^10.0.2",
-    "@typescript-eslint/eslint-plugin": "^8.24.1",
-    "@typescript-eslint/parser": "^8.24.1",
     "@types/chance": "^1.1.6",
     "@types/lodash": "^4.17.5",
     "@types/node": "^22.13.1",
+    "@typescript-eslint/eslint-plugin": "^8.24.1",
+    "@typescript-eslint/parser": "^8.24.1",
     "eslint": "8.57.1",
     "eslint-config-prettier": "^10.0.1",
     "eslint-import-resolver-typescript": "^3.8.3",
@@ -36,6 +38,7 @@
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.1.0",
     "globals": "^16.0.0",
+    "http-server": "^14.1.1",
     "mocha": "^11.1.0",
     "prettier": "^3.3.2",
     "typescript": "^5.4.5",
