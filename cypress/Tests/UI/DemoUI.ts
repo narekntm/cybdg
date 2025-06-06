@@ -1,5 +1,6 @@
 ﻿describe('Intercept Example on Real Website', () => {
   it('Should intercept and mock the GET /comments/* request', () => {
+
     // Intercept the request triggered by the "Get Comment" button
     cy.intercept('GET', '**/comments/*', {
       statusCode: 200,
