@@ -33,11 +33,14 @@ describe("Test scenarios for Admin Dashboard", () => {
   });
 
   it("Should check existence of modal and close it", () => {
-    cy.get("table.user-table tbody tr").eq(0).find(".btn.small-btn").click();
-    cy.get("#edit-modal").should("have.class", "active");
-    cy.get("#edit-modal h2").should("have.text", "Edit User");
-    cy.get("#edit-modal .close-modal").should("exist");
-    cy.get("#edit-modal .close-modal").click();
-    cy.get("#edit-modal").should("not.have.class", "active");
+    cy.get("table.user-table tbody tr").eq(0).find(".btn.small-btn").should("be.visible").click();
+
+    cy.get("#edit-modal").should("be.visible").and("have.class", "active");
+
+    cy.get("#edit-modal h2").should("be.visible").and("have.text", "Edit User");
+
+    cy.get("#edit-modal .close-modal").should("be.visible").click();
+
+    cy.get("#edit-modal").should("not.be.visible");
   });
 });
