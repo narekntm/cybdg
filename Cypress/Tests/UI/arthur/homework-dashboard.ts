@@ -31,4 +31,13 @@ describe("Test scenarios for Admin Dashboard", () => {
     cy.get("aside.sidebar ul li a").should("have.length", 3);
     cy.get(".footer").should("contain", "© 2025 TestCorp");
   });
+
+  it("Should check existence of modal and close it", () => {
+    cy.get("table.user-table tbody tr").eq(0).find(".btn.small-btn").click();
+    cy.get("#edit-modal").should("have.class", "active");
+    cy.get("#edit-modal h2").should("have.text", "Edit User");
+    cy.get("#edit-modal .close-modal").should("exist");
+    cy.get("#edit-modal .close-modal").click();
+    cy.get("#edit-modal").should("not.have.class", "active");
+  });
 });
