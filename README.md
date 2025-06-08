@@ -1,6 +1,7 @@
 # cybdg
 
 📁 Project Directory Structure
+
 ```
 ├── .eslintignore            # Files/folders to ignore during linting
 ├── .eslintrc.json           # ESLint configuration file
