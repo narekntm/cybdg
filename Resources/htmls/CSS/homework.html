@@ -164,22 +164,23 @@
       </main>
     </div>
 
-    <!-- Modal -->
-    <div class="modal" id="edit-modal">
-      <h2>Edit User</h2>
-      <p>Modal content here...</p>
-      <button class="btn close-modal">Close</button>
-    </div>
-    <script>
-      document.querySelector(".close-modal").addEventListener("click", function () {
-        document.getElementById("edit-modal").classList.remove("active");
-      });
+<!-- Modal -->
+<div class="modal" id="edit-modal">
+    <h2>Edit User</h2>
+    <p>Modal content here...</p>
+    <button class="btn close-modal">Close</button>
+</div>
+<script>
+  document.querySelector('.close-modal').addEventListener('click', function() {
+    document.getElementById('edit-modal').classList.remove('active');
+  });
 
-      document.querySelectorAll(".btn.small-btn").forEach(function (button) {
-        button.addEventListener("click", function () {
-          document.getElementById("edit-modal").classList.add("active");
-        });
-      });
-    </script>
-  </body>
+  document.querySelectorAll('.btn.small-btn').forEach(function(button) {
+    button.addEventListener('click', function() {
+      document.getElementById('edit-modal').classList.add('active');
+    });
+  });
+</script>
+
+</body>
 </html>
