@@ -1,0 +1,97 @@
+name: CI Pipeline (Lint and Test)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  TSC-Check:
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: "--max_old_space_size=4096"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+      - name: npm install
+        run: npm install
+      - name: Run TSC check for all files in the repo
+        run: npm run tsc
+
+  ESLint-Check:
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: "--max_old_space_size=4096"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+      - name: npm install
+        run: npm install
+      - name: Run ESLint for all files in the repo
+        run: npm run eslint -- --ext .ts ./
+
+  Prettier-Check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required for diffing against base branch
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+      - name: npm install
+        run: npm install
+      - name: Run Prettier for changed files in PR (or all on push)
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            npm run prettier -- --check $(git diff origin/${{ github.event.pull_request.base.ref }}..HEAD --name-only --diff-filter d | grep '.ts$' | xargs)
+          else
+            npm run prettier -- --check .
+          fi
+
+  Cypress-Run:
+    name: Cypress Tests
+    runs-on: ubuntu-latest
+    needs: [TSC-Check, ESLint-Check, Prettier-Check] # Run after linting jobs
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - name: Install dependencies
+        run: npm install
+
+      # Install a browser for Cypress to use if not using a pre-built image with browsers
+      # - name: Install Chrome
+      #   run: sudo apt-get update && sudo apt-get install -y google-chrome-stable
+
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v6
+        with:
+          # command: npm run cy:run # Assuming you have a script for this
+          # or specify directly:
+          # command: npx cypress run
+          browser: chrome # Specify browser if needed, ensure it's available
+          # record: true # Uncomment if you're using Cypress Dashboard and have set CYPRESS_RECORD_KEY
+        # env:
+          # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }} # Example for Cypress Dashboard
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Recommended for Cypress Dashboard integration
+
+      - name: Upload Cypress artifacts (screenshots, videos) on failure
+        uses: actions/upload-artifact@v4
+        if: failure() # Only upload if the previous step (Cypress tests) failed
+        with:
+          name: cypress-artifacts
+          path: |
+            cypress/screenshots
+            cypress/videos
+          retention-days: 7 # Optional: how long to keep the artifacts

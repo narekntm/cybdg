@@ -1,13 +1,19 @@
-﻿describe("Intercept Example on Real Website", () => {
-  it("Should intercept and mock the GET /comments/* request", () => {
+describe("Intercept Example on Real Website", () => {
+  beforeEach(() => {
+    // Load the fixture data
+    cy.fixture("example").as("commentData");
+  });
+
+  it("Should intercept and mock the GET /comments/* request using a fixture", function () {
     // Intercept the request triggered by the "Get Comment" button
+    // Notice how we're using this.commentData which was loaded in beforeEach
     cy.intercept("GET", "**/comments/*", {
       statusCode: 200,
       body: {
         postId: 1,
         id: 1,
-        name: "Mocked Name",
-        body: "This is a mocked comment body.",
+        name: this.commentData.name, // Using fixture data
+        body: this.commentData.body,  // Using fixture data
       },
     }).as("getComment");
 
@@ -20,7 +26,7 @@
     // Wait for the intercepted call
     cy.wait("@getComment");
 
-    // Assert mocked data is shown in the UI
-    cy.get(".network-comment").should("contain", "This is a mocked comment body.");
+    // Assert mocked data (from fixture) is shown in the UI
+    cy.get(".network-comment").should("contain", this.commentData.body);
   });
 });
