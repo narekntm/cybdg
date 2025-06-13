@@ -66,3 +66,4 @@ The above command starts a static server on
 [http://127.0.0.1:8080](http://127.0.0.1:8080).
 Navigate to `http://localhost:8080/Resources/htmls` or
 `http://127.0.0.1:8080/Resources/htmls` to access the HTML files.
+
