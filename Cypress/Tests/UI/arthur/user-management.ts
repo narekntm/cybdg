@@ -1,4 +1,8 @@
 describe("User Management Test Scenarios", () => {
+  beforeEach(() => {
+    cy.visit(baseUrl);
+  });
+
   const baseUrl = "http://127.0.0.1:8080/Resources/htmls/CSS/user_management.html";
 
   const login = (email: string, password: string) => {
@@ -28,10 +32,6 @@ describe("User Management Test Scenarios", () => {
   }
 
   context("Admin auth test cases", () => {
-    beforeEach(() => {
-      cy.visit(baseUrl);
-    });
-
     it("Login with valid credentials", () => {
       loginAdmin();
     });
@@ -58,10 +58,6 @@ describe("User Management Test Scenarios", () => {
   });
 
   context("Adding new user", () => {
-    beforeEach(() => {
-      cy.visit(baseUrl);
-    });
-
     it("Should add user with valid input", () => {
       loginAdmin();
       cy.get("#form-title").should("be.visible");
@@ -195,10 +191,6 @@ describe("User Management Test Scenarios", () => {
   });
 
   context("Edit,Delete, Deactivate user", () => {
-    beforeEach(() => {
-      cy.visit(baseUrl);
-    });
-
     it("Should edit existing user and update in the table", () => {
       loginAdmin();
       cy.get("#form-title").should("be.visible");
@@ -255,16 +247,10 @@ describe("User Management Test Scenarios", () => {
 
       cy.contains("#user-table tr", "Alice").within(() => {
         cy.contains("Deactivate").click();
-      });
-
-      cy.contains("#user-table tr", "Alice").within(() => {
         cy.get("td").eq(6).should("contain", "Inactive");
         cy.contains("Activate").click();
-      });
-
-      cy.contains("#user-table tr", "Alice").within(() => {
         cy.get("td").eq(6).should("contain", "Active");
-        cy.contains("Deactivate");
+        cy.contains("Deactivate").should("exist");
       });
     });
   });
