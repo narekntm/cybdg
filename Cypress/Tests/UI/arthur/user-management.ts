@@ -5,17 +5,15 @@ describe("User Management Test Scenarios", () => {
 
   const baseUrl = "http://127.0.0.1:8080/Resources/htmls/CSS/user_management.html";
 
-  const login = (email: string, password: string) => {
+  const login = (
+    email: string = "admin@example.com",
+    password: string = "admin123"
+  ) => {
     cy.get("#admin-email").type(email);
     cy.get("#admin-password").type(password);
     cy.get('button[type="submit"].btn-primary').contains("Login").click();
   };
 
-  const loginAdmin = () => {
-    login("admin@example.com", "admin123");
-    cy.get("#admin-controls").should("contain", "You are logged in as admin.");
-    cy.get("#logout-btn").should("be.visible").contains("Logout");
-  };
 
   function fillUserForm(user: { name: string; role: string; age: string; email: string; gender: string; subscriptions?: string[] }) {
     cy.get("#name").clear().type(user.name);
@@ -33,7 +31,9 @@ describe("User Management Test Scenarios", () => {
 
   context("Admin auth test cases", () => {
     it("Login with valid credentials", () => {
-      loginAdmin();
+      login();
+      cy.get("#admin-controls").should("contain", "You are logged in as admin.");
+      cy.get("#logout-btn").should("be.visible").contains("Logout");
     });
 
     it("Check login with invalid credentials", () => {
@@ -42,7 +42,7 @@ describe("User Management Test Scenarios", () => {
     });
 
     it("Verify that the delete button is working after login", () => {
-      loginAdmin();
+      login();
       cy.contains("#user-table tr", "Alice").within(() => {
         cy.get("button.delete-btn").click();
       });
@@ -59,7 +59,7 @@ describe("User Management Test Scenarios", () => {
 
   context("Adding new user", () => {
     it("Should add user with valid input", () => {
-      loginAdmin();
+      login();
       cy.get("#form-title").should("be.visible");
 
       fillUserForm({
@@ -78,7 +78,7 @@ describe("User Management Test Scenarios", () => {
     });
 
     it("Should submit form with all fields empty", () => {
-      loginAdmin();
+      login();
       cy.get("#form-title").should("be.visible");
       cy.get('button[type="submit"].btn-primary').contains("Save").click();
       cy.get("#form-errors").should("be.visible");
@@ -92,7 +92,7 @@ describe("User Management Test Scenarios", () => {
     });
 
     it("Should show error when name contains symbols", () => {
-      loginAdmin();
+      login();
       cy.get("#form-title").should("be.visible");
       fillUserForm({
         name: "John@",
@@ -106,7 +106,7 @@ describe("User Management Test Scenarios", () => {
     });
 
     it("Should show error when name contains numbers", () => {
-      loginAdmin();
+      login();
       cy.get("#form-title").should("be.visible");
       fillUserForm({
         name: "John123",
@@ -120,7 +120,7 @@ describe("User Management Test Scenarios", () => {
     });
 
     it("Should show error when name is too long", () => {
-      loginAdmin();
+      login();
       cy.get("#form-title").should("be.visible");
       fillUserForm({
         name: "ArthurTheGreatAndPowerfulKingOfTheBrits",
@@ -134,7 +134,7 @@ describe("User Management Test Scenarios", () => {
     });
 
     it("Should show error when no @ symbol", () => {
-      loginAdmin();
+      login();
       cy.get("#form-title").should("be.visible");
 
       fillUserForm({
@@ -149,7 +149,7 @@ describe("User Management Test Scenarios", () => {
     });
 
     it("Should show error when no domain", () => {
-      loginAdmin();
+      login();
       cy.get("#form-title").should("be.visible");
 
       fillUserForm({
@@ -164,7 +164,7 @@ describe("User Management Test Scenarios", () => {
     });
 
     it("Should show error when no username part", () => {
-      loginAdmin();
+      login();
       cy.get("#form-title").should("be.visible");
 
       fillUserForm({
@@ -179,7 +179,7 @@ describe("User Management Test Scenarios", () => {
     });
 
     it("Should show error when gender is not selected", () => {
-      loginAdmin();
+      login();
       cy.get("#form-title").should("be.visible");
       cy.get("#name").type("Arthur");
       cy.get("#role").select("Admin");
@@ -192,7 +192,7 @@ describe("User Management Test Scenarios", () => {
 
   context("Edit,Delete, Deactivate user", () => {
     it("Should edit existing user and update in the table", () => {
-      loginAdmin();
+      login();
       cy.get("#form-title").should("be.visible");
 
       cy.contains("#user-table tr", "Alice").within(() => {
@@ -226,7 +226,7 @@ describe("User Management Test Scenarios", () => {
     });
 
     it("Should delete existing user and remove from the table", () => {
-      loginAdmin();
+      login();
       cy.contains("#user-table tr", "Alice").within(() => {
         cy.get("button.delete-btn").click();
       });
@@ -243,7 +243,7 @@ describe("User Management Test Scenarios", () => {
     });
 
     it("Should deactivate and activate user", () => {
-      loginAdmin();
+      login();
 
       cy.contains("#user-table tr", "Alice").within(() => {
         cy.contains("Deactivate").click();
