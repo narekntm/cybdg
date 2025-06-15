@@ -24,6 +24,7 @@ export default defineConfig({
   env: {},
   e2e: {
     baseUrl: "https://example.cypress.io",
+    watchForFileChanges: false,
     experimentalRunAllSpecs: true,
     setupNodeEvents(on, config) {
       return plugin(on, config);
