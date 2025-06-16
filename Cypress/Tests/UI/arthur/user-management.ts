@@ -1,3 +1,5 @@
+import { UserManagementPage } from "Pages/UserManagementPage";
+
 describe("User Management Test Scenarios", () => {
   beforeEach(() => {
     cy.visit(baseUrl);
@@ -9,22 +11,22 @@ describe("User Management Test Scenarios", () => {
     email: string = "admin@example.com",
     password: string = "admin123"
   ) => {
-    cy.get("#admin-email").type(email);
-    cy.get("#admin-password").type(password);
-    cy.get('button[type="submit"].btn-primary').contains("Login").click();
+    UserManagementPage.adminEmailInput().type(email);
+    UserManagementPage.adminPasswordInput().type(password);
+    UserManagementPage.loginButton().click();
   };
 
 
   function fillUserForm(user: { name: string; role: string; age: string; email: string; gender: string; subscriptions?: string[] }) {
-    cy.get("#name").clear().type(user.name);
-    cy.get("#role").select(user.role);
-    cy.get("#age").clear().type(user.age);
-    cy.get("#email").clear().type(user.email);
-    cy.get(`input[name="gender"][value="${user.gender}"]`).check();
+    UserManagementPage.userNameInput().clear().type(user.name);
+    UserManagementPage.userRoleSelect().select(user.role);
+    UserManagementPage.userAgeInput().clear().type(user.age);
+    UserManagementPage.userEmailInput().clear().type(user.email);
+    UserManagementPage.userGenderRadio(user.gender).check();
 
     if (user.subscriptions && user.subscriptions.length > 0) {
       user.subscriptions.forEach((sub) => {
-        cy.get(`input[name="subscribe"][value="${sub}"]`).uncheck().check();
+        UserManagementPage.userSubscriptionCheckbox(sub).uncheck().check();
       });
     }
   }
@@ -32,36 +34,31 @@ describe("User Management Test Scenarios", () => {
   context("Admin auth test cases", () => {
     it("Login with valid credentials", () => {
       login();
-      cy.get("#admin-controls").should("contain", "You are logged in as admin.");
-      cy.get("#logout-btn").should("be.visible").contains("Logout");
+      UserManagementPage.adminControls().should("contain", "You are logged in as admin.");
+      UserManagementPage.logoutButton().should("be.visible").contains("Logout");
     });
 
     it("Check login with invalid credentials", () => {
       login("invalid@admin.test", "wrongpassword");
-      cy.get("#login-status").should("be.visible").contains("Invalid credentials");
+      UserManagementPage.loginStatus().should("be.visible").contains("Invalid credentials");
     });
 
     it("Verify that the delete button is working after login", () => {
       login();
-      cy.contains("#user-table tr", "Alice").within(() => {
-        cy.get("button.delete-btn").click();
-      });
-      cy.get("#confirm-modal").should("be.visible");
+      UserManagementPage.deleteButtonInRow("Alice").click();
+      UserManagementPage.confirmModal().should("be.visible");
     });
 
     it("Should check error message on delete button without login", () => {
-      cy.contains("#user-table tr", "Alice").within(() => {
-        cy.get("button.delete-btn").click();
-      });
-      cy.get("#admin-delete-error").should("be.visible").and("contain", "Admin login required to delete Admin-level users.");
+      UserManagementPage.deleteButtonInRow("Alice").click();
+      UserManagementPage.deleteError().should("be.visible").and("contain", "Admin login required to delete Admin-level users.");
     });
   });
 
   context("Adding new user", () => {
     it("Should add user with valid input", () => {
       login();
-      cy.get("#form-title").should("be.visible");
-
+      UserManagementPage.formTitle().should("be.visible");
       fillUserForm({
         name: "Arthur",
         role: "Admin",
@@ -70,19 +67,16 @@ describe("User Management Test Scenarios", () => {
         gender: "Male",
         subscriptions: ["Newsletter", "Product Updates"],
       });
-      cy.get('button[type="submit"].btn-primary').contains("Save").click();
-
-      cy.contains("#user-table tr", "Arthur").within(() => {
-        cy.get("button.delete-btn").should("be.visible").contains("Delete");
-      });
+      UserManagementPage.saveButton().contains("Save").click();
+      UserManagementPage.deleteButtonInRow("Arthur").click();
     });
 
     it("Should submit form with all fields empty", () => {
       login();
-      cy.get("#form-title").should("be.visible");
-      cy.get('button[type="submit"].btn-primary').contains("Save").click();
-      cy.get("#form-errors").should("be.visible");
-      cy.get("#form-errors").within(() => {
+      UserManagementPage.formTitle().should("be.visible");
+      UserManagementPage.saveButton().contains("Save").click();
+      UserManagementPage.formErrors().should("be.visible");
+      UserManagementPage.formErrors().within(() => {
         cy.contains("Name must be 1–20 letters only (no spaces or symbols).").should("exist");
         cy.contains("Role is required.").should("exist");
         cy.contains("Age must be between 1 and 99.").should("exist");
@@ -93,7 +87,6 @@ describe("User Management Test Scenarios", () => {
 
     it("Should show error when name contains symbols", () => {
       login();
-      cy.get("#form-title").should("be.visible");
       fillUserForm({
         name: "John@",
         role: "Admin",
@@ -101,13 +94,12 @@ describe("User Management Test Scenarios", () => {
         email: "test@example.com",
         gender: "Male",
       });
-      cy.get('button[type="submit"].btn-primary').contains("Save").click();
-      cy.get("#form-errors").should("be.visible").contains("Name must be 1–20 letters only (no spaces or symbols).");
+      UserManagementPage.saveButton().contains("Save").click();
+      UserManagementPage.formErrors().should("be.visible").contains("Name must be 1–20 letters only (no spaces or symbols).");
     });
 
     it("Should show error when name contains numbers", () => {
       login();
-      cy.get("#form-title").should("be.visible");
       fillUserForm({
         name: "John123",
         role: "Admin",
@@ -115,13 +107,12 @@ describe("User Management Test Scenarios", () => {
         email: "test@example.com",
         gender: "Male",
       });
-      cy.get('button[type="submit"].btn-primary').contains("Save").click();
-      cy.get("#form-errors").should("be.visible").contains("Name must be 1–20 letters only (no spaces or symbols).");
+      UserManagementPage.saveButton().contains("Save").click();
+      UserManagementPage.formErrors().should("be.visible").contains("Name must be 1–20 letters only (no spaces or symbols).");
     });
 
     it("Should show error when name is too long", () => {
       login();
-      cy.get("#form-title").should("be.visible");
       fillUserForm({
         name: "ArthurTheGreatAndPowerfulKingOfTheBrits",
         role: "Admin",
@@ -129,14 +120,13 @@ describe("User Management Test Scenarios", () => {
         email: "test@example.com",
         gender: "Male",
       });
-      cy.get('button[type="submit"].btn-primary').contains("Save").click();
-      cy.get("#form-errors").should("be.visible").contains("Name must be 1–20 letters only (no spaces or symbols).");
+      UserManagementPage.saveButton().contains("Save").click();
+      UserManagementPage.formErrors().should("be.visible").contains("Name must be 1–20 letters only (no spaces or symbols).");
     });
 
     it("Should show error when no @ symbol", () => {
       login();
       cy.get("#form-title").should("be.visible");
-
       fillUserForm({
         name: "Arthur",
         role: "Admin",
@@ -144,14 +134,12 @@ describe("User Management Test Scenarios", () => {
         email: "arthurtest.com",
         gender: "Male",
       });
-      cy.get('button[type="submit"].btn-primary').contains("Save").click();
-      cy.get("#form-errors").should("be.visible").contains("Valid email is required.");
+      UserManagementPage.saveButton().contains("Save").click();
+      UserManagementPage.formErrors().should("be.visible").contains("Valid email is required.");
     });
 
     it("Should show error when no domain", () => {
       login();
-      cy.get("#form-title").should("be.visible");
-
       fillUserForm({
         name: "Arthur",
         role: "Admin",
@@ -159,14 +147,12 @@ describe("User Management Test Scenarios", () => {
         email: "arthurtest@",
         gender: "Male",
       });
-      cy.get('button[type="submit"].btn-primary').contains("Save").click();
-      cy.get("#form-errors").should("be.visible").contains("Valid email is required.");
+      UserManagementPage.saveButton().contains("Save").click();
+      UserManagementPage.formErrors().should("be.visible").contains("Valid email is required.");
     });
 
     it("Should show error when no username part", () => {
       login();
-      cy.get("#form-title").should("be.visible");
-
       fillUserForm({
         name: "Arthur",
         role: "Admin",
@@ -174,36 +160,30 @@ describe("User Management Test Scenarios", () => {
         email: "@test.test",
         gender: "Male",
       });
-      cy.get('button[type="submit"].btn-primary').contains("Save").click();
-      cy.get("#form-errors").should("be.visible").contains("Valid email is required.");
+      UserManagementPage.saveButton().contains("Save").click();
+      UserManagementPage.formErrors().should("be.visible").contains("Valid email is required.");
     });
 
     it("Should show error when gender is not selected", () => {
       login();
-      cy.get("#form-title").should("be.visible");
-      cy.get("#name").type("Arthur");
-      cy.get("#role").select("Admin");
-      cy.get("#age").type("30");
-      cy.get("#email").type("arthur@test.test");
-      cy.get('button[type="submit"].btn-primary').contains("Save").click();
-      cy.get("#form-errors").should("be.visible").contains("Gender selection is required.");
+      UserManagementPage.userNameInput().type("Arthur");
+      UserManagementPage.userRoleSelect().select("Admin");
+      UserManagementPage.userAgeInput().type("30");
+      UserManagementPage.userEmailInput().type("arthur@test.test");
+      UserManagementPage.saveButton().contains("Save").click();
+      UserManagementPage.formErrors().should("be.visible").contains("Gender selection is required.");
     });
   });
 
   context("Edit,Delete, Deactivate user", () => {
     it("Should edit existing user and update in the table", () => {
       login();
-      cy.get("#form-title").should("be.visible");
-
-      cy.contains("#user-table tr", "Alice").within(() => {
-        cy.get("button.edit-btn").click();
-      });
-
-      cy.get("#name").should("have.value", "Alice");
-      cy.get("#role").should("have.value", "Admin");
-      cy.get("#age").should("have.value", "30");
-      cy.get("#email").should("have.value", "alice@site.com");
-      cy.get(`input[name="subscribe"][value="Newsletter"]`).should("be.checked");
+      UserManagementPage.editButtonInRow("Alice").click();
+      UserManagementPage.userNameInput().should("have.value", "Alice");
+      UserManagementPage.userRoleSelect().should("have.value", "Admin");
+      UserManagementPage.userAgeInput().should("have.value", "30");
+      UserManagementPage.userEmailInput().should("have.value", "alice@site.com");
+      UserManagementPage.userSubscriptionCheckbox("Newsletter").should("be.checked");
 
       fillUserForm({
         name: "AliceUpdatedName",
@@ -214,8 +194,7 @@ describe("User Management Test Scenarios", () => {
         subscriptions: ["Product Updates"],
       });
 
-      cy.get('button[type="submit"].btn-primary').contains("Save").click();
-
+      UserManagementPage.saveButton().contains("Save").click();
       cy.contains("#user-table tr", "AliceUpdatedName").within(() => {
         cy.contains("Editor");
         cy.contains("35");
@@ -227,31 +206,23 @@ describe("User Management Test Scenarios", () => {
 
     it("Should delete existing user and remove from the table", () => {
       login();
-      cy.contains("#user-table tr", "Alice").within(() => {
-        cy.get("button.delete-btn").click();
-      });
-
-      cy.get("#confirm-modal").should("be.visible");
-      cy.get("#cancel-delete").should("be.visible").click();
-      cy.get("#confirm-modal").should("not.be.visible");
-      cy.contains("#user-table tr", "Alice").within(() => {
-        cy.get("button.delete-btn").should("be.visible").click();
-      });
-      cy.get("#confirm-modal").should("be.visible");
-      cy.get("#confirm-delete").should("be.visible").click();
+      UserManagementPage.deleteButtonInRow("Alice").click();
+      UserManagementPage.confirmModal().should("be.visible");
+      UserManagementPage.cancelDeleteButton().should("be.visible").click();
+      UserManagementPage.confirmModal().should("not.be.visible");
+      UserManagementPage.deleteButtonInRow("Alice").click();
+      UserManagementPage.confirmModal().should("be.visible");
+      UserManagementPage.confirmDeleteButton().should("be.visible").click();
       cy.contains("#user-table tr", "Alice").should("not.exist");
     });
 
     it("Should deactivate and activate user", () => {
       login();
-
-      cy.contains("#user-table tr", "Alice").within(() => {
-        cy.contains("Deactivate").click();
-        cy.get("td").eq(6).should("contain", "Inactive");
-        cy.contains("Activate").click();
-        cy.get("td").eq(6).should("contain", "Active");
-        cy.contains("Deactivate").should("exist");
-      });
+      UserManagementPage.deactivateButtonInRow("Alice").click();
+      UserManagementPage.statusCellInRow("Alice").should("contain", "Inactive");
+      UserManagementPage.activateButtonInRow("Alice").click();
+      UserManagementPage.statusCellInRow("Alice").should("contain", "Active");
+      UserManagementPage.deactivateButtonInRow("Alice").should("exist");
     });
   });
 });
