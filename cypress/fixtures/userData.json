@@ -1,0 +1,120 @@
+{
+  "tableHeaders": [
+    "Name",
+    "Role",
+    "Age",
+    "Email",
+    "Gender",
+    "Subscription",
+    "Status",
+    "Actions"
+  ],
+  "loginPositiveCase": {
+    "email": "admin@example.com",
+    "password": "admin123"
+  },
+  "loginNegativeCases": [
+    {
+      "email": "",
+      "password": ""
+    },
+    {
+      "email": "user@example.com",
+      "password": ""
+    },
+    {
+      "email": "",
+      "password": "password123"
+    },
+    {
+      "email": "invalid-email",
+      "password": "password123"
+    },
+    {
+      "email": "wrong@example.com",
+      "password": "wrongpassword"
+    }
+  ],
+  "userFormPositiveData": {
+    "name": "LarisaYeremyan",
+    "role": "Editor",
+    "age": 30,
+    "email": "larisayeremyan@gmail.com",
+    "gender": "Female",
+    "subscription": "Newsletter"
+  },
+  "userFormNegativeData": [
+    {
+      "name": "",
+      "role": "Admin",
+      "age": 30,
+      "email": "valid@example.com",
+      "gender": "Male",
+      "subscription": "Premium",
+      "expectedError": "Name is required"
+    },
+    {
+      "name": "John Doe",
+      "role": "User",
+      "age": 25,
+      "email": "not-an-email",
+      "gender": "Female",
+      "subscription": "Free",
+      "expectedError": "Invalid email address"
+    },
+    {
+      "name": "Jane Doe",
+      "role": "Moderator",
+      "age": "",
+      "email": "jane@example.com",
+      "gender": "Female",
+      "subscription": "Standard",
+      "expectedError": "Age is required"
+    },
+    {
+      "name": "Sam",
+      "role": "Admin",
+      "age": -5,
+      "email": "sam@example.com",
+      "gender": "Male",
+      "subscription": "Premium",
+      "expectedError": "Age must be a positive number"
+    },
+    {
+      "name": "Alex",
+      "role": "User",
+      "age": 40,
+      "email": "alex@example.com",
+      "gender": "Alien",
+      "subscription": "Free",
+      "expectedError": "Invalid gender selected"
+    },
+    {
+      "name": "Chris",
+      "role": "",
+      "age": 29,
+      "email": "chris@example.com",
+      "gender": "Non-binary",
+      "subscription": "Standard",
+      "expectedError": "Role is required"
+    },
+    {
+      "name": "Taylor",
+      "role": "Moderator",
+      "age": 22,
+      "email": "taylor@example.com",
+      "gender": "Female",
+      "subscription": "Gold",
+      "expectedError": "Invalid subscription selected"
+    },
+    {
+      "name": "Jordan",
+      "role": "User",
+      "age": 33,
+      "email": "jordan@example.com",
+      "gender": "Male",
+      "subscription": "Free",
+      "expectedError": "Invalid status"
+    }
+  ]
+}
