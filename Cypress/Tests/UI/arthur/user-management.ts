@@ -1,11 +1,12 @@
 import { UserManagementPage } from "Pages/UserManagementPage";
 
 describe("User Management Test Scenarios", () => {
+
+  const baseUrl = "http://127.0.0.1:8080/Resources/htmls/CSS/user_management.html";
+
   beforeEach(() => {
     cy.visit(baseUrl);
   });
-
-  const baseUrl = "http://127.0.0.1:8080/Resources/htmls/CSS/user_management.html";
 
   const login = (
     email: string = "admin@example.com",
@@ -30,6 +31,8 @@ describe("User Management Test Scenarios", () => {
       });
     }
   }
+
+  const saveUser = () => UserManagementPage.saveButton().contains("Save").click();
 
   context("Admin auth test cases", () => {
     it("Login with valid credentials", () => {
@@ -67,14 +70,14 @@ describe("User Management Test Scenarios", () => {
         gender: "Male",
         subscriptions: ["Newsletter", "Product Updates"],
       });
-      UserManagementPage.saveButton().contains("Save").click();
+      saveUser();
       UserManagementPage.deleteButtonInRow("Arthur").click();
     });
 
     it("Should submit form with all fields empty", () => {
       login();
       UserManagementPage.formTitle().should("be.visible");
-      UserManagementPage.saveButton().contains("Save").click();
+      saveUser();
       UserManagementPage.formErrors().should("be.visible");
       UserManagementPage.formErrors().within(() => {
         cy.contains("Name must be 1–20 letters only (no spaces or symbols).").should("exist");
@@ -94,7 +97,7 @@ describe("User Management Test Scenarios", () => {
         email: "test@example.com",
         gender: "Male",
       });
-      UserManagementPage.saveButton().contains("Save").click();
+      saveUser();
       UserManagementPage.formErrors().should("be.visible").contains("Name must be 1–20 letters only (no spaces or symbols).");
     });
 
@@ -107,7 +110,7 @@ describe("User Management Test Scenarios", () => {
         email: "test@example.com",
         gender: "Male",
       });
-      UserManagementPage.saveButton().contains("Save").click();
+      saveUser();
       UserManagementPage.formErrors().should("be.visible").contains("Name must be 1–20 letters only (no spaces or symbols).");
     });
 
@@ -120,7 +123,7 @@ describe("User Management Test Scenarios", () => {
         email: "test@example.com",
         gender: "Male",
       });
-      UserManagementPage.saveButton().contains("Save").click();
+      saveUser();
       UserManagementPage.formErrors().should("be.visible").contains("Name must be 1–20 letters only (no spaces or symbols).");
     });
 
@@ -134,7 +137,7 @@ describe("User Management Test Scenarios", () => {
         email: "arthurtest.com",
         gender: "Male",
       });
-      UserManagementPage.saveButton().contains("Save").click();
+      saveUser();
       UserManagementPage.formErrors().should("be.visible").contains("Valid email is required.");
     });
 
@@ -147,7 +150,7 @@ describe("User Management Test Scenarios", () => {
         email: "arthurtest@",
         gender: "Male",
       });
-      UserManagementPage.saveButton().contains("Save").click();
+      saveUser();
       UserManagementPage.formErrors().should("be.visible").contains("Valid email is required.");
     });
 
@@ -160,7 +163,7 @@ describe("User Management Test Scenarios", () => {
         email: "@test.test",
         gender: "Male",
       });
-      UserManagementPage.saveButton().contains("Save").click();
+      saveUser();
       UserManagementPage.formErrors().should("be.visible").contains("Valid email is required.");
     });
 
@@ -170,7 +173,7 @@ describe("User Management Test Scenarios", () => {
       UserManagementPage.userRoleSelect().select("Admin");
       UserManagementPage.userAgeInput().type("30");
       UserManagementPage.userEmailInput().type("arthur@test.test");
-      UserManagementPage.saveButton().contains("Save").click();
+      saveUser();
       UserManagementPage.formErrors().should("be.visible").contains("Gender selection is required.");
     });
   });
@@ -194,7 +197,7 @@ describe("User Management Test Scenarios", () => {
         subscriptions: ["Product Updates"],
       });
 
-      UserManagementPage.saveButton().contains("Save").click();
+      saveUser();
       cy.contains("#user-table tr", "AliceUpdatedName").within(() => {
         cy.contains("Editor");
         cy.contains("35");
