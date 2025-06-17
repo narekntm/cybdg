@@ -1,4 +1,5 @@
 import { UserManagementPage } from "Pages/UserManagementPage";
+import { UserFormData } from "Models/UserManagementModels";
 
 describe("User Management Test Scenarios", () => {
   const baseUrl = "http://127.0.0.1:8080/Resources/htmls/CSS/user_management.html";
@@ -13,7 +14,7 @@ describe("User Management Test Scenarios", () => {
     UserManagementPage.loginButton().click();
   };
 
-  function fillUserForm(user: { name: string; role: string; age: string; email: string; gender: string; subscriptions?: string[] }) {
+  function fillUserForm(user: UserFormData) {
     UserManagementPage.userNameInput().clear().type(user.name);
     UserManagementPage.userRoleSelect().select(user.role);
     UserManagementPage.userAgeInput().clear().type(user.age);
