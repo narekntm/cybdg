@@ -1,22 +1,17 @@
 import { UserManagementPage } from "Pages/UserManagementPage";
 
 describe("User Management Test Scenarios", () => {
-
   const baseUrl = "http://127.0.0.1:8080/Resources/htmls/CSS/user_management.html";
 
   beforeEach(() => {
     cy.visit(baseUrl);
   });
 
-  const login = (
-    email: string = "admin@example.com",
-    password: string = "admin123"
-  ) => {
+  const login = (email: string = "admin@example.com", password: string = "admin123") => {
     UserManagementPage.adminEmailInput().type(email);
     UserManagementPage.adminPasswordInput().type(password);
     UserManagementPage.loginButton().click();
   };
-
 
   function fillUserForm(user: { name: string; role: string; age: string; email: string; gender: string; subscriptions?: string[] }) {
     UserManagementPage.userNameInput().clear().type(user.name);
