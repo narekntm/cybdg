@@ -19,7 +19,7 @@ const INITIAL_USERS = [
   { id: 3, name: "Eve", role: "Editor", age: 28, email: "eve@site.com", gender: "Other", subscriptions: "Newsletter, Product Updates", status: "Active" },
 ];
 
-let users = [...INITIAL_USERS];
+let users = INITIAL_USERS.map(u => ({ ...u }))
 
 // Admin login
 app.post("/api/login", (req, res) => {
@@ -74,7 +74,7 @@ app.patch("/api/users/:id/status", (req, res) => {
 
 // Reset in-memory data back to initial state
 app.post("/api/reset", (req, res) => {
-  users = [...INITIAL_USERS];
+  users = INITIAL_USERS.map(u => ({ ...u }))
   return res.json({ success: true, users });
 });
 

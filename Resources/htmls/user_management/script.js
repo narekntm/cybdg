@@ -17,21 +17,27 @@ let editRow = null;
 let rowToDelete = null;
 
 const adminLoginForm = document.getElementById("admin-login-form");
-const userForm = document.getElementById("user-form");
 const adminControls = document.getElementById("admin-controls");
 const logoutBtn = document.getElementById("logout-btn");
 const loginStatus = document.getElementById("login-status");
+
 const tableBody = document.querySelector("#user-table tbody");
+const userForm = document.getElementById("user-form");
 const nameInput = document.getElementById("name");
 const roleInput = document.getElementById("role");
 const ageInput = document.getElementById("age");
 const emailInput = document.getElementById("email");
 const formErrors = document.getElementById("form-errors");
+
 const adminDeleteError = document.getElementById("admin-delete-error");
-const confirmModal = document.getElementById("confirm-modal");
+const confirmDeleteModal = document.getElementById("confirm-delete-modal");
 const confirmDeleteBtn = document.getElementById("confirm-delete");
 const cancelDeleteBtn = document.getElementById("cancel-delete");
-const resetBtn = document.getElementById("reset-btn");
+
+const resetBtn       = document.getElementById('reset-btn');
+const resetModal     = document.getElementById('confirm-reset-modal');
+const confirmReset   = document.getElementById('confirm-reset');
+const cancelReset    = document.getElementById('cancel-reset');
 
 // ─────────────────────────────────────────────────────────
 // ✅ Admin Login / Logout
@@ -137,7 +143,7 @@ function toggleStatus(row, btn) {
 }
 
 // ─────────────────────────────────────────────────────────
-// ✅ Modal Confirmation
+// ✅ Delete Modal Confirmation
 // ─────────────────────────────────────────────────────────
 confirmDeleteBtn.addEventListener("click", async () => {
   if (!rowToDelete) return;
@@ -148,13 +154,38 @@ confirmDeleteBtn.addEventListener("click", async () => {
     adminDeleteError.textContent = err.error || "Server error";
     adminDeleteError.style.display = "block";
   } finally {
-    confirmModal.style.display = "none";
+    confirmDeleteModal.style.display = "none";
     rowToDelete = null;
   }
 });
 
 cancelDeleteBtn.addEventListener("click", () => {
-  confirmModal.style.display = "none";
+  confirmDeleteModal.style.display = "none";
+});
+
+// ─────────────────────────────────────────────────────────
+// ✅ Reset Modal Confirmation
+// ─────────────────────────────────────────────────────────
+confirmReset.addEventListener('click', async () => {
+  try {
+    await resetData();
+    await loadUsers();        // re-fetch & re-render the table
+    // optionally: showToast('Data has been reset');
+  } catch (err) {
+    console.error('Reset failed:', err);
+    // optionally: showToast('Reset failed', 'error');
+  } finally {
+    resetModal.style.display = 'none';
+  }
+});
+
+// if they cancel
+cancelReset.addEventListener('click', () => {
+  resetModal.style.display = 'none';
+});
+resetBtn.addEventListener('click', () => {
+  // show the modal instead of window.confirm
+  resetModal.style.display = 'flex';
 });
 
 // ─────────────────────────────────────────────────────────
@@ -234,7 +265,7 @@ function handleDelete(row) {
     return;
   }
   rowToDelete = row;
-  confirmModal.style.display = "flex";
+  confirmDeleteModal.style.display = "flex";
 }
 
 // ─────────────────────────────────────────────────────────
@@ -259,14 +290,3 @@ function loadUsers() {
 
 loadUsers();
 
-resetBtn.addEventListener("click", async () => {
-  const ok = confirm("This will wipe all changes and restore initial users. Continue?");
-  if (!ok) return;
-  try {
-    await resetData();
-    loadUsers();
-    alert("Data reset");
-  } catch {
-    alert("Reset failed");
-  }
-});

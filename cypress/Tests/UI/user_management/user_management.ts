@@ -6,6 +6,14 @@ describe("User Management – Cypress Sandbox", () => {
   beforeEach(() => {
     cy.visit(baseUrl);
   });
+  
+  afterEach(() => {
+  // reset the state after each test
+    cy.request({
+      method: "POST",
+      url: "/api/reset",
+    }); 
+  })
 
   function loginAsAdmin(name: string = "admin@example.com", password: string = "admin123") {
     UserManagementPage.adminEmailInput().type(name);
@@ -129,9 +137,9 @@ describe("User Management – Cypress Sandbox", () => {
       cy.contains("tr", "TempUser").within(() => {
         cy.get(".delete-btn").click();
       });
-      cy.get("#confirm-modal").should("be.visible");
+      cy.get("#confirm-delete-modal").should("be.visible");
       cy.get("#cancel-delete").click();
-      cy.get("#confirm-modal").should("not.be.visible");
+      cy.get("#confirm-delete-modal").should("not.be.visible");
     });
 
     it("Non-admin cannot delete Admin user", () => {
@@ -154,9 +162,9 @@ describe("User Management – Cypress Sandbox", () => {
   describe("🔁 Status Toggle", () => {
     it("Toggles status between Active and Inactive", () => {
       cy.contains("tr", "Eve").within(() => {
-        cy.get("td").eq(6).should("contain", "Inactive");
-        cy.get(".status-btn").click();
         cy.get("td").eq(6).should("contain", "Active");
+        cy.get(".status-btn").click();
+        cy.get("td").eq(6).should("contain", "Inactive");
       });
     });
   });

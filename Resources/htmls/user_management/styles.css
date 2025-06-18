@@ -14,6 +14,14 @@
   box-sizing: border-box;
 }
 
+footer {
+  display: flex;
+  flex-direction: column;    /* stack button over the paragraph */
+  align-items: center;       /* center items horizontally */
+  gap: 0.5rem;               /* space between button and text */
+  margin-top: 2rem;          /* optional spacing above the footer */
+}
+
 body {
   font-family: "Segoe UI", sans-serif;
   background-color: var(--bg-light);
