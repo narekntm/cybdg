@@ -18,7 +18,11 @@
     "prettier"
   ],
   "settings": {
-    "import/resolver": "typescript"
+    "import/resolver": {
+      "typescript": {
+        "project": "./tsconfig.json"
+      }
+    }
   },
   "rules": {
     "eqeqeq": "error",
