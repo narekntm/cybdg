@@ -1,5 +1,15 @@
-﻿// ─────────────────────────────────────────────────────────
+import {
+  loginAdmin,
+  fetchUsers,
+  submitUser,
+  updateUser,
+  deleteUser,
+  toggleStatus as toggleStatusApi,
+} from "./api.js";
+
+// ─────────────────────────────────────────────────────────
 // ✅ State & References
+
 // ─────────────────────────────────────────────────────────
 let isAdmin = false;
 let editRow = null;
@@ -24,17 +34,22 @@ const cancelDeleteBtn = document.getElementById("cancel-delete");
 // ─────────────────────────────────────────────────────────
 // ✅ Admin Login / Logout
 // ─────────────────────────────────────────────────────────
-adminLoginForm.addEventListener("submit", (e) => {
+adminLoginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("admin-email").value;
   const password = document.getElementById("admin-password").value;
 
-  if (email === "admin@example.com" && password === "admin123") {
-    isAdmin = true;
-    loginStatus.style.display = "none";
-    adminControls.style.display = "block";
-    adminLoginForm.reset();
-  } else {
+  try {
+    const res = await loginAdmin(email, password);
+    if (res.success) {
+      isAdmin = true;
+      loginStatus.style.display = "none";
+      adminControls.style.display = "block";
+      adminLoginForm.reset();
+    } else {
+      loginStatus.style.display = "block";
+    }
+  } catch {
     loginStatus.style.display = "block";
   }
 });
@@ -48,7 +63,7 @@ logoutBtn.addEventListener("click", () => {
 // ─────────────────────────────────────────────────────────
 // ✅ User Form Submission
 // ─────────────────────────────────────────────────────────
-userForm.addEventListener("submit", (e) => {
+userForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const name = nameInput.value.trim();
@@ -68,17 +83,25 @@ userForm.addEventListener("submit", (e) => {
     return;
   }
 
-  if (editRow) {
-    editRow.innerHTML = generateRowHTML(name, role, age, email, gender, subscriptions, editRow.children[6].textContent);
-    editRow = null;
-    document.getElementById("form-title").textContent = "Add New User";
-  } else {
-    const row = document.createElement("tr");
-    row.innerHTML = generateRowHTML(name, role, age, email, gender, subscriptions, "Active");
-    tableBody.appendChild(row);
-  }
+  try {
+    if (editRow) {
+      const id = editRow.dataset.id;
+      const updated = await updateUser(id, { name, role, age, email, gender, subscriptions });
+      editRow.innerHTML = generateRowHTML(updated.name, updated.role, updated.age, updated.email, updated.gender, updated.subscriptions, updated.status);
+      editRow = null;
+      document.getElementById("form-title").textContent = "Add New User";
+    } else {
+      const created = await submitUser({ name, role, age, email, gender, subscriptions });
+      const row = document.createElement("tr");
+      row.dataset.id = created.id;
+      row.innerHTML = generateRowHTML(created.name, created.role, created.age, created.email, created.gender, created.subscriptions, created.status);
+      tableBody.appendChild(row);
+    }
 
-  userForm.reset();
+    userForm.reset();
+  } catch (err) {
+    showErrors([err.error || "Server error"]);
+  }
 });
 
 // ─────────────────────────────────────────────────────────
@@ -98,17 +121,34 @@ tableBody.addEventListener("click", (e) => {
 });
 
 function toggleStatus(row, btn) {
-  const cell = row.children[6];
-  cell.textContent = cell.textContent === "Active" ? "Inactive" : "Active";
-  btn.textContent = cell.textContent === "Active" ? "Deactivate" : "Activate";
+  const current = row.children[6].textContent;
+  const newStatus = current === "Active" ? "Inactive" : "Active";
+  toggleStatusApi(row.dataset.id, newStatus)
+    .then((res) => {
+      row.children[6].textContent = res.status;
+      btn.textContent = res.status === "Active" ? "Deactivate" : "Activate";
+    })
+    .catch((err) => {
+      adminDeleteError.textContent = err.error || "Server error";
+      adminDeleteError.style.display = "block";
+    });
 }
 
 // ─────────────────────────────────────────────────────────
 // ✅ Modal Confirmation
 // ─────────────────────────────────────────────────────────
-confirmDeleteBtn.addEventListener("click", () => {
-  if (rowToDelete) rowToDelete.remove();
-  confirmModal.style.display = "none";
+confirmDeleteBtn.addEventListener("click", async () => {
+  if (!rowToDelete) return;
+  try {
+    await deleteUser(rowToDelete.dataset.id, isAdmin);
+    rowToDelete.remove();
+  } catch (err) {
+    adminDeleteError.textContent = err.error || "Server error";
+    adminDeleteError.style.display = "block";
+  } finally {
+    confirmModal.style.display = "none";
+    rowToDelete = null;
+  }
 });
 
 cancelDeleteBtn.addEventListener("click", () => {
@@ -196,16 +236,23 @@ function handleDelete(row) {
 }
 
 // ─────────────────────────────────────────────────────────
-// ✅ Seed Data
+// ✅ Load Users from API
 // ─────────────────────────────────────────────────────────
-const defaultUsers = [
-  { name: "Alice", role: "Admin", age: 30, email: "alice@site.com", gender: "Female", subscriptions: "Newsletter", status: "Active" },
-  { name: "Bob", role: "Viewer", age: 25, email: "bob@site.com", gender: "Male", subscriptions: "Product Updates", status: "Inactive" },
-  { name: "Eve", role: "Editor", age: 28, email: "eve@site.com", gender: "Other", subscriptions: "Newsletter, Product Updates", status: "Active" }
-];
+function loadUsers() {
+  fetchUsers()
+    .then((users) => {
+      tableBody.innerHTML = "";
+      users.forEach((u) => {
+        const row = document.createElement("tr");
+        row.dataset.id = u.id;
+        row.innerHTML = generateRowHTML(u.name, u.role, u.age, u.email, u.gender, u.subscriptions, u.status);
+        tableBody.appendChild(row);
+      });
+    })
+    .catch((err) => {
+      formErrors.textContent = err.error || "Failed to load users";
+      formErrors.style.display = "block";
+    });
+}
 
-defaultUsers.forEach((u) => {
-  const row = document.createElement("tr");
-  row.innerHTML = generateRowHTML(u.name, u.role, u.age, u.email, u.gender, u.subscriptions, u.status);
-  tableBody.appendChild(row);
-});
+loadUsers();

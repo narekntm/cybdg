@@ -39,3 +39,27 @@ export function submitUser(userData) {
     body: JSON.stringify(userData),
   }).then((res) => res.json());
 }
+
+export function updateUser(id, user) {
+  return fetch(`${API_BASE}/users/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(user),
+  }).then((res) => res.json());
+}
+
+export function deleteUser(id, isAdmin) {
+  return fetch(`${API_BASE}/users/${id}`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ isAdmin }),
+  }).then((res) => res.json());
+}
+
+export function toggleStatus(id, status) {
+  return fetch(`${API_BASE}/users/${id}/status`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status }),
+  }).then((res) => res.json());
+}
