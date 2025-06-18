@@ -6,14 +6,14 @@ describe("User Management – Cypress Sandbox", () => {
   beforeEach(() => {
     cy.visit(baseUrl);
   });
-  
+
   afterEach(() => {
-  // reset the state after each test
+    // reset the state after each test
     cy.request({
       method: "POST",
       url: "/api/reset",
-    }); 
-  })
+    });
+  });
 
   function loginAsAdmin(name: string = "admin@example.com", password: string = "admin123") {
     UserManagementPage.adminEmailInput().type(name);
