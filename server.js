@@ -4,11 +4,14 @@ import bodyParser from "body-parser";
 
 const app = express();
 app.use(bodyParser.json());
-let users = [
+
+const INITIAL_USERS = [
   { id: 1, name: "Alice", role: "Admin", age: 30, email: "alice@site.com", gender: "Female", subscriptions: "Newsletter", status: "Active" },
-  { id: 2, name: "Bob",   role: "Viewer",age: 25, email: "bob@site.com",   gender: "Male",   subscriptions: "Product Updates", status: "Inactive" },
-  { id: 3, name: "Eve",   role: "Editor",age: 28, email: "eve@site.com",   gender: "Other",  subscriptions: "Newsletter, Product Updates", status: "Active" }
+  { id: 2, name: "Bob", role: "Viewer", age: 25, email: "bob@site.com", gender: "Male", subscriptions: "Product Updates", status: "Inactive" },
+  { id: 3, name: "Eve", role: "Editor", age: 28, email: "eve@site.com", gender: "Other", subscriptions: "Newsletter, Product Updates", status: "Active" },
 ];
+
+let users = [...INITIAL_USERS];
 
 // Admin login
 app.post("/api/login", (req, res) => {
@@ -59,6 +62,12 @@ app.patch("/api/users/:id/status", (req, res) => {
   if (!user) return res.status(404).json({ error: "Not found" });
   user.status = status;
   res.json(user);
+});
+
+// Reset in-memory data back to initial state
+app.post("/api/reset", (req, res) => {
+  users = [...INITIAL_USERS];
+  return res.json({ success: true, users });
 });
 
 app.use(express.static("Resources/htmls/user_management"));

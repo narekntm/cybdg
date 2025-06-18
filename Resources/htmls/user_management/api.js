@@ -63,3 +63,12 @@ export function toggleStatus(id, status) {
     body: JSON.stringify({ status }),
   }).then((res) => res.json());
 }
+
+/**
+ * Resets server data back to preload state.
+ */
+export function resetData() {
+  return fetch(`${API_BASE}/reset`, {
+    method: "POST",
+  }).then((res) => res.json());
+}
