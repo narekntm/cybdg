@@ -41,7 +41,7 @@
     "age": 30,
     "email": "larisayeremyan@gmail.com",
     "gender": "Female",
-    "subscription": "Newsletter"
+    "subscription": ["Newsletter", "Product Updates"]
   },
   "userFormNegativeData": [
     {
@@ -50,7 +50,7 @@
       "age": 30,
       "email": "valid@example.com",
       "gender": "Male",
-      "subscription": "Premium",
+      "subscription": ["Premium"],
       "expectedError": "Name is required"
     },
     {
@@ -59,7 +59,7 @@
       "age": 25,
       "email": "not-an-email",
       "gender": "Female",
-      "subscription": "Free",
+      "subscription": ["Free"],
       "expectedError": "Invalid email address"
     },
     {
@@ -68,7 +68,7 @@
       "age": "",
       "email": "jane@example.com",
       "gender": "Female",
-      "subscription": "Standard",
+      "subscription": ["Standard"],
       "expectedError": "Age is required"
     },
     {
@@ -77,7 +77,7 @@
       "age": -5,
       "email": "sam@example.com",
       "gender": "Male",
-      "subscription": "Premium",
+      "subscription": ["Premium"],
       "expectedError": "Age must be a positive number"
     },
     {
@@ -86,7 +86,7 @@
       "age": 40,
       "email": "alex@example.com",
       "gender": "Alien",
-      "subscription": "Free",
+      "subscription": ["Free"],
       "expectedError": "Invalid gender selected"
     },
     {
@@ -95,7 +95,7 @@
       "age": 29,
       "email": "chris@example.com",
       "gender": "Non-binary",
-      "subscription": "Standard",
+      "subscription": ["Standard"],
       "expectedError": "Role is required"
     },
     {
@@ -104,7 +104,7 @@
       "age": 22,
       "email": "taylor@example.com",
       "gender": "Female",
-      "subscription": "Gold",
+      "subscription": ["Gold"],
       "expectedError": "Invalid subscription selected"
     },
     {
@@ -113,7 +113,7 @@
       "age": 33,
       "email": "jordan@example.com",
       "gender": "Male",
-      "subscription": "Free",
+      "subscription": ["Free"],
       "expectedError": "Invalid status"
     }
   ]
