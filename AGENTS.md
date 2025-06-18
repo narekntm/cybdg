@@ -42,26 +42,32 @@ Resources/
 config/
 ├─ test.config.ts           # Cypress configuration file
 
-````
+```
 
 ---
 
 ## 🚀 Getting Started
 
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) **18+** (any current LTS version will work)
+- [npm](https://www.npmjs.com/) (bundled with Node.js)
+
 ### 1. Install Dependencies
 
 ```bash
 npm install
-````
+```
 
 ### 2. Run Local Servers
 
-* Static HTML:
+- Static HTML:
 
   ```bash
   npm run serve:UI
   ```
-* Express Server (e.g. user\_management):
+
+- Express Server (e.g. user_management):
 
   ```bash
   npm run serve:Server
@@ -78,16 +84,16 @@ npm run test:run     # Runs headless Cypress on a specific spec
 
 ## 🧪 Cypress Test Organization
 
-* `UI/`: Tests against HTML forms, tables, modals, CSS selectors
-* `API/`: Backend/API validation with mocked responses
-* `E2E/`: Full-flow scenarios across UI and backend logic
-* `Fixtures/Pages/`: Page Object Model helpers
-* Supports:
+- `UI/`: Tests against HTML forms, tables, modals, CSS selectors
+- `API/`: Backend/API validation with mocked responses
+- `E2E/`: Full-flow scenarios across UI and backend logic
+- `Fixtures/Pages/`: Page Object Model helpers
+- Supports:
 
-    * [@cypress/grep](https://github.com/cypress-io/cypress-grep) for test filtering
-    * [cypress-terminal-report](https://github.com/archfz/cypress-terminal-report) for logs
-    * [cypress-real-events](https://github.com/dmtrKovalenko/cypress-real-events) for real input simulation
-    * [cypress-file-upload](https://github.com/abramenal/cypress-file-upload) for file tests
+  - [@cypress/grep](https://github.com/cypress-io/cypress-grep) for test filtering
+  - [cypress-terminal-report](https://github.com/archfz/cypress-terminal-report) for logs
+  - [cypress-real-events](https://github.com/dmtrKovalenko/cypress-real-events) for real input simulation
+  - [cypress-file-upload](https://github.com/abramenal/cypress-file-upload) for file tests
 
 ---
 
@@ -103,8 +109,22 @@ These run automatically in GitHub Actions via `.github/workflows/lint.yml`.
 
 ---
 
+## 🔗 Configuring Path Aliases
+
+TypeScript path aliases are defined in `tsconfig.json` under `compilerOptions.paths`.
+Each alias maps to a folder inside the project, e.g.:
+
+```json
+"Plugins/*": ["cypress/Support/Plugins/*"]
+```
+
+Ensure the case of the folder names matches the actual directory structure (Linux is case sensitive).
+Update the paths if files are moved so imports like `import helper from 'Plugins/index'` resolve correctly.
+
+---
+
 ## 📚 Learning Resources
 
-* `Resources/Homework/`: Practice exercises in markdown
-* `Resources/htmls/`: Static UI sandboxes (tables, forms, etc.)
-* `LectureCheatSheets/`: Lecture summaries and quick references
+- `Resources/Homework/`: Practice exercises in markdown
+- `Resources/htmls/`: Static UI sandboxes (tables, forms, etc.)
+- `LectureCheatSheets/`: Lecture summaries and quick references
