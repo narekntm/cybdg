@@ -8,7 +8,7 @@
     "test:run": "npx cypress run --config-file config/test.config.ts --e2e -b electron --spec Cypress/Tests/API/DemoApi.ts",
     
     "serve:UI": "http-server -p 8080",
-    "serve:Server": "node ./Resources/htmls/user_management/server.js",
+    "serve:UserManagement": "node ./Resources/htmls/user_management/server.js",
     
     "prettier": "prettier --config .prettierrc --ignore-path .prettierignore",
     "eslint": "eslint --config .eslintrc.json --ignore-path .eslintignore",
