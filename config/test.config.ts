@@ -26,7 +26,7 @@ export default defineConfig({
     baseUrl: "http://127.0.0.1:3000",
     experimentalRunAllSpecs: true,
     setupNodeEvents(on, config) {
-      return plugin(on, config) as Cypress.PluginConfigOptions;
+      return plugin(on, config);
     },
     specPattern: "Cypress/Tests/{E2E,API,UI}/**/*.ts",
     supportFile: e2eOptions.supportFile,
