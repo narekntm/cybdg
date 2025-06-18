@@ -1,8 +1,16 @@
 // server.js
 import express from "express";
+import cors from "cors";
 import bodyParser from "body-parser";
 
 const app = express();
+
+// enable CORS for all origins
+// 1) Enable CORS for your UI origin (or "*" for all)
+app.use(cors({
+  origin: ["http://localhost:3000", "http://127.0.0.1:3000", "http://127.0.0.1:8080"]
+}));
+
 app.use(bodyParser.json());
 let users = [
   { id: 1, name: "Alice", role: "Admin", age: 30, email: "alice@site.com", gender: "Female", subscriptions: "Newsletter", status: "Active" },
@@ -62,4 +70,4 @@ app.patch("/api/users/:id/status", (req, res) => {
 });
 
 app.use(express.static("Resources/htmls/user_management"));
-app.listen(3000, () => console.log("Server running on http://localhost:3000"));
+app.listen(3000, () => console.log("Server running on http://localhost:3000 or http://127.0.0.1:3000"));
