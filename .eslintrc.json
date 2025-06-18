@@ -18,7 +18,11 @@
     "prettier"
   ],
   "settings": {
-    "import/resolver": "typescript"
+    "import/resolver": {
+      "typescript": {
+        "project": "./tsconfig.json"
+      }
+    }
   },
   "rules": {
     "eqeqeq": "error",
@@ -38,14 +42,19 @@
         "ignore": [
           "k6/*",
           "k6",
-          "cypress/types/net-stubbing"
+          "cypress/types/net-stubbing",
+          "Plugins/*",
+          "Pages/*",
+          "Helpers/*"
         ]
       }
     ],
     "import/extensions": [
       "error",
+      "ignorePackages",
       {
-        "js": "always",
+        "js": "never",
+        "ts": "never",
         "json": "always"
       }
     ],
