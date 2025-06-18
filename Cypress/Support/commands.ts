@@ -62,7 +62,7 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-import "@testing-library/cypress/add-commands.js";
+import "@testing-library/cypress/add-commands";
 import "cypress-file-upload";
 
 Cypress.Commands.add("safeFixture", (fixturePath, options) => {
