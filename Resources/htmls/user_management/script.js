@@ -5,6 +5,7 @@ import {
   updateUser,
   deleteUser,
   toggleStatus as toggleStatusApi,
+  resetData,
 } from "./api.js";
 
 // ─────────────────────────────────────────────────────────
@@ -30,6 +31,7 @@ const adminDeleteError = document.getElementById("admin-delete-error");
 const confirmModal = document.getElementById("confirm-modal");
 const confirmDeleteBtn = document.getElementById("confirm-delete");
 const cancelDeleteBtn = document.getElementById("cancel-delete");
+const resetBtn = document.getElementById("reset-btn");
 
 // ─────────────────────────────────────────────────────────
 // ✅ Admin Login / Logout
@@ -256,3 +258,15 @@ function loadUsers() {
 }
 
 loadUsers();
+
+resetBtn.addEventListener("click", async () => {
+  const ok = confirm("This will wipe all changes and restore initial users. Continue?");
+  if (!ok) return;
+  try {
+    await resetData();
+    loadUsers();
+    alert("Data reset");
+  } catch {
+    alert("Reset failed");
+  }
+});
