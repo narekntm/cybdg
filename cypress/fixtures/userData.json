@@ -41,7 +41,7 @@
     "age": 30,
     "email": "larisayeremyan@gmail.com",
     "gender": "Female",
-    "subscription": ["Newsletter", "Product Updates"]
+    "subscription": ["Newsletter"]
   },
   "userFormNegativeData": [
     {

@@ -20,7 +20,7 @@ describe("User Management Suite", () => {
     UserManagementPage.adminPasswordInput().should("be.visible").and("be.enabled").clear();
     if (login.password !== '') UserManagementPage.adminPasswordInput().type(login.password);
 
-    UserManagementPage.adminSubmitBtn().should("have.text", "Login").click();   
+    UserManagementPage.adminSubmitBtn().should("have.text", "Login").click();
   }
 
   function fillUserForm(user: User) {
@@ -42,7 +42,7 @@ describe("User Management Suite", () => {
     UserManagementPage.emailLbl().should("have.text", "Email");
     UserManagementPage.emailInput().should("have.attr", "required");
     UserManagementPage.emailInput().should("be.visible").and("be.enabled").clear();
-    if (user.email) UserManagementPage.emailInput().type(user.email);    
+    if (user.email) UserManagementPage.emailInput().type(user.email);
 
     UserManagementPage.genderTitle().should("have.text", "Gender");
     if (user.gender) UserManagementPage.genderInput(user.gender).check();
@@ -66,18 +66,25 @@ describe("User Management Suite", () => {
 
   beforeEach(() => {
     cy.log("Test is starting");
-    cy.visit('http://127.0.0.1:5500/resources/htmls/css/user_management.html');
+    cy.visit("http://127.0.0.1:5500/Resources/htmls/CSS/user_management.html");
   });
 
   it("Login as Admin, Positive case", () => {
     adminLogin(loginPositiveCase);
+
     UserManagementPage.logoutBtn().should('have.text', 'Logout').click();
+    UserManagementPage.adminEmailInput().should('have.text', '');
+    UserManagementPage.adminPasswordInput().should('have.text', '');
+    UserManagementPage.adminControls().should('not.be.visible');
   });
 
-  it("Login as Admin, Negative case", () => {
+  describe('Login as Admin, Negative cases', () => {
     loginNegativeCases.forEach((login: Login) => {
-      adminLogin(login);
-      UserManagementPage.loginStatus().should("have.text", "Invalid credentials");
+      it(`Login as Admin, Negative case: email: ${login.email}`, () => {
+        console.log('login.email: ', login.email);
+        adminLogin(login);
+        UserManagementPage.loginStatus().should("have.text", "Invalid credentials");
+      });
     });
   });
 
@@ -90,17 +97,19 @@ describe("User Management Suite", () => {
     });
   });
 
-  it("User Management Test, Negative case", () => {
+  describe('User Management Test, Negative cases', () => {
     userFormNegativeData.forEach((user: User) => {
-      fillUserForm(user);
+      it(`User Management Test, Negative case: user name: ${user.name}`, () => {
+          fillUserForm(user);
 
-      UserManagementPage.userTableRows().its("length")
-        .then((count: number) => {
-          UserManagementPage.userFormSubmitBtn().click();
-          UserManagementPage.userTableRows().its("length").should("be.eq", count);
-          UserManagementPage.userFormErrors().should("be.visible");
+          UserManagementPage.userTableRows().its("length")
+            .then((count: number) => {
+              UserManagementPage.userFormSubmitBtn().click();
+              UserManagementPage.userTableRows().its("length").should("be.eq", count);
+              UserManagementPage.userFormErrors().should("be.visible");
+            });
         });
-    });
+    });  
   });
 
   it("User Table", () => {
@@ -108,97 +117,97 @@ describe("User Management Suite", () => {
     UserManagementPage.userTableColumnCount().should("have.length", 8);
 
     UserManagementPage.userTableHeader().each(($el: JQuery<HTMLElement>, index: number) => {
-      cy.wrap($el).should("have.text", ColumnNames[Columns[index] as keyof typeof ColumnNames]);
+      UserManagementPage.userTableHeaderTd($el).should("have.text", ColumnNames[Columns[index] as keyof typeof ColumnNames]);
     });
   });
 
   it("User table first row edit", () => {
-    UserManagementPage.userTableRows().then((rows: JQuery<HTMLElement>) => {
-      cy.wrap(rows).first().find('td').then((cells: JQuery<HTMLElement>) => {
-        
-        const user: User = {
-          name: cells.eq(Columns.Name).text().trim(),
-          role: cells.eq(Columns.Role).text().trim(),
-          age: Number(cells.eq(Columns.Age).text().trim()),
-          email: cells.eq(Columns.Email).text().trim(),
-          gender: cells.eq(Columns.Gender).text().trim() as Gender,
-          subscription: cells.eq(Columns.Subscription).toArray().map(el => el.textContent?.trim() || '') ,          
-        };
+    UserManagementPage.userTableRowTds(1).then((cells: JQuery<HTMLElement>) => {
+      const user: User = {
+        name: cells[Columns.Name].innerText.trim(),
+        role: cells[Columns.Role].innerText.trim(),
+        age: Number(cells[Columns.Age].innerText.trim()),
+        email: cells[Columns.Email].innerText.trim(),
+        gender: cells.eq(Columns.Gender).text().trim() as Gender,
+        subscription: cells[Columns.Subscription].innerText.split(',').map(part => part.trim())
+      };
 
-        cy.wrap(cells).find("button.edit-btn").should("have.text", ActionButtons.Edit).should("be.visible").click();
+      UserManagementPage.userTableRowEditButton(1).should("have.text", ActionButtons.Edit).should("be.visible").click();
 
-        UserManagementPage.firstNameInput().should("have.value", user.name);
-        UserManagementPage.roleSelect().should("have.value", user.role);
-        UserManagementPage.ageInput().should("have.value", user.age);
-        UserManagementPage.emailInput().should("have.value", user.email);
-        UserManagementPage.genderInput(userFormPositiveData.gender).should("be.checked");
+      UserManagementPage.firstNameInput().should("have.value", user.name);
+      UserManagementPage.roleSelect().should("have.value", user.role);
+      UserManagementPage.ageInput().should("have.value", user.age);
+      UserManagementPage.emailInput().should("have.value", user.email);
+      UserManagementPage.genderInput(user.gender).should("be.checked");
 
-        user.subscription.forEach((value: string) => {
-          UserManagementPage.subscriptionInput(value).should("be.checked");
-        });
+      user.subscription.forEach((value: string) => {
+        UserManagementPage.subscriptionInput(value).should("be.checked");
       });
     });
   });
 
   it("User table first row toggle activate", () => {
-    UserManagementPage.userTableRows().then((rows: JQuery<HTMLElement>) => {
-      cy.wrap(rows).first().find("td").find("button.status-btn").as('submitBtn');
-      
-     cy.get('@submitBtn').should("be.visible").invoke("text").then((text) => {
+    UserManagementPage.userTableRowStatusButton(0).as('submitBtn');
+
+    cy.get('@submitBtn').should("be.visible").invoke("text").then((text) => {
+      cy.get('@submitBtn').click();
+
+      if (text === ButtonAction.Activate) {
+        cy.get('@submitBtn').should("have.text", ButtonAction.Deactivate);
         cy.get('@submitBtn').click();
-        if (text === ButtonAction.Activate) {
-          cy.get('@submitBtn').should("have.text", ButtonAction.Deactivate);
-        } else {
-          cy.get('@submitBtn').should("have.text", ButtonAction.Activate);
-        }
-      });
+        cy.get('@submitBtn').should("have.text", ButtonAction.Activate);
+
+      } else {
+        cy.get('@submitBtn').should("have.text", ButtonAction.Activate);
+        cy.get('@submitBtn').click();
+        cy.get('@submitBtn').should("have.text", ButtonAction.Deactivate);        
+      }
     });
   });
 
   it("User table admin row delete", () => {
-    UserManagementPage.userTableRows().each(($row: JQuery<HTMLElement>) => {
-      cy.wrap($row).find("td").eq(Columns.Role).then(($cell) => {
-        if ($cell.text().trim() === UserRole.Admin) {
-          cy.wrap($row).find("td").find("button.delete-btn").should("have.text", "Delete").should("be.visible").click();
-          UserManagementPage.adminError().should("have.text", "Admin login required to delete Admin-level users.");
-        }
-      });
+    UserManagementPage.userTableRows().each(($row: JQuery<HTMLElement>, index: number) => {
+      if ($row.text().includes(UserRole.Admin)) {
+        UserManagementPage.userTableRowDeleteButton(index).should("have.text", "Delete").should("be.visible").click();
+        UserManagementPage.adminError().should("have.text", "Admin login required to delete Admin-level users.");
+
+        return false;
+      }
     });
   });
 
   it("User table not admin row delete and cancel", () => {
-    UserManagementPage.userTableRows().each(($row: JQuery<HTMLElement>) => {
-      cy.wrap($row).find("td").eq(Columns.Role).then(($cell) => {
-        if ($cell.text().trim() !== UserRole.Admin) {
-          cy.wrap($row).find("td").find("button.delete-btn").should("have.text", "Delete").should("be.visible").click();
+    UserManagementPage.userTableRows().each(($row: JQuery<HTMLElement>, index: number) => {
+      if (!$row.text().includes(UserRole.Admin)) {
+        UserManagementPage.userTableRowDeleteButton(index).should("have.text", "Delete").should("be.visible").click();
 
-          UserManagementPage.deleteModalTitle().contains("Are you sure you want to delete this user?");
-          UserManagementPage.deleteModalConfirmBtn().should("be.visible");
-          UserManagementPage.deleteModalCancelBtn().should("be.visible").click();
-          UserManagementPage.confirmModal().should("not.be.visible");
-        }
-      });
+        UserManagementPage.deleteModalTitle().contains("Are you sure you want to delete this user?");
+        UserManagementPage.deleteModalConfirmBtn().should("be.visible");
+        UserManagementPage.deleteModalCancelBtn().should("be.visible").click();
+        UserManagementPage.confirmModal().should("not.be.visible");
+
+        return false;
+      }
     });
   });
 
   it("User table not admin row delete and confirm", () => {
-    UserManagementPage.userTableRows().each(($row: JQuery<HTMLElement>) => {
-      cy.wrap($row).find("td").eq(Columns.Role).then(($cell) => {
-        if ($cell.text().trim() !== UserRole.Admin) {
-          cy.wrap($row).find("td").find("button.delete-btn").should("have.text", "Delete").should("be.visible").click();
+    UserManagementPage.userTableRows().each(($row: JQuery<HTMLElement>, index: number) => {
+      if (!$row.text().includes(UserRole.Admin)) {
+        UserManagementPage.userTableRowDeleteButton(index).should("have.text", "Delete").should("be.visible").click();
 
-          UserManagementPage.deleteModalTitle().contains("Are you sure you want to delete this user?");
-          UserManagementPage.deleteModalCancelBtn().should("be.visible");
+        UserManagementPage.deleteModalTitle().should('have.text', 'Are you sure you want to delete this user?');
+        UserManagementPage.deleteModalCancelBtn().should("be.visible");
 
-          UserManagementPage.userTableRows().its("length")
-            .then((count: number) => {
-              UserManagementPage.deleteModalConfirmBtn().should("be.visible").click();
-              UserManagementPage.confirmModal().should("not.be.visible");
+        UserManagementPage.userTableRows().its("length")
+          .then((count: number) => {
+            UserManagementPage.deleteModalConfirmBtn().should("be.visible").click();
+            UserManagementPage.confirmModal().should("not.be.visible");
+            UserManagementPage.userTableRows().its("length").should("be.lt", count);
+          });
 
-              UserManagementPage.userTableRows().its("length").should("be.lt", count);
-            });
-        }
-      });
+        return false;
+      }
     });
   });
 });

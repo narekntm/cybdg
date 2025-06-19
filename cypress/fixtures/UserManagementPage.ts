@@ -1,3 +1,5 @@
+import { Columns } from "../../cypress/fixtures/Models/UserManagementModels";
+
 export class UserManagementPage {
     //admin section
     static adminTitle = () => cy.get('div#admin-controls').prev();
@@ -6,6 +8,7 @@ export class UserManagementPage {
     static adminPasswordLbl = () => cy.get('label[for="admin-password"]');
     static adminPasswordInput = () => cy.get('input#admin-password');
     static adminSubmitBtn = () => cy.get('form#admin-login-form button[type="submit"]');
+    static adminControls = () => cy.get('#admin-controls');
     static loggedStrong = () => cy.get('div#admin-controls strong');
     static loginStatus = () => cy.get('#login-status');
     static logoutBtn = () => cy.get('button#logout-btn');
@@ -43,8 +46,17 @@ export class UserManagementPage {
 
     //User Table
     static userTableRows = () => cy.get('table#user-table tbody tr'); 
+    static userTableRow = (row: number) => cy.get('table#user-table tbody tr').eq(row);     
+    static userTableRowTds = (row: number) => cy.get('table#user-table tbody tr').eq(row).find('td'); 
+    static userTableRoleColumnTd = (row: number) => cy.get('table#user-table tbody tr').eq(row).find('td').eq(Columns.Role);
+
+    static userTableRowEditButton = (row: number) => cy.get('table#user-table tbody tr').eq(row).find('td').find("button.edit-btn");
+    static userTableRowDeleteButton = (row: number) => cy.get('table#user-table tbody tr').eq(row).find('td').find("button.delete-btn");
+    static userTableRowStatusButton = (row: number) => cy.get('table#user-table tbody tr').eq(row).find('td').find("button.status-btn");
+    
     static userTableColumnCount = () => cy.get('table#user-table tr').first().find('th');
     static userTableHeader = () => cy.get('table#user-table thead tr').first().find('th');
+    static userTableHeaderTd = ($el: JQuery<HTMLElement>) => cy.wrap($el);    
     
     static confirmModal = () => cy.get('#confirm-modal');
     static deleteModalTitle = () => cy.get('#confirm-modal div.modal-content p');
