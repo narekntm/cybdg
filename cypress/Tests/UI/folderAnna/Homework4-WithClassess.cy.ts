@@ -1,4 +1,4 @@
-import { UserManagmentPage } from "./UserManagmentPage";
+import { UserManagmentPage } from "Pages/UserManagmentPage";
 
 describe('Tests for page "User Management Cypress Sandbox"', () => {
   beforeEach(() => {
@@ -8,12 +8,12 @@ describe('Tests for page "User Management Cypress Sandbox"', () => {
   function adminLogin(email: any, password: any) {
     UserManagmentPage.adminEmailInput().type(email);
     UserManagmentPage.adminPasswordInput().type(password);
-    return UserManagmentPage.adminLoginButton().click();
+    UserManagmentPage.adminLoginButton().click();
   }
 
   function adminLogout() {
     adminLogin("admin@example.com", "admin123");
-    return UserManagmentPage.userButtonLogout().click();
+    UserManagmentPage.userButtonLogout().click();
   }
   function userCreation() {
     UserManagmentPage.userFullName().type("Anna");
@@ -21,7 +21,7 @@ describe('Tests for page "User Management Cypress Sandbox"', () => {
     UserManagmentPage.userAge().type("30");
     UserManagmentPage.userEmail().type("test@test.com");
     UserManagmentPage.userGendeFemale().click();
-    return UserManagmentPage.userButtonSave().click();
+    UserManagmentPage.userButtonSave().click();
   }
 
   describe("Admin Login", () => {
@@ -164,7 +164,7 @@ describe('Tests for page "User Management Cypress Sandbox"', () => {
       UserManagmentPage.userTableRow().should("have.length", 3);
     });
     it(" Check the UI of the Add New User section", () => {
-      UserManagmentPage.userTitle().should("be.visible").should("have.text", "Add New User");
+      UserManagmentPage.userFormTitle().should("be.visible").should("have.text", "Add New User");
       UserManagmentPage.userLabelFullname().should("be.visible").should("have.text", "Full Name");
       UserManagmentPage.userLabelRole().should("be.visible").should("have.text", "Role");
       UserManagmentPage.userLabelAge().should("be.visible").should("have.text", "Age");
@@ -201,7 +201,7 @@ describe('Tests for page "User Management Cypress Sandbox"', () => {
       UserManagmentPage.userTableRow().should("have.length", 3);
       UserManagmentPage.userTableDelete().click();
       UserManagmentPage.userTableModal().should("be.visible");
-      UserManagmentPage.usereModalCansel().should("have.text", "Cansel").click();
+      UserManagmentPage.userModalCancel().should("have.text", "Cansel").click();
       UserManagmentPage.userTableRow().should("have.length", 3);
     });
     it("Deactivate a user(logged out user)", () => {
@@ -217,7 +217,7 @@ describe('Tests for page "User Management Cypress Sandbox"', () => {
       UserManagmentPage.userTableRow().first().find("td").eq(6).should("have.text", "Active");
       UserManagmentPage.userTableRow().first().find("td").find(".btn-primary.status-btn").should("have.text", "Deactivate").click();
       UserManagmentPage.userTableRow().first().find("td").find(".btn-primary.status-btn").should("have.text", "Activate");
-      UserManagmentPage.userTableRow.first().find("td").eq(6).should("have.text", "Inactive");
+      UserManagmentPage.userTableRow().first().find("td").eq(6).should("have.text", "Inactive");
     });
     it(" Activate a user(logged out user)", () => {
       UserManagmentPage.userButtonLogout().should("not.be.visible");
@@ -237,7 +237,7 @@ describe('Tests for page "User Management Cypress Sandbox"', () => {
     it(" Make sure the Edit User section becomes active when clicking on the Edit button(logged out user)", () => {
       UserManagmentPage.userButtonLogout().should("not.be.visible");
       UserManagmentPage.userTableRow().first().find("td").eq(0).should("have.text", "Alice");
-      UserManagmentPage.userTitle().should("be.visible").should("have.text", "Add New User");
+      UserManagmentPage.userFormTitle().should("be.visible").should("have.text", "Add New User");
       UserManagmentPage.userTableEdit().click();
       UserManagmentPage.userFormTitle().should("be.visible").should("have.text", "Edit User");
       UserManagmentPage.userFullName().should("have.value", "Alice");
@@ -246,7 +246,7 @@ describe('Tests for page "User Management Cypress Sandbox"', () => {
       adminLogin("admin@example.com", "admin123");
       UserManagmentPage.userButtonLogout().should("be.visible");
       UserManagmentPage.userTableRow().first().find("td").eq(0).should("have.text", "Alice");
-      UserManagmentPage.userTitle().should("be.visible").should("have.text", "Add New User");
+      UserManagmentPage.userFormTitle().should("be.visible").should("have.text", "Add New User");
       UserManagmentPage.userTableEdit().click();
       UserManagmentPage.userFormTitle().should("be.visible").should("have.text", "Edit User");
       UserManagmentPage.userFullName().should("have.value", "Alice");
@@ -258,7 +258,7 @@ describe('Tests for page "User Management Cypress Sandbox"', () => {
       UserManagmentPage.userTableRow().first().find("td").eq(2).should("have.text", "30");
       UserManagmentPage.userTableRow().first().find("td").eq(3).should("have.text", "alice@site.com");
       UserManagmentPage.userTableRow().first().find("td").eq(4).should("have.text", "Female");
-      UserManagmentPage.userTitle().should("be.visible").should("have.text", "Add New User");
+      UserManagmentPage.userFormTitle().should("be.visible").should("have.text", "Add New User");
       UserManagmentPage.userTableEdit().click();
       UserManagmentPage.userFormTitle().should("be.visible").should("have.text", "Edit User");
       UserManagmentPage.userFullName().clear().type("Max");
@@ -267,7 +267,7 @@ describe('Tests for page "User Management Cypress Sandbox"', () => {
       UserManagmentPage.userEmail().clear().type("example@test.com");
       UserManagmentPage.userGenderMale().click();
       UserManagmentPage.userButtonSave().click();
-      UserManagmentPage.userTitle().should("be.visible").should("have.text", "Add New User");
+      UserManagmentPage.userFormTitle().should("be.visible").should("have.text", "Add New User");
       UserManagmentPage.userTableRow().first().find("td").eq(0).should("have.text", "Max");
       UserManagmentPage.userTableRow().first().find("td").eq(1).should("have.text", "Viewer");
       UserManagmentPage.userTableRow().first().find("td").eq(2).should("have.text", "26");
@@ -282,7 +282,7 @@ describe('Tests for page "User Management Cypress Sandbox"', () => {
       UserManagmentPage.userTableRow().first().find("td").eq(2).should("have.text", "30");
       UserManagmentPage.userTableRow().first().find("td").eq(3).should("have.text", "alice@site.com");
       UserManagmentPage.userTableRow().first().find("td").eq(4).should("have.text", "Female");
-      UserManagmentPage.userTitle().should("be.visible").should("have.text", "Add New User");
+      UserManagmentPage.userFormTitle().should("be.visible").should("have.text", "Add New User");
       UserManagmentPage.userTableEdit().click();
       UserManagmentPage.userFormTitle().should("be.visible").should("have.text", "Edit User");
       UserManagmentPage.userFullName().clear().type("Max");
@@ -291,7 +291,7 @@ describe('Tests for page "User Management Cypress Sandbox"', () => {
       UserManagmentPage.userEmail().clear().type("example@test.com");
       UserManagmentPage.userGenderMale().click();
       UserManagmentPage.userButtonSave().click();
-      UserManagmentPage.userTitle().should("be.visible").should("have.text", "Add New User");
+      UserManagmentPage.userFormTitle().should("be.visible").should("have.text", "Add New User");
       UserManagmentPage.userTableRow().first().find("td").eq(0).should("have.text", "Max");
       UserManagmentPage.userTableRow().first().find("td").eq(1).should("have.text", "Viewer");
       UserManagmentPage.userTableRow().first().find("td").eq(2).should("have.text", "26");
