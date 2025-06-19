@@ -1,4 +1,4 @@
-export class UserManagementPage {
+﻿export class UserManagementPage {
   // Login as Admin label
   static loginAsAdminLabel = () => cy.get("section h2").eq(0);
 
@@ -103,8 +103,9 @@ export class UserManagementPage {
   static modalContent = () => cy.get("#confirm-modal .modal-content");
 
   static modalMessage = () => cy.get("#confirm-modal .modal-content p");
+  static adminLoginButton = () => cy.get('#admin-login-form button[type="submit"]');
 
-  static confirmDeleteButton = () => cy.get("#confirm-delete");
-
-  static cancelDeleteButton = () => cy.get("#cancel-delete");
+  static nameInput = () => {
+    return cy.get("#name");
+  };
 }
