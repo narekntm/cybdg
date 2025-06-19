@@ -1,21 +1,21 @@
 export class AdminDashboardPage {
-    static usernameInput = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('#username')
+  static usernameInput = () => cy.get("#username");
 
-    static emailInput = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('#email')
+  static emailInput = () => cy.get("#email");
 
-    static roleDropdown = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('#role')
+  static roleDropdown = () => cy.get("#role");
 
-    static subscriptionCheckbox = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('#newsletter')
+  static subscriptionCheckbox = () => cy.get("#newsletter");
 
-    static submitBtn = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('[type="submit"]')
+  static submitBtn = () => cy.get('[type="submit"]');
 
-    static userTable = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('.table.user-table')
+  static userTable = () => cy.get(".table.user-table");
 
-    static userEditModal = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('#edit-modal')
+  static userEditModal = () => cy.get("#edit-modal");
 
-    static userEditModalCloseBtn = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('.btn.close-modal')
+  static userEditModalCloseBtn = () => cy.get(".btn.close-modal");
 
-    static sidebarSubSections = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('.sidebar').get('ul > li')
+  static sidebarSubSections = () => cy.get(".sidebar").get("ul > li");
 
-    static dashboardFooter = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('.footer')
+  static dashboardFooter = () => cy.get(".footer");
 }

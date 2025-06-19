@@ -1,65 +1,109 @@
+﻿import { Gender } from "../Models/UserManagementModels";
+
 export class UserManagementPage {
-    static adminEmailInput = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('input[id="admin-email"]')
+  static adminEmailInput = () => cy.get('input[id="admin-email"]');
 
-    static adminPasswordInput = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('input[id="admin-password"]')
+  static adminPasswordInput = () => cy.get('input[id="admin-password"]');
 
-    static adminLoginBtn = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('form[id="admin-login-form"] button[type="submit"]')
+  static adminLoginBtn = () => cy.get('form[id="admin-login-form"] button[type="submit"]');
 
-    static adminLogoutBtn = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('#logout-btn')
+  static adminLogoutBtn = () => cy.get("#logout-btn");
 
-    static adminLoginStatusMsg = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('#login-status')
+  static adminLoginStatusMsg = () => cy.get("#login-status");
 
-    static adminControlsPanel = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('#admin-controls')
+  static adminControlsPanel = () => cy.get("#admin-controls");
 
-    static adminEmailLabel = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('label[for="admin-email"]')
+  static loginAsAdminTitle = () => cy.get("#admin-controls").prev();
 
-    static adminPasswordLabel = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('label[for="admin-password"]')
+  static adminEmailLabel = () => cy.get('label[for="admin-email"]');
 
-    static userFullNameInput = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('input[id="name"]')
+  static adminPasswordLabel = () => cy.get('label[for="admin-password"]');
 
-    static userRoleDropdown = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('select[id="role"]')
+  static userFullNameInput = () => cy.get('input[id="name"]');
 
-    static userAgeInput = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('input[id="age"]')
+  static userRoleDropdown = () => cy.get('select[id="role"]');
 
-    static userEmailInput = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('input[id="email"]')
+  static userAgeInput = () => cy.get('input[id="age"]');
 
-    static userGenderFemaleBtn = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('input[value="Female"]')
+  static userEmailInput = () => cy.get('input[id="email"]');
 
-    static userSaveBtn = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('form[id="user-form"] button[type="submit"]')
+  static userGenderLabel = (gender: Gender) => cy.get(`input[value=${gender}]`).parent();
 
-    static userTableData = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('#user-table tbody tr') 
+  static userGenderBtn = (gender: Gender) => cy.get(`input[value=${gender}]`);
 
-    static userValidationErrors = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('#form-errors ul li')
+  static userGenderFemaleBtn = () => cy.get('input[value="Female"');
 
-    static userFormTitle = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('#form-title')
+  static userGenderFemaleLabel = () => cy.get('input[value="Female"]').parent();
 
-    static userNameLabel = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('label[for="name"]')
+  static userGenderOtherBtn = () => cy.get('input[value="Other"]');
 
-    static userRoleLabel = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('label[for="role"]')
+  static userGenderOtherLabel = () => cy.get('input[value="Other"]').parent();
 
-    static userAgeLabel = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('label[for="age"]')
+  static userSaveBtn = () => cy.get('form[id="user-form"] button[type="submit"]');
 
-    static userEmailLabel = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('label[for="email"]')
+  static userTableData = () => cy.get("#user-table tbody tr");
 
-    static userGenderLabel = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('input[value="Male"]').parents('label').parent().siblings('label')
+  static userTableFirstUserActiveRow = () => cy.get("#user-table tbody tr").first().find("td").eq(6);
 
-    static userGenderMaleBtn = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('input[value="Male"]')
+  static userTableFirstUserRole = () => cy.get("#user-table tbody tr").first().find("td").eq(1);
 
-    static userDeleteValidationError = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('#admin-delete-error')
+  static userTableFirstUserAge = () => cy.get("#user-table tbody tr").first().find("td").eq(2);
 
-    static userDeleteConfirmationModal = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('.modal-content')
+  static userTableFirstUserEmail = () => cy.get("#user-table tbody tr").first().find("td").eq(3);
 
-    static userDeleteConfirmBtn = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('#confirm-delete')
+  static userTableFirstUserGender = () => cy.get("#user-table tbody tr").first().find("td").eq(4);
 
-    static userDeleteCancelBtn = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('#cancel-delete')
+  static userTableFirstUserName = () => cy.get("#user-table tbody tr").first().find("td").eq(0);
 
-    static userSubscriptionLabel = ():Cypress.Chainable<JQuery<HTMLElement>> => cy.get('input[value="Newsletter"]').parents('label').parent().siblings('label')
+  static userTableSecondUserActiveRow = () => cy.get("#user-table tbody tr").eq(1).find("td").eq(6);
+
+  static userTableFirstUsersDeleteBtn = () => cy.get("#user-table tbody tr").first().find("td").find(".btn-danger.delete-btn");
+
+  static userTableFirstUserEditBtn = () => cy.get("#user-table tbody tr").first().find("td").find(".btn-secondary.edit-btn");
+
+  static userTableFirstUserStatusBtn = () => cy.get("#user-table tbody tr").first().find("td").find(".btn-primary.status-btn");
+
+  static userTableSecondUserStatusBtn = () => cy.get("#user-table tbody tr").eq(1).find("td").find(".btn-primary.status-btn");
+
+  static userTableLastUserName = () => cy.get("#user-table tbody tr").last().find("td").eq(0);
+
+  static userTable = () => cy.get("#user-table");
+
+  static userTableTitle = () => cy.get("#admin-delete-error").prev();
+
+  static userValidationErrors = () => cy.get("#form-errors ul li");
+
+  static userFormTitle = () => cy.get("#form-title");
+
+  static userNameLabel = () => cy.get('label[for="name"]');
+
+  static userRoleLabel = () => cy.get('label[for="role"]');
+
+  static userAgeLabel = () => cy.get('label[for="age"]');
+
+  static userEmailLabel = () => cy.get('label[for="email"]');
+
+  static userGenderTitle = () => cy.get('input[value="Male"]').parents("label").parent().siblings("label");
+
+  static userGenderMaleBtn = () => cy.get('input[value="Male"]');
+
+  static userGenderMaleLabel = () => cy.get('input[value="Male"]').parent();
+
+  static userNewsletterLabel = () => cy.get('input[value="Newsletter"]').parent();
+
+  static userNewsletterCheckbox = () => cy.get('input[value="Newsletter"]');
+
+  static userProductUpdatesLabel = () => cy.get('input[value="Product Updates"]').parent();
+
+  static userProductUpdatesCheckbox = () => cy.get('input[value="Product Updates"]');
+
+  static userDeleteValidationError = () => cy.get("#admin-delete-error");
+
+  static userDeleteConfirmationModal = () => cy.get(".modal-content");
+
+  static userDeleteConfirmBtn = () => cy.get("#confirm-delete");
+
+  static userDeleteCancelBtn = () => cy.get("#cancel-delete");
+
+  static userSubscriptionLabel = () => cy.get('input[value="Newsletter"]').parents("label").parent().siblings("label");
 }
-
-
-
-
-
-
-
-
