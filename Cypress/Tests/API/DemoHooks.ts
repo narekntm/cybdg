@@ -30,7 +30,7 @@
       cy.log("This test is skipped");
     });
 
-    it.only("Third test in Level 1 (only)", () => {
+    it("Third test in Level 1 (only)", () => {
       cy.log("third test in Level 1 (only)");
     });
   });
