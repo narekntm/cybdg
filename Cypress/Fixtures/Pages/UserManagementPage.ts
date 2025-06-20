@@ -100,6 +100,13 @@
   // Modal for Delete Confirmation
   static confirmModal = () => cy.get("#confirm-modal");
 
+  // Modal for Confirm Delete
+  static confirmDeleteButton = () => cy.get("#confirm-delete");
+
+  //Cancel Delete Button
+
+  static cancelDeleteButton = () => cy.get("#cancel-delete");
+
   static modalContent = () => cy.get("#confirm-modal .modal-content");
 
   static modalMessage = () => cy.get("#confirm-modal .modal-content p");
