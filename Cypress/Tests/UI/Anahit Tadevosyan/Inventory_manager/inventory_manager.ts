@@ -3,8 +3,8 @@ import {InventoryManagerPage} from "Pages/InventoryManagerPage";
 
 describe("InventoryManager", () => {
     const baseUrl = "http://127.0.0.1:8080/Resources/htmls/inventory_manager/"
-    const categoryOptions = [productCategory.Electronics, productCategory.Books, productCategory.Clothing, productCategory.Other]
-    const statusOptions = [productStatus.Available, productStatus.Discontinued, productStatus.OutOfStock]
+    const categoryOptions = [productCategory.Select, productCategory.Electronics, productCategory.Books, productCategory.Clothing, productCategory.Other]
+    const statusOptions = [productStatus.Select, productStatus.Available, productStatus.OutOfStock, productStatus.Discontinued]
     const testProduct: Product = {
         name: "TV",
         category: productCategory.Electronics,

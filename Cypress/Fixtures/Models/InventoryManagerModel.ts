@@ -1,5 +1,5 @@
 export enum productCategory {
-    Select = 'Select',
+    Select = 'Select...',
     Electronics = "Electronics",
     Books = "Books",
     Clothing = "Clothing",
@@ -7,6 +7,7 @@ export enum productCategory {
 }
 
 export enum productStatus {
+    Select = 'Select...',
     Available = "Available",
     OutOfStock = "OutOfStock",
     Discontinued = "Discontinued",
