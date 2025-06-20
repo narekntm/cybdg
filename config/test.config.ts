@@ -23,7 +23,7 @@ export default defineConfig({
   },
   env: {},
   e2e: {
-    baseUrl: "https://example.cypress.io",
+    baseUrl: "http://127.0.0.1:3000",
     watchForFileChanges: false,
     experimentalRunAllSpecs: true,
     setupNodeEvents(on, config) {
