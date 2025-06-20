@@ -17,13 +17,13 @@ describe("InventoryManager", () => {
 
     it('validates Product Category drop-down item', () => {
         InventoryManagerPage.getCategoryOptions().each((option, index) => {
-            cy.wrap(option).should('have.text', categoryOptions[index]);
+            cy.wrap(option).should('have.value', categoryOptions[index]);
         })
     })
 
     it('validates Product Status drop-down items', () => {
         InventoryManagerPage.getStatusOptions().each((option, index) => {
-            cy.wrap(option).should('have.text', statusOptions[index]);
+            cy.wrap(option).should('have.value', statusOptions[index]);
         })
     })
 
