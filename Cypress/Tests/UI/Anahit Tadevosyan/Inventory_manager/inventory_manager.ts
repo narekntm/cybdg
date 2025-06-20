@@ -8,7 +8,7 @@ describe("InventoryManager", () => {
     const testProduct: Product = {
         name: "TV",
         category: productCategory.Electronics,
-        quanity: 34,
+        quantity: 34,
         status: productStatus.Available,
     }
     beforeEach('Visit the site', () => {
@@ -31,12 +31,12 @@ describe("InventoryManager", () => {
     it('adds and verifies products', () => {
         InventoryManagerPage.nameInput().type(testProduct.name).should('have.value', testProduct.name)
         InventoryManagerPage.categorySelect().select(testProduct.category).should('have.value', testProduct.category)
-        InventoryManagerPage.quantityInput().type(testProduct.quanity.toString()).should('have.value', testProduct.quanity.toString())
+        InventoryManagerPage.quantityInput().type(testProduct.quantity.toString()).should('have.value', testProduct.quantity.toString())
         InventoryManagerPage.statusSelect().select(testProduct.status).should('have.value', testProduct.status)
         InventoryManagerPage.submitButton().click()
         InventoryManagerPage.getCell(0, productsTableColumn.Name).should('have.text', testProduct.name)
         InventoryManagerPage.getCell(0, productsTableColumn.Category).should('have.text', testProduct.category)
-        InventoryManagerPage.getCell(0, productsTableColumn.Quantity).should('have.text', testProduct.quanity.toString())
+        InventoryManagerPage.getCell(0, productsTableColumn.Quantity).should('have.text', testProduct.quantity.toString())
         InventoryManagerPage.getCell(0, productsTableColumn.Status).should('have.text', testProduct.status)
     })
 })

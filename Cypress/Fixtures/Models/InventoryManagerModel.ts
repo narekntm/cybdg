@@ -1,5 +1,5 @@
 export enum productCategory {
-    Select = 'Select...',
+    Select = '',
     Electronics = "Electronics",
     Books = "Books",
     Clothing = "Clothing",
@@ -7,7 +7,7 @@ export enum productCategory {
 }
 
 export enum productStatus {
-    Select = 'Select...',
+    Select = '',
     Available = "Available",
     OutOfStock = "OutOfStock",
     Discontinued = "Discontinued",
@@ -16,7 +16,7 @@ export enum productStatus {
 export interface Product {
     name: string;
     category: productCategory;
-    quanity: number;
+    quantity: number;
     status: productStatus;
 }
 
