@@ -1,4 +1,4 @@
-import { Columns } from "../../cypress/fixtures/Models/UserManagementModels";
+import { Columns } from "Cypress/Fixtures/Models/UserManagementModels";
 
 export class UserManagementPage {
     //admin section

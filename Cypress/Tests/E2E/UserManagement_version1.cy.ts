@@ -1,5 +1,5 @@
-import { UserManagementPage } from "../../fixtures/UserManagementPage";
-import { Columns, ColumnNames, UserRole, ActionButtons, ButtonAction, Gender, User,Login } from "../../fixtures/Models/UserManagementModels";
+import { UserManagementPage } from "Cypress/Fixtures/UserManagementPage";
+import { Columns, ColumnNames, UserRole, ActionButtons, ButtonAction, Gender, User,Login } from "Cypress/Fixtures/Models/UserManagementModels";
 
 describe("User Management Suite", () => {
   let loginPositiveCase: Login;
@@ -66,7 +66,7 @@ describe("User Management Suite", () => {
 
   beforeEach(() => {
     cy.log("Test is starting");
-    cy.visit("http://127.0.0.1:5500/Resources/htmls/CSS/user_management.html");
+    cy.visit("/Resources/htmls/CSS/user_management.html");
   });
 
   it("Login as Admin, Positive case", () => {
