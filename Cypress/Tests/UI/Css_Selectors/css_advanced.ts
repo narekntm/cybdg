@@ -1,96 +1,71 @@
 ﻿/**
  * Test suite demonstrating advanced CSS selectors in a realistic HTML structure.
  */
-describe('Realistic DOM - Advanced CSS Selectors in Cypress', () => {
+describe("Realistic DOM - Advanced CSS Selectors in Cypress", () => {
   /**
    * Visit the test HTML file before each test.
    */
   beforeEach(() => {
-    cy.visit('http://127.0.0.1:8080/Resources/htmls/CSS/advanced_css.html');
+    cy.visit("http://127.0.0.1:8080/Resources/htmls/CSS/advanced_css.html");
   });
 
   /**
    * Fill out a login form using descendant and positional selectors.
    */
-  it('Fills login form using descendant selectors', () => {
+  it("Fills login form using descendant selectors", () => {
     // Select the first input-group's input field (email) and type a value
-    cy.get('.login-wrapper .auth-form .input-group:first-of-type input')
-      .type('user@example.com');
+    cy.get(".login-wrapper .auth-form .input-group:first-of-type input").type("user@example.com");
 
     // Select the second input-group's input field (password) using .eq()
-    cy.get('.auth-form .input-group')
-      .eq(1)
-      .find('input')
-      .type('supersecret');
+    cy.get(".auth-form .input-group").eq(1).find("input").type("supersecret");
 
     // Check the "Remember Me" checkbox using class and attribute selector
-    cy.get('.auth-form .remember-block input[type="checkbox"]')
-      .check();
+    cy.get('.auth-form .remember-block input[type="checkbox"]').check();
 
     // Click the primary Sign In button inside the auth-form
-    cy.get('.auth-form .row-item button.btn.primary-btn')
-      .click();
+    cy.get(".auth-form .row-item button.btn.primary-btn").click();
   });
 
   /**
    * Interact with a settings list using structural and index-based selectors.
    */
-  it('Interacts with preferences list using structural selectors', () => {
+  it("Interacts with preferences list using structural selectors", () => {
     // Select the first setting row and change the language to 'FR'
-    cy.get('.dashboard-container .settings-list li')
-      .eq(0)
-      .find('select')
-      .select('FR');
+    cy.get(".dashboard-container .settings-list li").eq(0).find("select").select("FR");
 
     // Select the second setting row and change timezone to 'UTC'
-    cy.get('.settings-list li')
-      .eq(1)
-      .find('select')
-      .select('UTC');
+    cy.get(".settings-list li").eq(1).find("select").select("UTC");
 
     // Uncheck the Email Notifications checkbox in the third row
-    cy.get('.settings-list li')
-      .eq(2)
-      .find('input[type="checkbox"]')
-      .uncheck();
+    cy.get(".settings-list li").eq(2).find('input[type="checkbox"]').uncheck();
 
     // Check the Push Notifications checkbox in the fourth row
-    cy.get('.settings-list li')
-      .eq(3)
-      .find('input[type="checkbox"]')
-      .check();
+    cy.get(".settings-list li").eq(3).find('input[type="checkbox"]').check();
 
     // Click the Save Settings button located inside .actions div
-    cy.get('.dashboard-container .actions > .save-btn')
-      .click();
+    cy.get(".dashboard-container .actions > .save-btn").click();
   });
 
   /**
    * Assert specific sibling and child element relationships in the DOM.
    */
-  it('Verifies sibling and child relationships', () => {
+  it("Verifies sibling and child relationships", () => {
     // Verify that the second input-group input has type="password"
-    cy.get('.input-group')
-      .eq(1)
-      .find('input')
-      .should('have.attr', 'type', 'password');
+    cy.get(".input-group").eq(1).find("input").should("have.attr", "type", "password");
 
     // Validate that the third setting-row's notification label contains expected text
-    cy.get('.setting-row:nth-child(3) .notifications > span')
-      .should('contain', 'Email Notifications');
+    cy.get(".setting-row:nth-child(3) .notifications > span").should("contain", "Email Notifications");
   });
 
   /**
    * Count checkboxes and verify how many are checked by default.
    */
-  it('Counts and verifies checkboxes', () => {
+  it("Counts and verifies checkboxes", () => {
     // Assert that 3 checkboxes exist on the page
-    cy.get('input[type="checkbox"]')
-      .should('have.length', 3);
+    cy.get('input[type="checkbox"]').should("have.length", 3);
 
     // Assert that exactly 1 checkbox is checked by default
-    cy.get('input[type="checkbox"]:checked')
-      .should('have.length', 1);
+    cy.get('input[type="checkbox"]:checked').should("have.length", 1);
   });
 });
 
