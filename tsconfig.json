@@ -30,7 +30,7 @@
         "Cypress/Fixtures/Elements/*"
       ],
       "Pages/*": [
-        "Cypress/Pages/*",
+        "Cypress/Fixtures/Pages/*",
       ],
       "Helpers/*": [
         "Cypress/Support/Helpers/*"
