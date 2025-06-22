@@ -1,5 +1,5 @@
 import { UserManagementPage } from "Pages/UserManagementPage";
-import { UserManagementMethods } from "Pages/UserManagementMethods";
+import { UserManagementMethods } from "Pages/Methods/UserManagementMethods";
 import { SignIn } from "Pages/Models/UserManagementModels";
 
 describe('Add New user section', () => {

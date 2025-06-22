@@ -1,5 +1,5 @@
-import { UserManagementPage } from "Pages/UserManagementPage";
-import { SignIn , AdminLoginData, NewUser} from "./Models/UserManagementModels";
+import { UserManagementPage } from "../UserManagementPage";
+import { SignIn , AdminLoginData, NewUser} from "../Models/UserManagementModels";
 export class UserManagementMethods {
   // Auth part
   static Auth = (data:AdminLoginData) => {
