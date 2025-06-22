@@ -1,5 +1,5 @@
 
-import { UserManagementPage } from 'cypress/fixtures/pages/UserManagementPage';
+import { UserManagementPage } from 'Cypress/Fixtures/Pages/UserManagementPage';
 
 describe('User Management block', () => {
 
