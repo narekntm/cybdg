@@ -1,17 +1,35 @@
 import { UserFormData } from "Models/UserManagementModels";
-import { UserManagementPage } from "Pages/UserManagementPage";
+import { UserManagementPage } from "Pages/UserManagementPageV2";
 
 describe("User Management Test Scenarios", () => {
-  const baseUrl = "http://127.0.0.1:8080/Resources/htmls/CSS/user_management.html";
+  const baseUrl = "/";
+
+  afterEach(() => {
+    // reset the state after each test
+    cy.request({
+      method: "POST",
+      url: "/api/reset",
+    });
+  });
 
   beforeEach(() => {
     cy.visit(baseUrl);
   });
 
-  const login = (email: string = "admin@example.com", password: string = "admin123") => {
+  const login = (email: string = "admin@example.com", password: string = "admin123", shouldSucceed: boolean = true) => {
     UserManagementPage.adminEmailInput().type(email);
     UserManagementPage.adminPasswordInput().type(password);
+    cy.intercept({ method: "POST", url: "/api/login" }).as("loginRequest");
     UserManagementPage.loginButton().click();
+    cy.wait("@loginRequest").then((xhr) => {
+      if (shouldSucceed) {
+        expect(xhr.response.statusCode).to.eq(200);
+        expect(xhr.response.body).to.have.property("success", true);
+      } else {
+        expect(xhr.response.statusCode).to.eq(401);
+        expect(xhr.response.body).to.have.property("success", false);
+      }
+    });
   };
 
   function fillUserForm(user: UserFormData) {
@@ -21,9 +39,14 @@ describe("User Management Test Scenarios", () => {
     UserManagementPage.userEmailInput().clear().type(user.email);
     UserManagementPage.userGenderRadio(user.gender).check();
 
+    const allSubscriptions = ["Newsletter", "Product Updates"];
+    allSubscriptions.forEach((sub) => {
+      UserManagementPage.userSubscriptionCheckbox(sub).uncheck({ force: true });
+    });
+
     if (user.subscriptions && user.subscriptions.length > 0) {
       user.subscriptions.forEach((sub) => {
-        UserManagementPage.userSubscriptionCheckbox(sub).uncheck().check();
+        UserManagementPage.userSubscriptionCheckbox(sub).check({ force: true });
       });
     }
   }
@@ -38,7 +61,7 @@ describe("User Management Test Scenarios", () => {
     });
 
     it("Check login with invalid credentials", () => {
-      login("invalid@admin.test", "wrongpassword");
+      login("invalid@admin.test", "wrongpassword,", false);
       UserManagementPage.loginStatus().should("be.visible").contains("Invalid credentials");
     });
 
@@ -58,15 +81,53 @@ describe("User Management Test Scenarios", () => {
     it("Should add user with valid input", () => {
       login();
       UserManagementPage.formTitle().should("be.visible");
-      fillUserForm({
+
+      const testUser = {
         name: "Arthur",
         role: "Admin",
         age: "30",
         email: "arthur@example.com",
         gender: "Male",
         subscriptions: ["Newsletter", "Product Updates"],
-      });
+      };
+
+      fillUserForm(testUser);
+
+      cy.intercept("POST", "/api/users").as("addUser");
+
       saveUser();
+
+      cy.wait("@addUser").then((interception) => {
+        const sent = interception.request.body;
+
+        expect(sent.name).to.eq(testUser.name);
+        expect(sent.role).to.eq(testUser.role);
+        expect(sent.age).to.eq(testUser.age);
+        expect(sent.email).to.eq(testUser.email);
+        expect(sent.gender).to.eq(testUser.gender);
+
+        const sentSubscriptionsArray = sent.subscriptions.split(",").map((s: string) => s.trim());
+        expect(sentSubscriptionsArray).to.have.members(testUser.subscriptions);
+
+        expect(interception.response?.statusCode).to.eq(200);
+
+        const responseBody = interception.response?.body;
+
+        expect(responseBody).to.include({
+          name: testUser.name,
+          email: testUser.email,
+          role: testUser.role,
+          age: testUser.age,
+          gender: testUser.gender,
+          status: "Active",
+        });
+
+        const responseSubscriptionsArray = responseBody.subscriptions.split(",").map((s: string) => s.trim());
+        expect(responseSubscriptionsArray).to.have.members(testUser.subscriptions);
+
+        expect(responseBody).to.have.property("id").that.is.a("number");
+      });
+
       UserManagementPage.deleteButtonInRow("Arthur").click();
     });
 
@@ -178,28 +239,62 @@ describe("User Management Test Scenarios", () => {
     it("Should edit existing user and update in the table", () => {
       login();
       UserManagementPage.editButtonInRow("Alice").click();
+
       UserManagementPage.userNameInput().should("have.value", "Alice");
       UserManagementPage.userRoleSelect().should("have.value", "Admin");
       UserManagementPage.userAgeInput().should("have.value", "30");
       UserManagementPage.userEmailInput().should("have.value", "alice@site.com");
       UserManagementPage.userSubscriptionCheckbox("Newsletter").should("be.checked");
 
-      fillUserForm({
+      const updatedUser = {
         name: "AliceUpdatedName",
         role: "Editor",
         age: "35",
         email: "alice.updated@test.test",
         gender: "Female",
         subscriptions: ["Product Updates"],
-      });
+      };
+
+      fillUserForm(updatedUser);
+
+      cy.intercept("PUT", "/api/users/1").as("editUser");
 
       saveUser();
-      cy.contains("#user-table tr", "AliceUpdatedName").within(() => {
-        cy.contains("Editor");
-        cy.contains("35");
-        cy.contains("alice.updated@test.test");
-        cy.contains("Female");
-        cy.contains("Product Updates");
+
+      cy.wait("@editUser").then((interception) => {
+        expect(interception.response?.statusCode).to.eq(200);
+        const sent = interception.request.body;
+
+        expect(sent.name).to.eq(updatedUser.name);
+        expect(sent.role).to.eq(updatedUser.role);
+        expect(sent.age).to.eq(updatedUser.age);
+        expect(sent.email).to.eq(updatedUser.email);
+        expect(sent.gender).to.eq(updatedUser.gender);
+
+        const sentSubscriptionsArray = sent.subscriptions.split(",").map((s: string) => s.trim());
+        expect(sentSubscriptionsArray).to.have.members(updatedUser.subscriptions);
+
+        const res = interception.response?.body;
+
+        expect(res).to.include({
+          name: updatedUser.name,
+          email: updatedUser.email,
+          role: updatedUser.role,
+          age: updatedUser.age,
+          gender: updatedUser.gender,
+          status: "Active", // если есть
+        });
+
+        const responseSubscriptionsArray = res.subscriptions.split(",").map((s: string) => s.trim());
+        expect(responseSubscriptionsArray).to.have.members(updatedUser.subscriptions);
+      });
+
+      cy.contains("#user-table tr", updatedUser.name).within(() => {
+        cy.contains(updatedUser.role);
+        cy.contains(updatedUser.age);
+        cy.contains(updatedUser.email);
+        cy.contains(updatedUser.gender);
+        cy.contains(updatedUser.subscriptions[0]);
       });
     });
 
@@ -211,17 +306,52 @@ describe("User Management Test Scenarios", () => {
       UserManagementPage.confirmModal().should("not.be.visible");
       UserManagementPage.deleteButtonInRow("Alice").click();
       UserManagementPage.confirmModal().should("be.visible");
+
+      cy.intercept("DELETE", "/api/users/1").as("deleteUser");
+
       UserManagementPage.confirmDeleteButton().should("be.visible").click();
+      cy.wait("@deleteUser").then((interception) => {
+        expect(interception.request.body).to.have.property("isAdmin", true);
+        expect(interception.response?.statusCode).to.eq(200);
+        expect(interception.response?.body).to.have.property("success", true);
+      });
       cy.contains("#user-table tr", "Alice").should("not.exist");
     });
 
     it("Should deactivate and activate user", () => {
       login();
+
+      cy.intercept("PATCH", "/api/users/1/status").as("toggleUserStatus");
+
       UserManagementPage.deactivateButtonInRow("Alice").click();
+
+      cy.wait("@toggleUserStatus").then((interception) => {
+        expect(interception.request.body).to.have.property("status", "Inactive");
+        expect(interception.response?.statusCode).to.eq(200);
+        expect(interception.response?.body).to.have.property("status", "Inactive");
+      });
+
       UserManagementPage.statusCellInRow("Alice").should("contain", "Inactive");
       UserManagementPage.activateButtonInRow("Alice").click();
       UserManagementPage.statusCellInRow("Alice").should("contain", "Active");
       UserManagementPage.deactivateButtonInRow("Alice").should("exist");
+    });
+
+    it("Should reset all users and verify API returns 3 users", () => {
+      login();
+
+      cy.intercept("POST", "/api/reset").as("resetRequest");
+
+      UserManagementPage.resetButton().click();
+      UserManagementPage.confirmResetModal().should("be.visible");
+      UserManagementPage.confirmResetButton().should("be.visible").click();
+
+      cy.wait("@resetRequest").then(({ response }) => {
+        expect(response?.statusCode).to.eq(200);
+        expect(response?.body).to.have.property("success", true);
+        expect(response?.body).to.have.property("users");
+        expect(response?.body.users).to.be.an("array").with.length(3);
+      });
     });
   });
 });

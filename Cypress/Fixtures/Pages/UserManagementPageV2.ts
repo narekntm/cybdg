@@ -29,7 +29,7 @@ export class UserManagementPage {
 
   static deleteButtonInRow = (username: string) => this.userRow(username).find("button.delete-btn");
 
-  static confirmModal = () => cy.get("#confirm-modal");
+  static confirmModal = () => cy.get("#confirm-delete-modal");
 
   static deleteError = () => cy.get("#admin-delete-error");
 
@@ -48,4 +48,12 @@ export class UserManagementPage {
   static activateButtonInRow = (username: string) => this.userRow(username).contains("Activate");
 
   static deactivateButtonInRow = (username: string) => this.userRow(username).contains("Deactivate");
+
+  static resetButton = () => cy.get("#reset-btn");
+
+  static confirmResetModal = () => cy.get("#confirm-reset-modal");
+
+  static confirmResetButton = () => cy.get("#confirm-reset");
+
+  static cancelResetButton = () => cy.get("#cancel-reset");
 }

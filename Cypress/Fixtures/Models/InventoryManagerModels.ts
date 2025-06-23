@@ -2,13 +2,13 @@ export enum ProductCategory {
   Electronics = "Electronics",
   Books = "Books",
   Clothing = "Clothing",
-  Other = "Other"
+  Other = "Other",
 }
 
 export enum ProductStatus {
   Available = "Available",
   OutOfStock = "OutOfStock",
-  Discontinued = "Discontinued"
+  Discontinued = "Discontinued",
 }
 
 export interface Product {
