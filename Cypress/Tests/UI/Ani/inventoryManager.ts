@@ -1,4 +1,4 @@
-import { ProductCategory , ProductStatus } from "Models/InventoryManagerModels";
+import { ProductCategory, ProductStatus } from "Models/InventoryManagerModels";
 import { InventoryManagerPage } from "Pages/InventoryManagerPage";
 
 describe("Inventory Manager", () => {
