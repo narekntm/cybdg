@@ -1,4 +1,5 @@
 import { Columns } from "Cypress/Fixtures/Models/UserManagementModels";
+import {UserRole} from "Cypress/Fixtures/Models/UserManagementModels"
 
 export class UserManagementPage {
     //admin section
@@ -53,13 +54,16 @@ export class UserManagementPage {
     static userTableRowEditButton = (row: number) => cy.get('table#user-table tbody tr').eq(row).find('td').find("button.edit-btn");
     static userTableRowDeleteButton = (row: number) => cy.get('table#user-table tbody tr').eq(row).find('td').find("button.delete-btn");
     static userTableRowStatusButton = (row: number) => cy.get('table#user-table tbody tr').eq(row).find('td').find("button.status-btn");
-    
+
+    static userTableRowNotAdminDeleteButton = () => UserManagementPage.userTableRows().not(`:contains("${UserRole.Admin}")`).first().find('td').find("button.delete-btn");
+    static userTableRowAdminDeleteButton = () => UserManagementPage.userTableRows().contains(UserRole.Admin).eq(0).parent().find('td').find("button.delete-btn");    
+
     static userTableColumnCount = () => cy.get('table#user-table tr').first().find('th');
     static userTableHeader = () => cy.get('table#user-table thead tr').first().find('th');
     static userTableHeaderTd = ($el: JQuery<HTMLElement>) => cy.wrap($el);    
     
     static confirmModal = () => cy.get('#confirm-modal');
-    static deleteModalTitle = () => cy.get('#confirm-modal div.modal-content p');
+    static deleteModalTitle = () => cy.get('#confirm-delete-modal div.modal-content p');
     static deleteModalCancelBtn = () => cy.get('#cancel-delete');
     static deleteModalConfirmBtn = () => cy.get('#confirm-delete');
 }

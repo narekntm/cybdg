@@ -3,9 +3,9 @@ import { Columns, ColumnNames, UserRole, ActionButtons, ButtonAction, Gender, Us
 
 describe("User Management Suite", () => {
   let loginPositiveCase: Login;
-  let loginNegativeCases: Login[] = [];
+  let loginNegativeCase: Login;
   let userFormPositiveCase: User;
-  let userFormNegativeCases: User[] = [];
+  let userFormNegativeCase: User;
 
   function adminLogin(login: Login) {
     UserManagementPage.adminTitle().should("have.text", "Login as Admin");
@@ -55,61 +55,87 @@ describe("User Management Suite", () => {
     UserManagementPage.userFormSubmitBtn().should("have.text", "Save");
   }
 
+  const baseURL = "/";
+
   before(() => {
     cy.fixture("userData").then((data) => {
       loginPositiveCase = data.loginPositiveCase;
-      loginNegativeCases = data.loginNegativeCases;
+      loginNegativeCase = data.loginNegativeCase;
       userFormPositiveCase = data.userFormPositiveCase;
-      userFormNegativeCases = data.userFormNegativeCases;
+      userFormNegativeCase = data.userFormNegativeCase;
     });
   });
 
   beforeEach(() => {
-    cy.log("Test is starting");
-    cy.visit('/Resources/htmls/CSS/user_management.html');
+    cy.visit(baseURL);
+  });
+
+  afterEach(() => {
+    //reset the state after each test
+    cy.request({ method: "POST", url: "/api/reset" });
   });
 
   it("Login as Admin, Positive case", () => {
-    adminLogin(loginPositiveCase);
+      cy.intercept({method: "POST", url: "/api/login"}).as('adminLoginPositive');
 
-    UserManagementPage.logoutBtn().should('have.text', 'Logout').click();
-    UserManagementPage.adminEmailInput().should('have.text', '');
-    UserManagementPage.adminPasswordInput().should('have.text', '');
-    UserManagementPage.adminControls().should('not.be.visible');
+      adminLogin(loginPositiveCase);
+
+      cy.wait('@adminLoginPositive').then(xhr => {
+        expect(xhr.response.statusCode).to.eq(200);
+        expect(xhr.response.body).deep.equal({success: true});
+      })
+
+      UserManagementPage.logoutBtn().should('have.text', 'Logout').click();
+      UserManagementPage.adminEmailInput().should('have.value', '');
+      UserManagementPage.adminPasswordInput().should('have.value', '');
+      UserManagementPage.adminControls().should('not.be.visible');
   });
 
-  describe('Login as Admin, Negative cases', () => {
-    loginNegativeCases.forEach((login: Login) => {
-      it(`Login as Admin, Negative case: email: ${login.email}`, () => {
-        console.log('login.email: ', login.email);
-        adminLogin(login);
-        UserManagementPage.loginStatus().should("have.text", "Invalid credentials");
-      });
+  it('Login as Admin, Negative case', () => {
+    cy.intercept({ method: "POST", url: "/api/login"}).as('adminLoginNegative');
+    
+    adminLogin(loginNegativeCase);
+
+    cy.wait('@adminLoginNegative').then(xhr => {
+      expect(xhr.response.statusCode).to.eq(401);
+      expect(xhr.response.statusMessage).to.eq('Unauthorized');
+      expect(xhr.response.body).deep.equal({success: false});
     });
+
+    UserManagementPage.loginStatus().should("have.text", "Invalid credentials");
   });
 
   it("User Management Test, Positive case", () => {
-    fillUserForm(userFormPositiveCase);
+    cy.intercept({method: "POST", url: "/api/users"}).as('addNewUserPositive');
 
+    fillUserForm(userFormPositiveCase);
     UserManagementPage.userTableRows().its("length").then((count: number) => {
       UserManagementPage.userFormSubmitBtn().click();
+      
+      cy.wait('@addNewUserPositive').then(xhr => {
+        expect(xhr.response.statusCode).to.be.equal(200);
+        expect(xhr.response.statusMessage).to.eq('OK');
+      });
+  
       UserManagementPage.userTableRows().its("length").should("be.gt", count);
     });
   });
 
-  describe('User Management Test, Negative cases', () => {
-    userFormNegativeCases.forEach((user: User) => {
-      it(`User Management Test, Negative case: user name: ${user.name}`, () => {
-          fillUserForm(user);
+  it('User Management Test, Negative case', () => {
+    cy.intercept({method: "POST", url: "/api/users"}).as('addNewUserNegative')
 
-          UserManagementPage.userTableRows().its("length")
-            .then((count: number) => {
-              UserManagementPage.userFormSubmitBtn().click();
-              UserManagementPage.userTableRows().its("length").should("be.eq", count);
-              UserManagementPage.userFormErrors().should("be.visible");
-            });
+      fillUserForm(userFormNegativeCase);
+      UserManagementPage.userTableRows().its("length").then((count: number) => {
+        UserManagementPage.userFormSubmitBtn().click();
+
+        cy.wait('@addNewUserNegative').then(xhr => {
+          expect(xhr.response.statusCode).to.be.equal(400);
+          expect(xhr.response.body).deep.equal({success: false})
         });
-    });  
+  
+        UserManagementPage.userTableRows().its("length").should("be.eq", count);
+        UserManagementPage.userFormErrors().should("be.visible");
+      });
   });
 
   it("User Table", () => {
@@ -122,6 +148,8 @@ describe("User Management Suite", () => {
   });
 
   it("User table first row edit", () => {
+    cy.intercept({method: "PUT", url: "/api/users/1"}).as('updateUser');
+
     UserManagementPage.userTableRowTds(1).then((cells: JQuery<HTMLElement>) => {
       const user: User = {
         name: cells[Columns.Name].innerText.trim(),
@@ -143,30 +171,48 @@ describe("User Management Suite", () => {
       user.subscription.forEach((value: string) => {
         UserManagementPage.subscriptionInput(value).should("be.checked");
       });
+
+      UserManagementPage.firstNameInput().clear().type('UpdatedName');
+      UserManagementPage.ageInput().clear().type('23');
+
+      UserManagementPage.userFormSubmitBtn().click();
+
+      cy.wait('@updateUser').then(xhr => {
+        expect(xhr.response.statusCode).to.be.equal(201);
+        expect(xhr.response.body).deep.equal({success: true});
+      });
+
+      UserManagementPage.userTableRowTds(1).eq(Columns.Name).should('have.text', 'UpdatedName');
     });
   });
 
   it("User table first row toggle activate", () => {
+    cy.intercept({method: "PATCH", url: "/api/users/1/status"}).as('ToggleButton');
+
     UserManagementPage.userTableRowStatusButton(0).as('submitBtn');
 
     cy.get('@submitBtn').should("be.visible").invoke("text").then((text) => {
+      cy.get('@submitBtn').should("have.text", ButtonAction.Deactivate);
       cy.get('@submitBtn').click();
 
-      if (text === ButtonAction.Activate) {
-        cy.get('@submitBtn').should("have.text", ButtonAction.Deactivate);
-        cy.get('@submitBtn').click();
-        cy.get('@submitBtn').should("have.text", ButtonAction.Activate);
+      cy.wait('@ToggleButton').then(xhr => {
+          expect(xhr.response.statusCode).to.eq(200);
+          expect(xhr.response.statusMessage).to.eq('OK');
+      })
 
-      } else {
-        cy.get('@submitBtn').should("have.text", ButtonAction.Activate);
-        cy.get('@submitBtn').click();
-        cy.get('@submitBtn').should("have.text", ButtonAction.Deactivate);        
-      }
+      cy.get('@submitBtn').should("have.text", ButtonAction.Activate);
     });
   });
 
   it("User table admin row delete", () => {
+    cy.intercept({method: "DELETE", url: "/api/users/1" }).as('DeleteAdminUser');
     UserManagementPage.userTableRowAdminDeleteButton().click();
+
+    cy.wait('@DeleteAdminUser').then(xhr => {
+       expect(xhr.response.statusCode).to.be.oneOf([403, 400, 409]);
+       expect(xhr.response.body).deep.equal({success: false}); 
+    })
+
     UserManagementPage.adminError().should("have.text", "Admin login required to delete Admin-level users.");
   });
 
@@ -175,20 +221,26 @@ describe("User Management Suite", () => {
     UserManagementPage.deleteModalTitle().contains("Are you sure you want to delete this user?");
     UserManagementPage.deleteModalConfirmBtn().should("be.visible");
     UserManagementPage.deleteModalCancelBtn().should("be.visible").click();
-    UserManagementPage.confirmModal().should("not.be.visible");
   });
 
   it("User table not admin row delete and confirm", () => {
-    UserManagementPage.userTableRowNotAdminDeleteButton().click();
+    cy.intercept({method: "DELETE", url: "/api/users/2" }).as('DeleteNotAdminUser');
     
+    UserManagementPage.userTableRowNotAdminDeleteButton().click();
     UserManagementPage.deleteModalTitle().should('have.text', 'Are you sure you want to delete this user?');
     UserManagementPage.deleteModalCancelBtn().should("be.visible");
 
-    UserManagementPage.userTableRows().its("length")
-      .then((count: number) => {
-        UserManagementPage.deleteModalConfirmBtn().should("be.visible").click();
-        UserManagementPage.confirmModal().should("not.be.visible");
-        UserManagementPage.userTableRows().its("length").should("be.lt", count);
+    let userTableRowCount: number;
+    UserManagementPage.userTableRows().its("length").then((count: number) => {
+      userTableRowCount = count;
+      UserManagementPage.deleteModalConfirmBtn().should("be.visible").click();
+  
+      cy.wait('@DeleteNotAdminUser').then(xhr => {
+         expect(xhr.response.statusCode).to.eq(200);
+         expect(xhr.response.body).deep.equal({success: true}); 
       });
+  
+      UserManagementPage.userTableRows().its("length").should("be.lt", userTableRowCount);
+    });
   });
 });

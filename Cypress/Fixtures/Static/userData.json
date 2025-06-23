@@ -13,6 +13,10 @@
     "email": "admin@example.com",
     "password": "admin123"
   },
+  "loginNegativeCase": {
+    "email": "wrong@example.com",
+    "password": "wrongpassword"
+  },
   "loginNegativeCases": [
     {
       "email": "",
@@ -35,7 +39,7 @@
       "password": "wrongpassword"
     }
   ],
-  "userFormPositiveData": {
+  "userFormPositiveCase": {
     "name": "LarisaYeremyan",
     "role": "Editor",
     "age": 30,
@@ -43,7 +47,17 @@
     "gender": "Female",
     "subscription": ["Newsletter"]
   },
-  "userFormNegativeData": [
+  "userFormNegativeCase": 
+  {
+    "name": "",
+    "role": "Admin",
+    "age": 30,
+    "email": "valid@example.com",
+    "gender": "Male",
+    "subscription": ["Newsletter"],
+    "expectedError": "Name is required"
+  },  
+  "userFormNegativeCases": [
     {
       "name": "",
       "role": "Admin",
