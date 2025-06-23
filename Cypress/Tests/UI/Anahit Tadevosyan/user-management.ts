@@ -6,18 +6,20 @@ describe("User Management Test Cases", () => {
   beforeEach("visit the site", () => {
     cy.visit(baseUrl);
   });
+
+
   const login = function (email: string, password: string) {
     UserManagementPage.adminEmailInput().type(email);
     UserManagementPage.adminPasswordInput().type(password);
     UserManagementPage.loginButton().click();
   };
   const addUser = function (
-    fullName: string = "",
-    role: string = "",
-    age: string = "",
-    email: string = "",
-    gender?: "Male" | "Female" | "Other",
-    subscriptions: string[] = []
+      fullName: string = "",
+      role: string = "",
+      age: string = "",
+      email: string = "",
+      gender?: "Male" | "Female" | "Other",
+      subscriptions: string[] = []
   ) {
     if (fullName) UserManagementPage.fullNameInput().clear().type(fullName);
     if (role) UserManagementPage.roleInput().select(role);
@@ -67,9 +69,9 @@ describe("User Management Test Cases", () => {
     it("Add user with valid input", () => {
       addUser("Anahit", "Admin", "24", "anahit.ru@gmail.com", "Female", ["Newsletter"]);
       UserManagementPage.tableRow(3)
-        .within(() => {
-          UserManagementPage.tableTd(0).should("have.text", "Anahit");
-        });
+          .within(() => {
+            UserManagementPage.tableTd(0).should("have.text", "Anahit");
+          });
     });
 
     it("Submit form with all fields empty", () => {

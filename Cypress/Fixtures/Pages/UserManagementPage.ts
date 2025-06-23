@@ -98,7 +98,7 @@
   static statusButton = () => cy.get(".btn-primary.status-btn");
 
   // Modal for Delete Confirmation
-  static confirmModal = () => cy.get("#confirm-modal");
+  static confirmModal = () => cy.get("#confirm-delete-modal");
 
   // Modal for Confirm Delete
   static confirmDeleteButton = () => cy.get("#confirm-delete");
@@ -107,12 +107,22 @@
 
   static cancelDeleteButton = () => cy.get("#cancel-delete");
 
-  static modalContent = () => cy.get("#confirm-modal .modal-content");
+  static modalContent = () => cy.get("#confirm-delete-modal .modal-content");
 
-  static modalMessage = () => cy.get("#confirm-modal .modal-content p");
+  static modalMessage = () => cy.get("#confirm-delete-modal .modal-content p");
   static adminLoginButton = () => cy.get('#admin-login-form button[type="submit"]');
 
   static nameInput = () => {
     return cy.get("#name");
   };
+
+  //Reset
+  static resetButton = () => cy.get('#reset-btn');
+
+  //Confirm Reset
+  static confirmResetButton = () => cy.get('#confirm-reset')
+
+  //Cancel Reset
+
+  static cancelResetButton = () => cy.get('#cancel-reset')
 }
