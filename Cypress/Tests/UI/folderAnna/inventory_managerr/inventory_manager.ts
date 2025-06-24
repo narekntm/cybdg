@@ -2,7 +2,7 @@ import { ProductCategory , ProductStatus } from "Models/InventoryManagerModels";
 import { InventoryManagerPage } from "Pages/InventoryManagerPage";
 
 describe("Inventory Manager", () => {
-  const url = "http://127.0.0.1:8080/Resources/htmls/inventory_manager/index.html";
+  const url = "/Resources/htmls/inventory_manager/index.html";
   beforeEach(() => {
     cy.visit(url);
   });
@@ -17,7 +17,7 @@ describe("Inventory Manager", () => {
       InventoryManagerPage.errorQuantity().should("contain", "Quantity must be at least 1.");
       InventoryManagerPage.errorStatus().should("contain", "Please select a status.");
   
-      InventoryManagerPage.tableRows().should("have.length", 0);
+      InventoryManagerPage.tableRows().should("have.length", 0); 
     });
   
     it("Should Check the data on the Category dropdown", () => {

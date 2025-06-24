@@ -6,6 +6,6 @@
   static adminLoginButton = () => cy.get('#admin-login-form button[type="submit"]');
 
   static nameInput = () => {
-    return cy.get("#name");
+    return cy.get("#name"); 
   };
 }

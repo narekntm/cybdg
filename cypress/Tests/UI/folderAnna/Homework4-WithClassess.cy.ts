@@ -1,11 +1,11 @@
-import { UserManagmentPage } from "Pages/UserManagmentPage";
+import { UserManagmentPage } from "Pages/UserManagmentPage1";
 
 describe('Tests for page "User Management Cypress Sandbox"', () => {
   beforeEach(() => {
     cy.visit("http://127.0.0.1:5500/Resources/htmls/CSS/user_management.html");
   });
 
-  function adminLogin(email: any, password: any) {
+  function adminLogin(email: string, password: string) {
     UserManagmentPage.adminEmailInput().type(email);
     UserManagmentPage.adminPasswordInput().type(password);
     UserManagmentPage.adminLoginButton().click();

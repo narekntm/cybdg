@@ -1,6 +1,6 @@
 export enum ColumnNamesFields {
-    name = "Name",
-    Role ="Role",
+    name = "Name", 
+    Role ="Role",  
     Age = "Age",
     Email ="Email",
     Gender = "Gender",

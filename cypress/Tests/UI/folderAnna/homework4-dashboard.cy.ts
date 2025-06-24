@@ -3,7 +3,7 @@ describe('Tests for page "User Management Cypress Sandbox"', () => {
     cy.visit("http://127.0.0.1:5500/Resources/htmls/CSS/user_management.html");
   });
 
-  function adminLogin(email: any, password: any) {
+  function adminLogin(email: string, password: string) {
     cy.get("#admin-email").type(email);
     cy.get("#admin-password").type(password);
     cy.get('#admin-login-form button[type="submit"]').click();

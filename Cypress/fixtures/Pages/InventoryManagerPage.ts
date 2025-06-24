@@ -1,6 +1,6 @@
 ﻿export class InventoryManagerPage {
   // Form elements
-  static form = () => cy.get("#add-product-form");
+  static form = () => cy.get("#add-product-form"); 
 
   static nameInput = () => cy.get("#product-name");
   static categorySelect = () => cy.get("#product-category");

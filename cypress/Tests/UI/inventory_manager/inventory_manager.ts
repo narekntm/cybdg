@@ -23,7 +23,7 @@ interface Product {
 type ProductField = keyof Product;
 
 describe("Inventory Manager – Advanced TypeScript UI Tests", () => {
-  const url = "http://127.0.0.1:8080/Resources/htmls/inventory_manager/index.html";
+  const url = "http://127.0.0.1:8080/Resources/htmls/inventory_manager/";
 
   beforeEach(() => {
     cy.visit(url);
@@ -56,15 +56,15 @@ describe("Inventory Manager – Advanced TypeScript UI Tests", () => {
       },
     ];
 
-    products.forEach((product) => {
-      fillProductForm(product);
+    products.forEach((prod) => {
+      fillProductForm(prod);
       InventoryManagerPage.submitButton().click();
     });
 
     InventoryManagerPage.tableRows().should("have.length.at.least", products.length);
 
     products.forEach((product) => {
-      InventoryManagerPage.getRowByProductName(product.name).within(() => {
+      InventoryManagerPage.rowProductName(product.name).within(() => {
         InventoryManagerPage.getCell(0).should("contain", product.name);
         InventoryManagerPage.getCell(1).should("contain", product.category);
         InventoryManagerPage.getCell(2).should("contain", product.quantity.toString());
@@ -94,7 +94,7 @@ describe("Inventory Manager – Advanced TypeScript UI Tests", () => {
       fillProductForm(product);
       InventoryManagerPage.submitButton().click();
 
-      InventoryManagerPage.getLastRow().within(() => {
+      InventoryManagerPage.tableLastRow().within(() => {
         InventoryManagerPage.getCell(0).should("contain", product.name);
         InventoryManagerPage.getCell(1).should("contain", product.category);
         InventoryManagerPage.getCell(2).should("contain", product.quantity.toString());
@@ -142,7 +142,7 @@ describe("Inventory Manager – Advanced TypeScript UI Tests", () => {
     fillProductForm(product);
     InventoryManagerPage.submitButton().click();
 
-    InventoryManagerPage.getLastRow().then((row) => {
+    InventoryManagerPage.tableLastRow().then((row) => {
       (Object.keys(product) as ProductField[]).forEach((field, index) => {
         const expectedValue = product[field].toString();
         cy.wrap(row).within(() => {
