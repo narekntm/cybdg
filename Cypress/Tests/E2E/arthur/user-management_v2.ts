@@ -1,15 +1,14 @@
 import { UserFormData } from "Models/UserManagementModels";
 import { UserManagementPage } from "Pages/UserManagementPageV2";
+import { UserManagementBuilders } from "Builders/UserManagementBuilders";
+import { UserManagementEndpoints } from "EndPoints/UserManagementEndpoints";
+
 
 describe("User Management Test Scenarios", () => {
   const baseUrl = "/";
 
   afterEach(() => {
-    // reset the state after each test
-    cy.request({
-      method: "POST",
-      url: "/api/reset",
-    });
+    UserManagementBuilders.ResetData()
   });
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe("User Management Test Scenarios", () => {
   const login = (email: string = "admin@example.com", password: string = "admin123", shouldSucceed: boolean = true) => {
     UserManagementPage.adminEmailInput().type(email);
     UserManagementPage.adminPasswordInput().type(password);
-    cy.intercept({ method: "POST", url: "/api/login" }).as("loginRequest");
+    cy.intercept({ method: "POST", url: UserManagementEndpoints.adminLogin }).as("loginRequest");
     UserManagementPage.loginButton().click();
     cy.wait("@loginRequest").then((xhr) => {
       if (shouldSucceed) {
@@ -82,7 +81,7 @@ describe("User Management Test Scenarios", () => {
       login();
       UserManagementPage.formTitle().should("be.visible");
 
-      const testUser = {
+      const testUser: UserFormData = {
         name: "Arthur",
         role: "Admin",
         age: "30",
@@ -93,7 +92,7 @@ describe("User Management Test Scenarios", () => {
 
       fillUserForm(testUser);
 
-      cy.intercept("POST", "/api/users").as("addUser");
+      cy.intercept("POST", UserManagementEndpoints.Users()).as("addUser");
 
       saveUser();
 
@@ -246,7 +245,7 @@ describe("User Management Test Scenarios", () => {
       UserManagementPage.userEmailInput().should("have.value", "alice@site.com");
       UserManagementPage.userSubscriptionCheckbox("Newsletter").should("be.checked");
 
-      const updatedUser = {
+      const updatedUser: UserFormData = {
         name: "AliceUpdatedName",
         role: "Editor",
         age: "35",
@@ -257,7 +256,7 @@ describe("User Management Test Scenarios", () => {
 
       fillUserForm(updatedUser);
 
-      cy.intercept("PUT", "/api/users/1").as("editUser");
+      cy.intercept("PUT", UserManagementEndpoints.Users(1)).as("editUser");
 
       saveUser();
 
@@ -282,7 +281,7 @@ describe("User Management Test Scenarios", () => {
           role: updatedUser.role,
           age: updatedUser.age,
           gender: updatedUser.gender,
-          status: "Active", // если есть
+          status: "Active",
         });
 
         const responseSubscriptionsArray = res.subscriptions.split(",").map((s: string) => s.trim());
@@ -307,7 +306,7 @@ describe("User Management Test Scenarios", () => {
       UserManagementPage.deleteButtonInRow("Alice").click();
       UserManagementPage.confirmModal().should("be.visible");
 
-      cy.intercept("DELETE", "/api/users/1").as("deleteUser");
+      cy.intercept("DELETE", UserManagementEndpoints.Users(1)).as("deleteUser");
 
       UserManagementPage.confirmDeleteButton().should("be.visible").click();
       cy.wait("@deleteUser").then((interception) => {
@@ -321,7 +320,7 @@ describe("User Management Test Scenarios", () => {
     it("Should deactivate and activate user", () => {
       login();
 
-      cy.intercept("PATCH", "/api/users/1/status").as("toggleUserStatus");
+      cy.intercept("PATCH", UserManagementEndpoints.Status(1)).as("toggleUserStatus");
 
       UserManagementPage.deactivateButtonInRow("Alice").click();
 
@@ -340,7 +339,7 @@ describe("User Management Test Scenarios", () => {
     it("Should reset all users and verify API returns 3 users", () => {
       login();
 
-      cy.intercept("POST", "/api/reset").as("resetRequest");
+      cy.intercept("POST", UserManagementEndpoints.reset).as("resetRequest");
 
       UserManagementPage.resetButton().click();
       UserManagementPage.confirmResetModal().should("be.visible");

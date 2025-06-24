@@ -1,0 +1,69 @@
+import { UserManagementEndpoints } from "EndPoints/UserManagementEndpoints";
+import { UserFormData } from "Models/UserManagementModels";
+
+
+export class UserManagementBuilders {
+
+    static AdminLogin = (email: string, password: string) => {
+        return cy.request({
+            method: "POST",
+            url: UserManagementEndpoints.adminLogin,
+            body: {
+                email,
+                password
+            },
+            failOnStatusCode: false
+        });
+    }
+
+    static ResetData = () => {
+        return cy.request({
+            method: "POST",
+            url: UserManagementEndpoints.reset,
+        });
+    }
+
+    static GetUsers = (id?: number) => {
+        return cy.request({
+            method: "GET",
+            url: UserManagementEndpoints.Users(id),
+        });
+    }
+
+    //chatGPT suggested to use overrides, need to clarify with Narek
+
+    static CreateUser = (overrides: Partial<UserFormData> = {}) => {
+        const user: UserFormData = {
+            name: "TestUser",
+            email: "test@example.com",
+            role: "Viewer",
+            age: "25",
+            gender: "Male",
+            subscriptions: ["Product Updates"],
+            ...overrides,
+        };
+
+        return cy.request({
+            method: "POST",
+            url: UserManagementEndpoints.Users(),
+            body: {
+                ...user,
+                subscriptions: user.subscriptions?.join(","),
+            },
+            failOnStatusCode: false,
+        });
+    }
+
+    static UpdateUser = (id: number, overrides: Partial<UserFormData> = {}) => {
+        return cy.request({
+            method: "PUT",
+            url: UserManagementEndpoints.Users(id),
+            body: {
+                ...overrides,
+                subscriptions: overrides.subscriptions?.join(","),
+            },
+            failOnStatusCode: false,
+        });
+    };
+
+}
