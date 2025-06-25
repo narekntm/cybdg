@@ -66,4 +66,22 @@ export class UserManagementBuilders {
         });
     };
 
+    static DeleteUser = (id: number, isAdmin: boolean = true) => {
+        return cy.request({
+            method: "DELETE",
+            url: UserManagementEndpoints.Users(id),
+            body: { isAdmin },
+            failOnStatusCode: false,
+        });
+    };
+
+    static ToggleUserStatus = (id: number, status: "Active" | "Inactive") => {
+        return cy.request({
+            method: "PATCH",
+            url: UserManagementEndpoints.Status(id),
+            body: { status },
+            failOnStatusCode: false,
+        });
+    };
+
 }
