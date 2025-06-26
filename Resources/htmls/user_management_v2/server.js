@@ -78,5 +78,5 @@ app.post("/api/reset", (req, res) => {
   return res.json({ success: true, users });
 });
 
-app.use(express.static("Resources/htmls/user_management"));
+app.use(express.static("Resources/htmls/user_management_v2"));
 app.listen(3000, () => console.log("Server running on http://localhost:3000 or http://127.0.0.1:3000"));

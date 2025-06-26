@@ -14,6 +14,14 @@
   box-sizing: border-box;
 }
 
+#search-input {
+  padding: 0.4rem 0.5rem;
+  font-size: 0.9rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  width: 100%;
+}
+
 footer {
   display: flex;
   flex-direction: column; /* stack button over the paragraph */

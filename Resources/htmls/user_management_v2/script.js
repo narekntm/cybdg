@@ -39,6 +39,9 @@ const resetModal     = document.getElementById('confirm-reset-modal');
 const confirmReset   = document.getElementById('confirm-reset');
 const cancelReset    = document.getElementById('cancel-reset');
 
+let allUsers = []; // keeps the full list
+const searchInput = document.getElementById("search-input");
+
 // ─────────────────────────────────────────────────────────
 // ✅ Admin Login / Logout
 // ─────────────────────────────────────────────────────────
@@ -274,19 +277,50 @@ function handleDelete(row) {
 function loadUsers() {
   fetchUsers()
     .then((users) => {
-      tableBody.innerHTML = "";
-      users.forEach((u) => {
-        const row = document.createElement("tr");
-        row.dataset.id = u.id;
-        row.innerHTML = generateRowHTML(u.name, u.role, u.age, u.email, u.gender, u.subscriptions, u.status);
-        tableBody.appendChild(row);
-      });
+      allUsers = users; // store original list
+      renderTable(users); // use filtered renderer
     })
     .catch((err) => {
       formErrors.textContent = err.error || "Failed to load users";
       formErrors.style.display = "block";
     });
 }
+
+function renderTable(users) {
+  tableBody.innerHTML = "";
+
+  if (users.length === 0) {
+    const emptyRow = document.createElement("tr");
+    emptyRow.innerHTML = `<td colspan="8" style="text-align: center; color: #888;">No users found.</td>`;
+    tableBody.appendChild(emptyRow);
+    return;
+  }
+
+  users.forEach((u) => {
+    const row = document.createElement("tr");
+    row.dataset.id = u.id;
+    row.innerHTML = generateRowHTML(
+      u.name,
+      u.role,
+      u.age,
+      u.email,
+      u.gender,
+      u.subscriptions,
+      u.status
+    );
+    tableBody.appendChild(row);
+  });
+}
+
+
+searchInput.addEventListener("input", () => {
+  const query = searchInput.value;
+  const filtered = allUsers.filter((u) =>
+    u.name.includes(query) || u.email.includes(query) || u.role.includes(query)
+  );
+  renderTable(filtered);
+});
+
 
 loadUsers();
 
