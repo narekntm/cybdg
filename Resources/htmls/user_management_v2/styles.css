@@ -129,6 +129,12 @@ button {
   color: white;
 }
 
+button:disabled {
+  background-color: var(--primary);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Tables */
 table {
   width: 100%;

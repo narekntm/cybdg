@@ -11,7 +11,6 @@ import {
 // ─────────────────────────────────────────────────────────
 // ✅ State & References
 
-// ─────────────────────────────────────────────────────────
 let isAdmin = false;
 let editRow = null;
 let rowToDelete = null;
@@ -34,17 +33,22 @@ const confirmDeleteModal = document.getElementById("confirm-delete-modal");
 const confirmDeleteBtn = document.getElementById("confirm-delete");
 const cancelDeleteBtn = document.getElementById("cancel-delete");
 
-const resetBtn       = document.getElementById('reset-btn');
-const resetModal     = document.getElementById('confirm-reset-modal');
-const confirmReset   = document.getElementById('confirm-reset');
-const cancelReset    = document.getElementById('cancel-reset');
+const resetBtn = document.getElementById("reset-btn");
+const resetModal = document.getElementById("confirm-reset-modal");
+const confirmReset = document.getElementById("confirm-reset");
+const cancelReset = document.getElementById("cancel-reset");
 
-let allUsers = []; // keeps the full list
+const prevPageBtn = document.getElementById("prev-page");
+const nextPageBtn = document.getElementById("next-page");
+const pageInfo = document.getElementById("page-info");
 const searchInput = document.getElementById("search-input");
+
+let allUsers = [];
+let currentPage = 1;
+const pageSize = 5;
 
 // ─────────────────────────────────────────────────────────
 // ✅ Admin Login / Logout
-// ─────────────────────────────────────────────────────────
 adminLoginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("admin-email").value;
@@ -73,7 +77,6 @@ logoutBtn.addEventListener("click", () => {
 
 // ─────────────────────────────────────────────────────────
 // ✅ User Form Submission
-// ─────────────────────────────────────────────────────────
 userForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -103,10 +106,8 @@ userForm.addEventListener("submit", async (e) => {
       document.getElementById("form-title").textContent = "Add New User";
     } else {
       const created = await submitUser({ name, role, age, email, gender, subscriptions });
-      const row = document.createElement("tr");
-      row.dataset.id = created.id;
-      row.innerHTML = generateRowHTML(created.name, created.role, created.age, created.email, created.gender, created.subscriptions, created.status);
-      tableBody.appendChild(row);
+      allUsers.push(created);
+      applySearchAndRender();
     }
 
     userForm.reset();
@@ -116,8 +117,7 @@ userForm.addEventListener("submit", async (e) => {
 });
 
 // ─────────────────────────────────────────────────────────
-// ✅ Table Actions: Edit, Delete, Toggle Status
-// ─────────────────────────────────────────────────────────
+// ✅ Table Actions
 tableBody.addEventListener("click", (e) => {
   const row = e.target.closest("tr");
   if (!row) return;
@@ -147,12 +147,12 @@ function toggleStatus(row, btn) {
 
 // ─────────────────────────────────────────────────────────
 // ✅ Delete Modal Confirmation
-// ─────────────────────────────────────────────────────────
 confirmDeleteBtn.addEventListener("click", async () => {
   if (!rowToDelete) return;
   try {
     await deleteUser(rowToDelete.dataset.id, isAdmin);
-    rowToDelete.remove();
+    allUsers = allUsers.filter((u) => u.id !== +rowToDelete.dataset.id);
+    applySearchAndRender();
   } catch (err) {
     adminDeleteError.textContent = err.error || "Server error";
     adminDeleteError.style.display = "block";
@@ -168,32 +168,102 @@ cancelDeleteBtn.addEventListener("click", () => {
 
 // ─────────────────────────────────────────────────────────
 // ✅ Reset Modal Confirmation
-// ─────────────────────────────────────────────────────────
-confirmReset.addEventListener('click', async () => {
+confirmReset.addEventListener("click", async () => {
   try {
     await resetData();
-    await loadUsers();        // re-fetch & re-render the table
-    // optionally: showToast('Data has been reset');
+    await loadUsers();
   } catch (err) {
-    console.error('Reset failed:', err);
-    // optionally: showToast('Reset failed', 'error');
+    console.error("Reset failed:", err);
   } finally {
-    resetModal.style.display = 'none';
+    resetModal.style.display = "none";
   }
 });
 
-// if they cancel
-cancelReset.addEventListener('click', () => {
-  resetModal.style.display = 'none';
+cancelReset.addEventListener("click", () => {
+  resetModal.style.display = "none";
 });
-resetBtn.addEventListener('click', () => {
-  // show the modal instead of window.confirm
-  resetModal.style.display = 'flex';
+resetBtn.addEventListener("click", () => {
+  resetModal.style.display = "flex";
 });
 
 // ─────────────────────────────────────────────────────────
-// ✅ Utility Functions
+// ✅ Pagination & Filtering Logic
+searchInput.addEventListener("input", () => {
+  currentPage = 1;
+  applySearchAndRender();
+});
+
+prevPageBtn.addEventListener("click", () => {
+  currentPage--;
+  applySearchAndRender();
+});
+
+nextPageBtn.addEventListener("click", () => {
+  currentPage++;
+  applySearchAndRender();
+});
+
+function applySearchAndRender() {
+  const query = searchInput.value;
+  const filtered = allUsers.filter((u) =>
+    u.name.includes(query) || u.email.includes(query) || u.role.includes(query)
+  );
+
+  const totalPages = Math.ceil(filtered.length / pageSize);
+  if (currentPage > totalPages) {
+    currentPage = totalPages > 0 ? totalPages : 1;
+  }
+
+  renderTable(filtered);
+}
+
+function renderTable(users) {
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedUsers = users.slice(startIndex, startIndex + pageSize);
+  tableBody.innerHTML = "";
+
+  updatePaginationInfo(users.length);
+
+  if (paginatedUsers.length === 0) {
+    const emptyRow = document.createElement("tr");
+    emptyRow.innerHTML = `<td colspan="8" style="text-align: center; color: #888;">No users found.</td>`;
+    tableBody.appendChild(emptyRow);
+    return;
+  }
+
+  paginatedUsers.forEach((u) => {
+    const row = document.createElement("tr");
+    row.dataset.id = u.id;
+    row.innerHTML = generateRowHTML(u.name, u.role, u.age, u.email, u.gender, u.subscriptions, u.status);
+    tableBody.appendChild(row);
+  });
+}
+
+function updatePaginationInfo(totalUsers) {
+  const totalPages = Math.ceil(totalUsers / pageSize);
+  const hasUsers = totalUsers > 0;
+
+  pageInfo.textContent = hasUsers ? `Page ${currentPage} of ${totalPages}` : "No results";
+  prevPageBtn.disabled = !hasUsers || currentPage <= 1;
+  nextPageBtn.disabled = !hasUsers || currentPage >= totalPages;
+}
+
 // ─────────────────────────────────────────────────────────
+// ✅ Utilities
+
+function loadUsers() {
+  fetchUsers()
+    .then((users) => {
+      allUsers = users;
+      currentPage = 1;
+      applySearchAndRender();
+    })
+    .catch((err) => {
+      formErrors.textContent = err.error || "Failed to load users";
+      formErrors.style.display = "block";
+    });
+}
+
 function generateRowHTML(name, role, age, email, gender, subscriptions, status) {
   return `<td>${name}</td><td>${role}</td><td>${age}</td><td>${email}</td><td>${gender}</td><td>${subscriptions}</td><td>${status}</td>
   <td>
@@ -218,8 +288,8 @@ function validateForm(name, role, age, email, gender) {
     ageInput.classList.add("error-input");
     errors.push("Age must be between 1 and 99.");
   }
-  const emailRegex = new RegExp("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
-  
+
+  const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
   if (!email || !emailRegex.test(email)) {
     emailInput.classList.add("error-input");
     errors.push("Valid email is required.");
@@ -261,66 +331,5 @@ function populateFormForEdit(row) {
   });
 }
 
-function handleDelete(row) {
-  if (!isAdmin && row.children[1].textContent === "Admin") {
-    adminDeleteError.textContent = "Admin login required to delete Admin-level users.";
-    adminDeleteError.style.display = "block";
-    return;
-  }
-  rowToDelete = row;
-  confirmDeleteModal.style.display = "flex";
-}
-
-// ─────────────────────────────────────────────────────────
-// ✅ Load Users from API
-// ─────────────────────────────────────────────────────────
-function loadUsers() {
-  fetchUsers()
-    .then((users) => {
-      allUsers = users; // store original list
-      renderTable(users); // use filtered renderer
-    })
-    .catch((err) => {
-      formErrors.textContent = err.error || "Failed to load users";
-      formErrors.style.display = "block";
-    });
-}
-
-function renderTable(users) {
-  tableBody.innerHTML = "";
-
-  if (users.length === 0) {
-    const emptyRow = document.createElement("tr");
-    emptyRow.innerHTML = `<td colspan="8" style="text-align: center; color: #888;">No users found.</td>`;
-    tableBody.appendChild(emptyRow);
-    return;
-  }
-
-  users.forEach((u) => {
-    const row = document.createElement("tr");
-    row.dataset.id = u.id;
-    row.innerHTML = generateRowHTML(
-      u.name,
-      u.role,
-      u.age,
-      u.email,
-      u.gender,
-      u.subscriptions,
-      u.status
-    );
-    tableBody.appendChild(row);
-  });
-}
-
-
-searchInput.addEventListener("input", () => {
-  const query = searchInput.value;
-  const filtered = allUsers.filter((u) =>
-    u.name.includes(query) || u.email.includes(query) || u.role.includes(query)
-  );
-  renderTable(filtered);
-});
-
-
+// Initial Load
 loadUsers();
-
