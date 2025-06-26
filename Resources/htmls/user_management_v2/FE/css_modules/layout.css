@@ -84,4 +84,13 @@ header h1 {
   gap: 0.5rem;
 }
 
-
+.about-section {
+  background-color: var(--bg-section);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}

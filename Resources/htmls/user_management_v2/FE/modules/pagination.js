@@ -75,7 +75,7 @@ function updatePaginationInfo(totalUsers) {
 }
 
 function generateRowHTML(u) {
-  return `<td>${u.name}</td><td>${u.role}</td><td>${u.age}</td><td>${u.email}</td><td>${u.gender}</td><td>${u.subscriptions}</td><td>${u.status}</td>
+  return `<td>${u.name}</td><td>${u.role}</td><td>${u.age}</td><td>${u.email}</td><td>${u.gender}</td><td>${u.subscriptions || "None"}</td><td>${u.status}</td>
 <td>
   <div class="action-buttons">
     <button class="btn-secondary edit-btn">Edit</button>

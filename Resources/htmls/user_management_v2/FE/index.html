@@ -22,6 +22,8 @@
 <header class="topbar">
     <h1>User Management – Cypress Sandbox</h1>
     <div class="topbar-actions">
+        <a href="./about.html" >
+        <button class="btn-secondary">About Site</button></a>
         <div class="admin-status-group">
             <span id="admin-status-text">🔒 Not Logged In</span>
             <button class="btn-primary" id="open-login-modal">Login</button>
@@ -36,7 +38,7 @@
         <div class="modal" id="user-form-modal">
             <div class="modal-content">
                 <h2 id="form-title">Add New User</h2>
-                <form class="form-grid" id="user-form">
+                <form class="form-grid" id="user-form" novalidate>
                     <div>
                         <label for="name">Full Name</label>
                         <input id="name" name="name" type="text"/>
@@ -137,7 +139,8 @@
     <div class="modal" id="admin-login-modal">
         <div class="modal-content">
             <h2>Admin Login</h2>
-            <form id="admin-login-form-modal">
+            <h2>Admin Login</h2>
+            <form id="admin-login-form-modal" novalidate>
                 <div>
                     <label for="admin-email">Email</label>
                     <input id="admin-email" required type="email"/>
