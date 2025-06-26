@@ -69,7 +69,7 @@ function updatePaginationInfo(totalUsers) {
   const prevPageBtn = document.getElementById("prev-page");
   const nextPageBtn = document.getElementById("next-page");
 
-  pageInfo.textContent = hasUsers ? `Page ${state.currentPage} of ${totalPages}` : "No results";
+  pageInfo.textContent = hasUsers ? `Page ${state.currentPage} of ${totalPages}: (${totalUsers} Users)` : "No results";
   prevPageBtn.disabled = !hasUsers || state.currentPage <= 1;
   nextPageBtn.disabled = !hasUsers || state.currentPage >= totalPages;
 }
