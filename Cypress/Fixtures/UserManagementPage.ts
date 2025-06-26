@@ -1,5 +1,4 @@
-import { Columns } from "Cypress/Fixtures/Models/UserManagementModels";
-import {UserRole} from "Cypress/Fixtures/Models/UserManagementModels"
+import { Columns, UserRole} from "Cypress/Fixtures/Models/UserManagementModels";
 
 export class UserManagementPage {
     //admin section
@@ -18,8 +17,8 @@ export class UserManagementPage {
     //add New User section
     static formNewUserTitle = () => cy.get('section h2#form-title');
 
-    static firstNameLbl = () => cy.get('label[for="name"]');
-    static firstNameInput = () => cy.get('input#name');
+    static fullNameLbl = () => cy.get('label[for="name"]');
+    static fullNameInput = () => cy.get('input#name');
 
     static roleLbl = () => cy.get('label[for="role"]');
     static roleSelect = () => cy.get('select#role');
@@ -55,15 +54,18 @@ export class UserManagementPage {
     static userTableRowDeleteButton = (row: number) => cy.get('table#user-table tbody tr').eq(row).find('td').find("button.delete-btn");
     static userTableRowStatusButton = (row: number) => cy.get('table#user-table tbody tr').eq(row).find('td').find("button.status-btn");
 
-    static userTableRowNotAdminDeleteButton = () => UserManagementPage.userTableRows().not(`:contains("${UserRole.Admin}")`).first().find('td').find("button.delete-btn");
     static userTableRowAdminDeleteButton = () => UserManagementPage.userTableRows().contains(UserRole.Admin).eq(0).parent().find('td').find("button.delete-btn");    
 
     static userTableColumnCount = () => cy.get('table#user-table tr').first().find('th');
     static userTableHeader = () => cy.get('table#user-table thead tr').first().find('th');
     static userTableHeaderTd = ($el: JQuery<HTMLElement>) => cy.wrap($el);    
     
-    static confirmModal = () => cy.get('#confirm-modal');
+    static confirmModal = () => cy.get('#confirm-delete-modal');
     static deleteModalTitle = () => cy.get('#confirm-delete-modal div.modal-content p');
     static deleteModalCancelBtn = () => cy.get('#cancel-delete');
     static deleteModalConfirmBtn = () => cy.get('#confirm-delete');
+
+    static resetBtn = () => cy.get('#reset-btn');
+    static resetModalConfirmBtn = () => cy.get('#confirm-reset');
+    static resetModalCancelBtn = () => cy.get('#cancel-reset');
 }
