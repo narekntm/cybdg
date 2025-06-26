@@ -1,0 +1,16 @@
+section {
+  background-color: var(--bg-section);
+  padding: 1rem 1.2rem;
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow);
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+header h1 {
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto 1rem;
+}

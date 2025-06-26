@@ -22,9 +22,13 @@ export function setupPagination() {
 
 export function applySearchAndRender() {
   const query = document.getElementById("search-input").value;
-  const filtered = state.allUsers.filter((u) =>
-    u.name.includes(query) || u.email.includes(query) || u.role.includes(query)
-  );
+  const filtered = query
+    ? state.allUsers.filter((u) =>
+      u.name.includes(query) ||
+      u.email.includes(query) ||
+      u.role.includes(query)
+    )
+    : state.allUsers.slice(); // ← return an original list if a query is empty
 
   const totalPages = Math.ceil(filtered.length / state.pageSize);
   if (state.currentPage > totalPages) {
@@ -72,9 +76,12 @@ function updatePaginationInfo(totalUsers) {
 
 function generateRowHTML(u) {
   return `<td>${u.name}</td><td>${u.role}</td><td>${u.age}</td><td>${u.email}</td><td>${u.gender}</td><td>${u.subscriptions}</td><td>${u.status}</td>
-  <td>
+<td>
+  <div class="action-buttons">
     <button class="btn-secondary edit-btn">Edit</button>
     <button class="btn-danger delete-btn">Delete</button>
     <button class="btn-primary status-btn">${u.status === "Active" ? "Deactivate" : "Activate"}</button>
-  </td>`;
+  </div>
+</td>`;
+
 }
