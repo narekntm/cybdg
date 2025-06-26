@@ -26,3 +26,12 @@ h2 {
   margin-bottom: 0.6rem;
   color: var(--primary);
 }
+
+.error-text {
+  color: var(--danger);
+  font-size: 0.85rem;
+}
+
+.full-width {
+  width: 100%;
+}
