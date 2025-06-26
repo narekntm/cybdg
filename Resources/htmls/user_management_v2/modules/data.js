@@ -15,3 +15,7 @@ export function loadUsers() {
       formErrors.style.display = "block";
     });
 }
+
+export function setAdminState(value) {
+  state.isAdmin = value;
+}

@@ -3,61 +3,70 @@ import { applySearchAndRender } from './pagination.js'
 import { state } from './state.js'
 import { clearErrors, showErrors, validateForm } from './utils.js'
 
+const openBtn = document.getElementById('open-user-modal')
+const closeBtn = document.getElementById('close-user-modal')
+const userModal = document.getElementById('user-form-modal')
+const form = document.getElementById('user-form')
+
 export function setupUserForm () {
-  const userForm = document.getElementById('user-form')
-  const nameInput = document.getElementById('name')
-  const roleInput = document.getElementById('role')
-  const ageInput = document.getElementById('age')
-  const emailInput = document.getElementById('email')
+  document.addEventListener('DOMContentLoaded', () => {
 
-  userForm.addEventListener('submit', async (e) => {
-    e.preventDefault()
+    openBtn?.addEventListener('click', () => {
+      state.editRow = null
+      document.getElementById('form-title').textContent = 'Add New User'
+      form.reset()
+      clearErrors()
+      userModal.style.display = 'flex'
+    })
 
-    const name = nameInput.value.trim()
-    const role = roleInput.value
-    const age = ageInput.value.trim()
-    const email = emailInput.value.trim()
-    const gender = document.querySelector('input[name="gender"]:checked')?.value
-    const subscriptions = Array.from(document.querySelectorAll('input[name="subscribe"]:checked'))
-      .map((cb) => cb.value)
-      .join(', ') || 'None'
+    closeBtn?.addEventListener("click", () => {
+      form.reset();
+      clearErrors();
+      state.editRow = null;
+      document.getElementById("form-title").textContent = "Add New User";
+      userModal.style.display = "none";
+    });
 
-    clearErrors()
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault()
 
-    const errors = validateForm(name, role, age, email, gender)
-    if (errors.length > 0) {
-      showErrors(errors)
-      return
-    }
+      const name = form.name.value.trim()
+      const role = form.role.value
+      const age = form.age.value.trim()
+      const email = form.email.value.trim()
+      const gender = form.querySelector('input[name="gender"]:checked')?.value
+      const subscriptions = Array.from(form.querySelectorAll('input[name="subscribe"]:checked'))
+        .map((cb) => cb.value)
+        .join(', ') || 'None'
 
-    try {
-      if (state.editRow) {
-        const id = state.editRow.dataset.id
-        const updated = await updateUser(id, { name, role, age, email, gender, subscriptions })
-        state.editRow.innerHTML = generateRowHTML(updated)
-        state.editRow = null
-        document.getElementById('form-title').textContent = 'Add New User'
-      } else {
-        const created = await submitUser({ name, role, age, email, gender, subscriptions })
-        state.allUsers.push(created)
+      clearErrors()
+      const errors = validateForm(name, role, age, email, gender)
+      if (errors.length > 0) return showErrors(errors)
+
+      try {
+        if (state.editRow) {
+          const id = state.editRow.dataset.id;
+          const updated = await updateUser(id, { name, role, age, email, gender, subscriptions });
+
+          // 🔧 Replace the user in allUsers
+          const index = state.allUsers.findIndex((u) => u.id === +id);
+          if (index !== -1) {
+            state.allUsers[index] = updated;
+          }
+
+          state.editRow = null;
+          document.getElementById("form-title").textContent = "Add New User";
+        } else {
+          const created = await submitUser({ name, role, age, email, gender, subscriptions });
+          state.allUsers.push(created);
+        }
+        
         applySearchAndRender()
+        form.reset()
+        userModal.style.display = 'none'
+      } catch (err) {
+        showErrors([err.error || 'Server error'])
       }
-
-      userForm.reset()
-    } catch (err) {
-      showErrors([err.error || 'Server error'])
-    }
+    })
   })
-}
-
-function generateRowHTML (u) {
-  return `<td>${u.name}</td><td>${u.role}</td><td>${u.age}</td><td>${u.email}</td><td>${u.gender}</td><td>${u.subscriptions}</td><td>${u.status}</td>
-<td>
-  <div class="action-buttons">
-    <button class="btn-secondary edit-btn">Edit</button>
-    <button class="btn-danger delete-btn">Delete</button>
-    <button class="btn-primary status-btn">${u.status === "Active" ? "Deactivate" : "Activate"}</button>
-  </div>
-</td>`;
-
 }

@@ -1,5 +1,5 @@
 import { deleteUser, toggleStatus as toggleStatusApi } from "../api.js";
-import { applySearchAndRender } from "./pagination.js";
+import { applySearchAndRender } from './pagination.js'
 import { state } from "./state.js";
 
 export function setupTableActions() {
@@ -63,4 +63,7 @@ function populateFormForEdit(row) {
   document.querySelectorAll('input[name="subscribe"]').forEach((cb) => {
     cb.checked = subs.includes(cb.value);
   });
+
+  // 👇 Open modal
+  document.getElementById("user-form-modal").style.display = "flex";
 }

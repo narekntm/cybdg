@@ -4,6 +4,8 @@ import { setupTableActions } from './modules/table.js';
 import { setupModals } from './modules/modals.js';
 import { setupPagination } from './modules/pagination.js';
 import { loadUsers } from './modules/data.js';
+import "./modules/loginModal.js";
+
 import { state } from "./modules/state.js";
 
 // 🔧 Global app state
