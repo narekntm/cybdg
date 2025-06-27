@@ -8,9 +8,17 @@ export class UserManagementPage {
 
     static adminPasswordInput = () => cy.get("#admin-password");
 
-    static loginButton = () => cy.get('button[type="submit"].btn-primary full-width').contains("Login");
+    static loginButton = () => cy.get('button.btn-primary.full-width');
 
     static closeLoginModalButton = () => cy.get("#close-login-modal");
+
+    static adminStatusText = () => cy.get("#admin-status-text");
+
+    static addNewUserButton = () => cy.get("#open-user-modal");
+
+    static closeUserModalButton = () => cy.get("#close-user-modal");
+
+    static searchInput = () => cy.get("#search-input");
 
     static userNameInput = () => cy.get("#name");
 
@@ -35,6 +43,8 @@ export class UserManagementPage {
     static userRow = (username: string) => cy.contains("#user-table tr", username);
 
     static deleteButtonInRow = (username: string) => this.userRow(username).find("button.delete-btn");
+
+    static viewButtonInRow = (username: string) => this.userRow(username).find("a.btn-neutral");
 
     static confirmModal = () => cy.get("#confirm-delete-modal");
 
@@ -63,4 +73,25 @@ export class UserManagementPage {
     static confirmResetButton = () => cy.get("#confirm-reset");
 
     static cancelResetButton = () => cy.get("#cancel-reset");
+
+    static prevButton = () => cy.get("#prev-page");
+
+    static nextButton = () => cy.get("#next-page");
+
+    static backButton = () => cy.get("#back-btn");
+
+    static editButton = () => cy.get("#edit-btn");
+
+    static saveUserDataButton = () => cy.get("#save-btn");
+
+    static cancelUserDataSaveButton = () => cy.get("#cancel-btn");
+
+    static toastContainer = () => cy.get("#toast-container");
+
+    static genderSelect = () => cy.get("#gender");
+
+    static newsletterCheckbox = () => cy.get("input[value='Newsletter']");
+
+    static productCheckbox = () => cy.get("input[value='Product Updates']");
+
 }

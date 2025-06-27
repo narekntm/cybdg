@@ -6,15 +6,12 @@
   "scripts": {
     "test": "npx cypress open --config-file config/test.config.ts --e2e -b electron",
     "test:run": "npx cypress run --config-file config/test.config.ts --e2e -b electron --spec Cypress/Tests/API/DemoApi.ts",
-    
     "serve:UI": "http-server -p 8080",
     "serve:UserManagement": "node ./Resources/htmls/user_management/server.js",
     "serve:UserManagementV2": "node ./Resources/htmls/user_management_v2/BE/server.js",
-    
     "prettier": "prettier --config .prettierrc --ignore-path .prettierignore",
     "eslint": "eslint --config .eslintrc.json --ignore-path .eslintignore",
     "tsc": "tsc --project ./tsconfig.json --noEmit",
-    
     "prettier:local:windows": "npm run prettier -- --write . --end-of-line crlf",
     "prettier:local:linux": "npm run prettier -- --write .",
     "eslint:local": "npm run eslint -- --ext .ts ./ --fix",
@@ -42,7 +39,7 @@
     "globals": "^16.0.0",
     "http-server": "^14.1.1",
     "mocha": "^11.1.0",
-    "prettier": "^3.3.2",
+    "prettier": "^3.6.2",
     "typescript": "^5.4.5",
     "typescript-eslint": "^8.24.1"
   },
