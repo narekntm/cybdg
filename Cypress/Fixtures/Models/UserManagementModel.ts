@@ -18,13 +18,13 @@ export enum userTableActions {
     Activate = 'Activate',
 }
 
-export interface AddUser {
+export interface UserData {
     fullName: string,
     role: string ,
     age: string,
     email: string,
     gender: "Male" | "Female" | "Other",
-    subscriptions: []
+    subscriptions: string[]
 }
 
 export interface Login {

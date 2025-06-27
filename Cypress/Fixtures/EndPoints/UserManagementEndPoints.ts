@@ -1,12 +1,12 @@
 const root = '/api';
 
 export class UserManagementEndpoints {
-    static getUsers = () => {`${root}/users`}
-    static Users = (id?: number) => `${root}/users${id ?? `/${id}`}`;
 
-    static reset = () => `${root}/reset`;
+    static adminLogin = ():string => `${root}/login`;
 
-    static adminLogin = () => `${root}/login`;
+    static reset = ():string => `${root}/reset`;
 
-    static status = (userId: number) => `${this.Users(userId)}/status`;
+    static users = (id?: number):string => `${root}/users${id !== undefined ? `/${id}` : ""}`;
+
+    static status = (userId: number):string => `${this.users(userId)}/status`;
 }

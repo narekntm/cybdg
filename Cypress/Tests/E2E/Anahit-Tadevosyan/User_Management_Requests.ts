@@ -6,7 +6,7 @@ import {UserManagementBuilders} from "Builders/UserManagementBuilders";
 describe("User Management Test Cases", () => {
     const baseUrl = "http://127.0.0.1:3000/";
     beforeEach("visit the site", () => {
-        cy.intercept({method: "GET", url: UserManagementEndpoints.getUsers()}).as('getUsers');
+        cy.intercept({method: "GET", url: '/api/users'}).as('getUsers');
         cy.visit(baseUrl);
         cy.wait('@getUsers').then((interception) => {
             expect(interception.response.statusCode).to.eq(304)
