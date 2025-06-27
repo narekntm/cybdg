@@ -37,10 +37,11 @@ export class UserManagementBuilders{
 
         })
 }
-    static EditUser(id: number){
+    static EditUser(id: number, editedUser: UserData){
         return cy.request({
             method: "PUT",
             url: UserManagementEndpoints.users(id),
+            body: editedUser,
             failOnStatusCode:false,
         })
     }
