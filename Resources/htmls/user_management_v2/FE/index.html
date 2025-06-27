@@ -1,175 +1,170 @@
 ﻿<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8"/>
+  <head>
+    <meta charset="UTF-8" />
     <title>User Management – Cypress Sandbox</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 
     <!-- Modular CSS imports -->
-    <link href="./css_modules/variables.css" rel="stylesheet"/>
-    <link href="./css_modules/reset-global.css" rel="stylesheet"/>
-    <link href="./css_modules/typography.css" rel="stylesheet"/>
-    <link href="./css_modules/layout.css" rel="stylesheet"/>
-    <link href="./css_modules/forms.css" rel="stylesheet"/>
-    <link href="./css_modules/buttons.css" rel="stylesheet"/>
-    <link href="./css_modules/tables.css" rel="stylesheet"/>
-    <link href="./css_modules/errors.css" rel="stylesheet"/>
-    <link href="./css_modules/modals.css" rel="stylesheet"/>
-    <link href="./css_modules/responsive.css" rel="stylesheet"/>
-</head>
+    <link href="./css_modules/variables.css" rel="stylesheet" />
+    <link href="./css_modules/reset-global.css" rel="stylesheet" />
+    <link href="./css_modules/typography.css" rel="stylesheet" />
+    <link href="./css_modules/layout.css" rel="stylesheet" />
+    <link href="./css_modules/forms.css" rel="stylesheet" />
+    <link href="./css_modules/buttons.css" rel="stylesheet" />
+    <link href="./css_modules/tables.css" rel="stylesheet" />
+    <link href="./css_modules/errors.css" rel="stylesheet" />
+    <link href="./css_modules/modals.css" rel="stylesheet" />
+    <link href="./css_modules/responsive.css" rel="stylesheet" />
+  </head>
 
-<body>
-<header class="topbar">
-    <h1>User Management – Cypress Sandbox</h1>
-    <div class="topbar-actions">
-        <a href="./about.html" >
-        <button class="btn-secondary">About Site</button></a>
+  <body>
+    <header class="topbar">
+      <h1>User Management – Cypress Sandbox</h1>
+      <div class="topbar-actions">
+        <a href="./about.html"> <button class="btn-secondary">About Site</button></a>
         <div class="admin-status-group">
-            <span id="admin-status-text">🔒 Not Logged In</span>
-            <button class="btn-primary" id="open-login-modal">Login</button>
-            <button class="btn-secondary" id="logout-btn" style="display: none;">Logout</button>
+          <span id="admin-status-text">🔒 Not Logged In</span>
+          <button class="btn-primary" id="open-login-modal">Login</button>
+          <button class="btn-secondary" id="logout-btn" style="display: none">Logout</button>
         </div>
-    </div>
-</header>
+      </div>
+    </header>
 
-<div class="app-wrapper">
-    <main class="grid-layout">
+    <div class="app-wrapper">
+      <main class="grid-layout">
         <!-- Add/Edit User Modal -->
         <div class="modal" id="user-form-modal">
-            <div class="modal-content">
-                <h2 id="form-title">Add New User</h2>
-                <form class="form-grid" id="user-form" novalidate>
-                    <div>
-                        <label for="name">Full Name</label>
-                        <input id="name" name="name" type="text"/>
-                    </div>
-                    <div>
-                        <label for="role">Role</label>
-                        <select id="role" name="role">
-                            <option value="">Select</option>
-                            <option>Admin</option>
-                            <option>Viewer</option>
-                            <option>Editor</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="age">Age</label>
-                        <input id="age" name="age" type="number"/>
-                    </div>
-                    <div>
-                        <label for="email">Email</label>
-                        <input id="email" name="email" type="email"/>
-                    </div>
-                    <div class="field-group full-width">
-                        <label>Gender</label>
-                        <div class="inline-options">
-                            <label><input name="gender" type="radio" value="Male"/> Male</label>
-                            <label><input name="gender" type="radio" value="Female"/> Female</label>
-                            <label><input name="gender" type="radio" value="Other"/> Other</label>
-                        </div>
-                    </div>
-                    <div class="field-group full-width">
-                        <label>Subscribe to</label>
-                        <div class="inline-options">
-                            <label><input name="subscribe" type="checkbox" value="Newsletter"/> Newsletter</label>
-                            <label><input name="subscribe" type="checkbox" value="Product Updates"/> Product
-                                Updates</label>
-                        </div>
-                    </div>
-                    <div class="form-group-inline full-width">
-                        <button class="btn-primary" type="submit">Save</button>
-                        <button class="btn-secondary" id="close-user-modal" type="button">Cancel</button>
-                    </div>
-                </form>
-                <div class="error-text" id="form-errors" style="display: none;"></div>
-            </div>
+          <div class="modal-content">
+            <h2 id="form-title">Add New User</h2>
+            <form class="form-grid" id="user-form" novalidate>
+              <div>
+                <label for="name">Full Name</label>
+                <input id="name" name="name" type="text" />
+              </div>
+              <div>
+                <label for="role">Role</label>
+                <select id="role" name="role">
+                  <option value="">Select</option>
+                  <option>Admin</option>
+                  <option>Viewer</option>
+                  <option>Editor</option>
+                </select>
+              </div>
+              <div>
+                <label for="age">Age</label>
+                <input id="age" name="age" type="number" />
+              </div>
+              <div>
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" />
+              </div>
+              <div class="field-group full-width">
+                <label>Gender</label>
+                <div class="inline-options">
+                  <label><input name="gender" type="radio" value="Male" /> Male</label>
+                  <label><input name="gender" type="radio" value="Female" /> Female</label>
+                  <label><input name="gender" type="radio" value="Other" /> Other</label>
+                </div>
+              </div>
+              <div class="field-group full-width">
+                <label>Subscribe to</label>
+                <div class="inline-options">
+                  <label><input name="subscribe" type="checkbox" value="Newsletter" /> Newsletter</label>
+                  <label><input name="subscribe" type="checkbox" value="Product Updates" /> Product Updates</label>
+                </div>
+              </div>
+              <div class="form-group-inline full-width">
+                <button class="btn-primary" type="submit">Save</button>
+                <button class="btn-secondary" id="close-user-modal" type="button">Cancel</button>
+              </div>
+            </form>
+            <div class="error-text" id="form-errors" style="display: none"></div>
+          </div>
         </div>
-
 
         <!-- User Table Card -->
         <section class="card">
-            <h2>User Table</h2>
-            <div class="table-toolbar">
-                <input class="search-input" id="search-input" placeholder="Search by Name, Email or Role" type="text"/>
-                <button class="btn-primary" id="open-user-modal">+ Add New User</button>
-            </div>
+          <h2>User Table</h2>
+          <div class="table-toolbar">
+            <input class="search-input" id="search-input" placeholder="Search by Name, Email or Role" type="text" />
+            <button class="btn-primary" id="open-user-modal">+ Add New User</button>
+          </div>
+          <div id="admin-delete-error" style="color: red; display: none; margin-bottom: 0.5rem"></div>
 
-            <table id="user-table">
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Role</th>
-                    <th>Age</th>
-                    <th>Email</th>
-                    <th>Gender</th>
-                    <th>Subscription</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+          <table id="user-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Age</th>
+                <th>Email</th>
+                <th>Gender</th>
+                <th>Subscription</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
 
-            <div class="pagination-bar" id="pagination-controls">
-                <button class="btn-primary" id="prev-page">Previous</button>
-                <span id="page-info">Page 1 of 1</span>
-                <button class="btn-primary" id="next-page">Next</button>
-            </div>
+          <div class="pagination-bar" id="pagination-controls">
+            <button class="btn-primary" id="prev-page">Previous</button>
+            <span id="page-info">Page 1 of 1</span>
+            <button class="btn-primary" id="next-page">Next</button>
+          </div>
         </section>
-    </main>
+      </main>
 
-    <!-- Modals -->
-    <div class="modal" id="confirm-delete-modal">
+      <!-- Modals -->
+      <div class="modal" id="confirm-delete-modal">
         <div class="modal-content">
-            <p>Are you sure you want to delete this user?</p>
-            <button class="btn-danger" id="confirm-delete">Yes</button>
-            <button class="btn-secondary" id="cancel-delete">Cancel</button>
+          <p>Are you sure you want to delete this user?</p>
+          <button class="btn-danger" id="confirm-delete">Yes</button>
+          <button class="btn-secondary" id="cancel-delete">Cancel</button>
         </div>
-    </div>
+      </div>
 
-    <div class="modal" id="confirm-reset-modal">
+      <div class="modal" id="confirm-reset-modal">
         <div class="modal-content">
-            <p>Reset all data back to original three users?</p>
-            <button class="btn-danger" id="confirm-reset">Yes, Reset</button>
-            <button class="btn-secondary" id="cancel-reset">Cancel</button>
+          <p>Reset all data back to original three users?</p>
+          <button class="btn-danger" id="confirm-reset">Yes, Reset</button>
+          <button class="btn-secondary" id="cancel-reset">Cancel</button>
         </div>
-    </div>
+      </div>
 
-    <!-- 🔐 Admin Login Modal -->
-    <div class="modal" id="admin-login-modal">
+      <!-- 🔐 Admin Login Modal -->
+      <div class="modal" id="admin-login-modal">
         <div class="modal-content">
-            <h2>Admin Login</h2>
-            <h2>Admin Login</h2>
-            <form id="admin-login-form-modal" novalidate>
-                <div>
-                    <label for="admin-email">Email</label>
-                    <input id="admin-email" required type="email"/>
-                </div>
-                <div>
-                    <label for="admin-password">Password</label>
-                    <input id="admin-password" required type="password"/>
-                </div>
-                <div>
-                    <button class="btn-primary full-width" type="submit">Login</button>
-                </div>
-                <div id="login-status" style="display: none; color: red; font-size: 0.85rem; margin-top: 0.5rem">
-                    Invalid credentials.
-                </div>
-            </form>
-            <button class="btn-secondary full-width" id="close-login-modal" style="margin-top: 1rem">Cancel</button>
+          <h2>Admin Login</h2>
+          <form id="admin-login-form-modal" novalidate>
+            <div>
+              <label for="admin-email">Email</label>
+              <input id="admin-email" required type="email" />
+            </div>
+            <div>
+              <label for="admin-password">Password</label>
+              <input id="admin-password" required type="password" />
+            </div>
+            <div>
+              <button class="btn-primary full-width" type="submit">Login</button>
+            </div>
+            <div id="login-status" style="display: none; color: red; font-size: 0.85rem; margin-top: 0.5rem">Invalid credentials.</div>
+          </form>
+          <button class="btn-secondary full-width" id="close-login-modal" style="margin-top: 1rem">Cancel</button>
         </div>
-    </div>
+      </div>
 
-    <!-- Footer -->
-    <footer>
+      <!-- Footer -->
+      <footer>
         <button class="btn-secondary" id="reset-btn">Reset Data</button>
         <p>&copy; 2025 Cypress Sandbox</p>
-    </footer>
-</div>
+      </footer>
+    </div>
 
-<div class="toast-container" id="toast-container"></div>
+    <div class="toast-container" id="toast-container"></div>
 
-<!-- Main script -->
-<script src="./main.js" type="module"></script>
-</body>
+    <!-- Main script -->
+    <script src="./main.js" type="module"></script>
+  </body>
 </html>
