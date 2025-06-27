@@ -1,0 +1,11 @@
+#error-input,
+.error-input {
+  border: 1px solid red;
+  background-color: #ffe5e5;
+}
+
+#form-errors,
+#admin-delete-error {
+  font-size: 0.85rem;
+  line-height: 1.4;
+}

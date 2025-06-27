@@ -1,0 +1,37 @@
+footer {
+  display: flex;
+  flex-direction: column; /* stack button over the paragraph */
+  align-items: center; /* center items horizontally */
+  gap: 0.5rem; /* space between button and text */
+  margin-top: 2rem; /* optional spacing above the footer */
+}
+
+body {
+  font-family: "Segoe UI", sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-color);
+  margin: 0;
+  padding: 1rem 2vw;
+  line-height: 1.5;
+}
+
+h1 {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+  color: var(--primary);
+}
+
+h2 {
+  font-size: 1.2rem;
+  margin-bottom: 0.6rem;
+  color: var(--primary);
+}
+
+.error-text {
+  color: var(--danger);
+  font-size: 0.85rem;
+}
+
+.full-width {
+  width: 100%;
+}
