@@ -48,7 +48,7 @@ describe('User Management API Testing', () => {
             UserManagementBuilders.AddUser(invalidEmailUser).then((response) => {
                 expect(response.status).to.eq(400)
                 expect(response.body).to.include(
-                    { error: "Missing fields" })
+                    { error: "Missing fields"} )
             })
         });
         it('Add a user with empty fields', () => {

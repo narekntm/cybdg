@@ -30,7 +30,8 @@
       cy.log("This test is skipped");
     });
 
-    it("Third test in Level 1 (only)", () => {
+    //eslint-disable-next-line no-only-tests/no-only-tests
+    it.only("Third test in Level 1 (only)", () => {
       cy.log("third test in Level 1 (only)");
     });
   });

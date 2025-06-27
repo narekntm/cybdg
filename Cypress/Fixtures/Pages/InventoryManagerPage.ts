@@ -19,7 +19,7 @@
   static getLastRow = () => cy.get("#inventory-table tbody tr").last();
   static getRowByProductName = (name: string) => cy.get("#inventory-table tbody tr").contains("td", name).parent("tr");
 
-  static getCell = (index: number, cell:number) =>cy.get("#inventory-table tbody tr").eq(index).find("td").eq(cell);
+  static getCell = (index: number) => cy.get("td").eq(index);
 
   // Select options
   static getCategoryOptions = () => cy.get("#product-category option");
