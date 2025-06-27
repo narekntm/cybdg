@@ -1,11 +1,13 @@
-﻿export class UserManagementPage {
-  static adminEmailInput = () => cy.get("#admin-email");
-
-  static adminPasswordInput = () => cy.get("#admin-password");
-
-  static adminLoginButton = () => cy.get('#admin-login-form button[type="submit"]');
-
-  static nameInput = () => {
-    return cy.get("#name");
-  };
-}
+﻿
+describe('Admin negative cases', () => {
+    it("Should check admin login with invalid credentials", () => {
+        UserManagementBuilders.AdminLogin("test@mail.ru", "test1234").then(xhr => {
+          expect(xhr.status).to.eq(401)
+        })
+      })
+    it("Should check admin login with empty fields", () => {
+        UserManagementBuilders.AdminLogin("  ", "  ").then(xhr => {
+          expect(xhr.status).to.eq(401)
+        })
+    })
+  }
