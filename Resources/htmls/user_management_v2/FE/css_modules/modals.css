@@ -71,7 +71,9 @@
   border-radius: var(--radius);
   color: #fff;
   box-shadow: var(--shadow);
-  animation: fadein 0.3s ease, fadeout 0.3s ease 2.7s;
+  animation:
+    fadein 0.3s ease,
+    fadeout 0.3s ease 2.7s;
   font-size: 0.9rem;
   min-width: 220px;
 }
@@ -85,11 +87,23 @@
 }
 
 @keyframes fadein {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeout {
-  from { opacity: 1; transform: translateY(0); }
-  to   { opacity: 0; transform: translateY(10px); }
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px);
+  }
 }
