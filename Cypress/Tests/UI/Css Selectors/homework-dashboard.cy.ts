@@ -1,7 +1,8 @@
-describe('Admin Dashboard', () => {
+describe('Add New User', () => {
   beforeEach(() =>{
-    cy.visit (file:///Users/vahagnyeghoyan/Desktop/Project/cybdg/Resources/htmls/CSS/homework.html
-        )
+    cy.visit ('http://127.0.0.1:8080/Resources/htmls/CSS/user_management.html')
+  })
+  
   it('should be filled and submited correctly', () => {
     cy.get('input[name='Username']').type('testuser');
     cy.get('input[name='Email']').type('testuser@example.com');
