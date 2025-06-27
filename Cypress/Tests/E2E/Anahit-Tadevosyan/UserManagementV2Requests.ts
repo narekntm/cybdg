@@ -97,7 +97,7 @@ describe("User Management Test Cases", () => {
                 expect(interception.response.statusCode).to.eq(200)
                 expect(interception.response.body).to.deep.eq({"success":true})
             })
-            UserManagementPage.logoutButton().should("exist");
+            UserManagementPage.logoutButton().click();
 
         });
 
@@ -108,8 +108,9 @@ describe("User Management Test Cases", () => {
             cy.wait('@login').then((interception) => {
                 expect(interception.request.body).not.to.deep.eq({"email":"admin@example.com","password":"admin123"})
                 expect(interception.response.statusCode).to.eq(401)
-                expect(interception.response.body).to.deep.eq({"success":false})
+                expect(interception.response.body).to.deep.eq({"errors":["Invalid credentials."]})
             })
+            UserManagementPage.loginPopUpClose().click();
         });
 
         it("Admin delete become active after login", () => {
