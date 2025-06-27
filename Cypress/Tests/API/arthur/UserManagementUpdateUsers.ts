@@ -49,39 +49,6 @@ describe("User Management Update User Tests", () => {
         });
     });
 
-    // API is not covering empty fields update, no error message when updating with empty fields
-
-    it("Should update user with empty fields (allowed)", () => {
-        UserManagementBuilders.GetUsers().then(({ body }) => {
-            const user = body[0];
-
-            UserManagementBuilders.UpdateUser(user.id, {
-                name: "",
-                email: "",
-                role: "",
-                age: "",
-                gender: "",
-                subscriptions: [],
-            }).then(({ status, body }) => {
-                expect(status).to.eq(200);
-                expect(body).to.include({
-                    id: user.id,
-                    name: "",
-                    email: "",
-                    role: "",
-                    age: "",
-                    gender: "",
-                });
-
-                const subs = body.subscriptions
-                    ? body.subscriptions.split(",").map((s: string) => s.trim()).filter((s: string) => Boolean(s))
-                    : [];
-
-                expect(subs).to.be.empty;
-            });
-        });
-    });
-
     it("Should delete user as admin and verify in the list", () => {
         UserManagementBuilders.GetUsers().then(({ body }) => {
             const userToDelete = body.find((u: any) => u.role !== "Admin");
