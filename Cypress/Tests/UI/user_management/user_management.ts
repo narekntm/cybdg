@@ -1,4 +1,4 @@
-﻿import { UserManagementPage } from "Pages/UserManagementPage";
+﻿import { UserManagementPage } from "Cypress/Fixtures/Pages/UserManagementPage";
 
 describe("User Management – Cypress Sandbox", () => {
   const baseUrl = "/";

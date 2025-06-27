@@ -1,4 +1,4 @@
-﻿import { InventoryManagerPage } from "Pages/InventoryManagerPage";
+﻿import { InventoryManagerPage } from "Cypress/Fixtures/Pages/InventoryManagerPage";
 
 enum ProductCategory {
   Electronics = "Electronics",

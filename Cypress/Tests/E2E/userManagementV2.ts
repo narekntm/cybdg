@@ -1,9 +1,8 @@
 //import { should } from "chai"
-import { UserFormInput } from "Cypress/fixtures/Models/UserManagementModels";
-import { Gender } from "Cypress/fixtures/Models/UserManagementModels";
-import { SubscribeTo } from "Cypress/fixtures/Models/UserManagementModels";
-import { UserManagementPage } from "Cypress/fixtures/Pages/UserManagementPage";
-import { Role } from "Models/UserManagementModels";
+import { UserManagementBuilders } from "Builders/UserManagementBuilders";
+import { Gender , Role , SubscribeTo , UserFormInput } from "Cypress/Fixtures/Models/UserManagementModels";
+import { UserManagementPage } from "Cypress/Fixtures/Pages/UserManagementPage";
+
 
 function getUserFormInput(
   name: string,
@@ -20,6 +19,11 @@ const viewerUser: UserFormInput = getUserFormInput("Viewer", Role.viewer, 50, "v
 describe("User Management", () => {
   beforeEach(() => {
     cy.visit("http://127.0.0.1:3000/");
+    cy.intercept({ method: "POST", url: "/api/login" }).as("adminLogin");
+    cy.intercept({ method: "POST", url: "/api/users" }).as("userCreate");
+    cy.intercept({ method: "PATCH", url: "/api/users/1/status" }).as("userStatusUpdate");
+    cy.intercept({ method: "PATCH", url: "/api/users/2/status" }).as("userStatusUpdate");
+    cy.intercept({ method: "PUT", url: "/api/users/1" }).as("userUpdate");
   });
   function adminLogin(email: any, password: any) {
     UserManagementPage.adminEmailInput().type(email);
@@ -49,7 +53,6 @@ describe("User Management", () => {
   }
   describe("Login As Admin", () => {
     it("1. Admin login with valid email and password", () => {
-      cy.intercept({ method: "POST", url: "/api/login" }).as("adminLogin");
       adminLogin("admin@example.com", "admin123");
       cy.wait("@adminLogin").then((xhr) => {
         expect(xhr.response.statusCode).to.eq(200);
@@ -58,7 +61,6 @@ describe("User Management", () => {
       UserManagementPage.adminLogoutBtn().should("be.visible");
     });
     it("2. Admin login with valid email and invalid password", () => {
-      cy.intercept({ method: "POST", url: "/api/login" }).as("adminLogin");
       adminLogin("admin@example.com", "wrongPassword");
       cy.wait("@adminLogin").then((xhr) => {
         expect(xhr.response.statusCode).to.eq(401);
@@ -67,7 +69,6 @@ describe("User Management", () => {
       UserManagementPage.adminLoginStatusMsg().should("have.text", "Invalid credentials").should("be.visible");
     });
     it("3. Admin login with invalid email and valid password", () => {
-      cy.intercept({ method: "POST", url: "/api/login" }).as("adminLogin");
       adminLogin("wrongEmail", "admin123");
       cy.wait("@adminLogin").then((xhr) => {
         expect(xhr.response.statusCode).to.eq(401);
@@ -76,7 +77,6 @@ describe("User Management", () => {
       UserManagementPage.adminLoginStatusMsg().should("have.text", "Invalid credentials").should("be.visible");
     });
     it("4. Admin login with empty credentials", () => {
-      cy.intercept({ method: "POST", url: "/api/login" }).as("adminLogin");
       adminLogin(" ", " ");
       cy.wait("@adminLogin").then((xhr) => {
         expect(xhr.response.statusCode).to.eq(401);
@@ -85,7 +85,6 @@ describe("User Management", () => {
       UserManagementPage.adminLoginStatusMsg().should("have.text", "Invalid credentials").should("be.visible");
     });
     it("5. Admin login with empty email and valid password", () => {
-      cy.intercept({ method: "POST", url: "/api/login" }).as("adminLogin");
       adminLogin(" ", "admin123");
       cy.wait("@adminLogin").then((xhr) => {
         expect(xhr.response.statusCode).to.eq(401);
@@ -94,7 +93,6 @@ describe("User Management", () => {
       UserManagementPage.adminLoginStatusMsg().should("have.text", "Invalid credentials").should("be.visible");
     });
     it("6. Admin login with valid email and empty password", () => {
-      cy.intercept({ method: "POST", url: "/api/login" }).as("adminLogin");
       adminLogin("admin@example.com", " ");
       cy.wait("@adminLogin").then((xhr) => {
         expect(xhr.response.statusCode).to.eq(401);
@@ -115,7 +113,6 @@ describe("User Management", () => {
   });
   describe("Add New User", () => {
     it("1. New user creation in a viewer mode", () => {
-      cy.intercept({ method: "POST", url: "/api/users" }).as("userCreate");
       userCreation();
       cy.wait("@userCreate").then((xhr) => {
         expect(xhr.response.statusCode).to.eq(200);
@@ -124,8 +121,6 @@ describe("User Management", () => {
       UserManagementPage.userTableLastUserName().should("have.text", "Ani");
     });
     it("2. New user creation (logged in as admin)", () => {
-      cy.intercept({ method: "POST", url: "/api/users" }).as("userCreate");
-      cy.intercept({ method: "POST", url: "/api/login" }).as("adminLogin");
       adminLogin("admin@example.com", "admin123");
       userCreation();
       cy.wait("@adminLogin").then((xhr) => {
@@ -217,7 +212,6 @@ describe("User Management", () => {
       UserManagementPage.userTableLastUserName().should("have.text", viewerUser.name);
     });
     it("2. New user creation (logged in as admin)", () => {
-      cy.intercept({ method: "POST", url: "/api/login" }).as("adminLogin");
       adminLogin("admin@example.com", "admin123");
       userCreationDynamic(adminUser);
       cy.wait("@adminLogin").then((xhr) => {
@@ -235,7 +229,6 @@ describe("User Management", () => {
       UserManagementPage.userDeleteValidationError().should("have.text", "Admin login required to delete Admin-level users.");
     });
     it("2. Trying to delete a user being an admin", () => {
-      cy.intercept({ method: "POST", url: "/api/login" }).as("adminLogin");
       cy.intercept({ method: "DELETE", url: "/api/users/1" }).as("userDelete");
       adminLogin("admin@example.com", "admin123");
       cy.wait("@adminLogin").then((xhr) => {
@@ -254,7 +247,6 @@ describe("User Management", () => {
       UserManagementPage.userTableData().should("have.length", 2);
     });
     it('3. Make sure that clicking on the "Cancel" button does not delete the user', () => {
-      cy.intercept({ method: "POST", url: "/api/login" }).as("adminLogin");
       adminLogin("admin@example.com", "admin123");
       cy.wait("@adminLogin").then((xhr) => {
         expect(xhr.response.statusCode).to.eq(200);
@@ -268,7 +260,6 @@ describe("User Management", () => {
       UserManagementPage.userTableData().should("have.length", 3);
     });
     it("4. Deactivate a user(logged out user)", () => {
-      cy.intercept({ method: "PATCH", url: "/api/users/1/status" }).as("userStatusUpdate");
       UserManagementPage.adminLogoutBtn().should("not.be.visible");
       UserManagementPage.userTableFirstUserActiveRow().should("have.text", "Active");
       UserManagementPage.userTableFirstUserStatusBtn().should("have.text", "Deactivate").click();
@@ -280,8 +271,6 @@ describe("User Management", () => {
       UserManagementPage.userTableFirstUserActiveRow().should("have.text", "Inactive");
     });
     it("5. Deactivate a user(logged in as Admin)", () => {
-      cy.intercept({ method: "POST", url: "/api/login" }).as("adminLogin");
-      cy.intercept({ method: "PATCH", url: "/api/users/1/status" }).as("userStatusUpdate");
       adminLogin("admin@example.com", "admin123");
       cy.wait("@adminLogin").then((xhr) => {
         expect(xhr.response.statusCode).to.eq(200);
@@ -298,7 +287,6 @@ describe("User Management", () => {
       UserManagementPage.userTableFirstUserActiveRow().should("have.text", "Inactive");
     });
     it("6. Activate a user(logged out user)", () => {
-      cy.intercept({ method: "PATCH", url: "/api/users/2/status" }).as("userStatusUpdate");
       UserManagementPage.adminLogoutBtn().should("not.be.visible");
       UserManagementPage.userTableSecondUserActiveRow().should("have.text", "Inactive");
       UserManagementPage.userTableSecondUserStatusBtn().should("have.text", "Activate").click();
@@ -310,8 +298,6 @@ describe("User Management", () => {
       UserManagementPage.userTableSecondUserActiveRow().should("have.text", "Active");
     });
     it("7. Activate a user(logged in as Admin)", () => {
-      cy.intercept({ method: "POST", url: "/api/login" }).as("adminLogin");
-      cy.intercept({ method: "PATCH", url: "/api/users/2/status" }).as("userStatusUpdate");
       adminLogin("admin@example.com", "admin123");
       cy.wait("@adminLogin").then((xhr) => {
         expect(xhr.response.statusCode).to.eq(200);
@@ -336,7 +322,6 @@ describe("User Management", () => {
       UserManagementPage.userFullNameInput().should("have.value", "Alice");
     });
     it("9. Make sure the Edit User section becomes active when clicking on the Edit button(logged in as Admin)", () => {
-      cy.intercept({ method: "POST", url: "/api/login" }).as("adminLogin");
       adminLogin("admin@example.com", "admin123");
       cy.wait("@adminLogin").then((xhr) => {
         expect(xhr.response.statusCode).to.eq(200);
@@ -350,7 +335,6 @@ describe("User Management", () => {
       UserManagementPage.userFullNameInput().should("have.value", "Alice");
     });
     it("10. Check that the user update flow works properly(logged out user)", () => {
-      cy.intercept({ method: "PUT", url: "/api/users/1" }).as("userUpdate");
       UserManagementPage.adminLogoutBtn().should("not.be.visible");
       UserManagementPage.userTableFirstUserName().should("have.text", "Alice");
       UserManagementPage.userTableFirstUserRole().should("have.text", "Admin");
@@ -378,8 +362,6 @@ describe("User Management", () => {
       UserManagementPage.userTableFirstUserGender().should("have.text", "Male");
     });
     it("11. Check that the user update flow works properly(logged in as Admin)", () => {
-      cy.intercept({ method: "PUT", url: "/api/users/1" }).as("userUpdate");
-      cy.intercept({ method: "POST", url: "/api/login" }).as("adminLogin");
       adminLogin("admin@example.com", "admin123");
       cy.wait("@adminLogin").then((xhr) => {
         expect(xhr.response.statusCode).to.eq(200);

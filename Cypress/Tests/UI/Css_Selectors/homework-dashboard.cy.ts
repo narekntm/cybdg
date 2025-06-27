@@ -1,4 +1,4 @@
-import { AdminDashboardPage } from "Cypress/fixtures/Pages/AdminDashboardPage";
+import { AdminDashboardPage } from "Cypress/Fixtures/Pages/AdminDashboardPage";
 
 describe("Admin Dashboard", () => {
   beforeEach(() => {

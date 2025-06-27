@@ -21,7 +21,7 @@
         "Cypress/Fixtures/Builders/*"
       ],
       "Models/*": [
-        "Cypress/fixtures/Models/*"
+        "Cypress/Fixtures/Models/*"
       ],
       "Static/*": [
         "Cypress/Fixtures/Static/*"
@@ -30,7 +30,7 @@
         "Cypress/Fixtures/Elements/*"
       ],
       "Pages/*": [
-        "Cypress/fixtures/Pages/*",
+        "Cypress/Fixtures/Pages/*",
       ],
       "Helpers/*": [
         "Cypress/Support/Helpers/*"

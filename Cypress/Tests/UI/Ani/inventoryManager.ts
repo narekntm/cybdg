@@ -1,5 +1,5 @@
-import { ProductCategory, ProductStatus } from "Models/InventoryManagerModels";
-import { InventoryManagerPage } from "Pages/InventoryManagerPage";
+import { ProductCategory, ProductStatus } from "Cypress/Fixtures/Models/InventoryManagerModels";
+import { InventoryManagerPage } from "Cypress/Fixtures/Pages/InventoryManagerPage";
 
 describe("Inventory Manager", () => {
   beforeEach(() => {
