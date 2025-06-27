@@ -1,5 +1,5 @@
-import { UserFormData } from "Models/UserManagementModels";
-import { UserManagementPage } from "Pages/UserManagementPage";
+import { UserFormData } from "Models/Arthur/UserManagementModels";
+import { UserManagementPage } from "Pages/Arthur/UserManagementPage";
 
 describe("User Management Test Scenarios", () => {
   const baseUrl = "http://127.0.0.1:8080/Resources/htmls/CSS/user_management.html";

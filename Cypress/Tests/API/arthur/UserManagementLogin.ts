@@ -1,5 +1,5 @@
-import { UserManagementEndpoints } from "EndPoints/UserManagementEndpoints";
-import { UserManagementBuilders } from "Builders/UserManagementBuilders";
+import { UserManagementEndpoints } from "EndPoints/Arthur/UserManagementEndpoints";
+import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
 
 describe('User Management Auth Tests', () => {
 

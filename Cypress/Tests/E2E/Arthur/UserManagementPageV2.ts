@@ -1,7 +1,7 @@
-import { UserFormData } from "Models/UserManagementModels";
-import { UserManagementPage } from "Pages/UserManagementPageV2";
-import { UserManagementBuilders } from "Builders/UserManagementBuilders";
-import { UserManagementEndpoints } from "EndPoints/UserManagementEndpoints";
+import { UserFormData } from "Models/Arthur/UserManagementModels";
+import { UserManagementPage } from "Pages/Arthur/UserManagementPageV2";
+import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
+import { UserManagementEndpoints } from "EndPoints/Arthur/UserManagementEndpoints";
 
 
 describe("User Management Test Scenarios", () => {

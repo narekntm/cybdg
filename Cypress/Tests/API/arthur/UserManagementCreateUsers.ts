@@ -1,5 +1,5 @@
-import { UserManagementBuilders } from "Builders/UserManagementBuilders";
-import { UserFormData } from "Models/UserManagementModels";
+import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
+import { UserFormData } from "Models/Arthur/UserManagementModels";
 
 
 describe('User Management Create Users Tests', () => {

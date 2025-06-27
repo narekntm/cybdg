@@ -1,5 +1,5 @@
-import { Product, ProductCategory, ProductStatus } from "Models/InventoryManagerModels";
-import { InventoryManagerPage } from "Pages/InventoryManagerPage";
+import { Product, ProductCategory, ProductStatus } from "Models/Arthur/InventoryManagerModels";
+import { InventoryManagerPage } from "Pages/Arthur/InventoryManagerPage";
 
 describe("Inventory Manager Test Scenarios", () => {
   const baseUrl = "http://127.0.0.1:8080/Resources/htmls/inventory_manager/";
