@@ -75,13 +75,20 @@ function updatePaginationInfo(totalUsers) {
 }
 
 function generateRowHTML(u) {
-  return `<td>${u.name}</td><td>${u.role}</td><td>${u.age}</td><td>${u.email}</td><td>${u.gender}</td><td>${u.subscriptions || "None"}</td><td>${u.status}</td>
-<td>
-  <div class="action-buttons">
-    <button class="btn-secondary edit-btn">Edit</button>
-    <button class="btn-danger delete-btn">Delete</button>
-    <button class="btn-primary status-btn">${u.status === "Active" ? "Deactivate" : "Activate"}</button>
-  </div>
-</td>`;
-
+  return `
+    <td>${u.name}</td>
+    <td>${u.role}</td>
+    <td>${u.age}</td>
+    <td>${u.email}</td>
+    <td>${u.gender}</td>
+    <td>${u.subscriptions || "None"}</td>
+    <td>${u.status}</td>
+    <td>
+      <div class="action-buttons">
+        <button class="btn-secondary edit-btn">Edit</button>
+        <button class="btn-danger delete-btn">Delete</button>
+        <button class="btn-primary status-btn">${u.status === "Active" ? "Deactivate" : "Activate"}</button>
+        <a href="user_detail.html?id=${u.id}" class="btn-neutral">View</a>
+      </div>
+    </td>`;
 }

@@ -7,7 +7,14 @@ import { loadUsers } from './modules/data.js';
 import "./modules/loginModal.js";
 
 import { state } from "./modules/state.js";
-
+document.addEventListener("DOMContentLoaded", () => {
+  if (window.location.hash === "#reload") {
+    import('./modules/data.js').then(({ loadUsers }) => {
+      loadUsers();
+    });
+    window.location.hash = ""; // clear hash after reloading
+  }
+});
 // 🔧 Global app state
 state.pageSize = 5;
 state.currentPage = 1;
