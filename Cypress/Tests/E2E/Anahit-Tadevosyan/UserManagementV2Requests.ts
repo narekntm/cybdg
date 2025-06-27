@@ -71,6 +71,7 @@ describe("User Management Test Cases", () => {
         gender?: "Male" | "Female" | "Other",
         subscriptions: string[] = []
     ) {
+        UserManagementPage.addUserPopupOpen().click();
         if (fullName) UserManagementPage.fullNameInput().clear().type(fullName);
         if (role) UserManagementPage.roleInput().select(role);
         if (age) UserManagementPage.ageInput().clear().type(age);
@@ -88,7 +89,7 @@ describe("User Management Test Cases", () => {
         UserManagementPage.saveButton().click();
     };
 
-    describe.only("Admin Login", () => {
+    describe("Admin Login", () => {
         it("Login with valid credentials", () => {
             cy.intercept({method: "POST", url: "/api/login"}).as('login');
             login("admin@example.com", "admin123");
@@ -136,7 +137,7 @@ describe("User Management Test Cases", () => {
         });
     });
 
-    describe("Add New User", () => {
+    describe.only("Add New User", () => {
         it("Add user with valid input", () => {
             cy.intercept({method: "POST", url: "/api/users"}).as('addUser');
             addUser("Anahit", "Admin", "24", "anahit.ru@gmail.com", "Female", ["Newsletter"]);

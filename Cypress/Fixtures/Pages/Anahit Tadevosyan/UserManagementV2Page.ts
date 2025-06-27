@@ -31,7 +31,11 @@ export class UserManagementPage {
     static loginStatus = () => cy.get("#login-status");
 
     static addNewUserLabel = () => cy.get("#form-title");
+    // Add User Popup open
+    static addUserPopupOpen = () => cy.get("#open-user-modal");
+    // Add User Popup close
 
+    static addUserPopupClose = () => cy.get("#close-user-modal");
     // Full Name label
     static fullNameLabel = () => cy.get('label[for="name"]');
 
