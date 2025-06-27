@@ -1,6 +1,6 @@
-import { UserManagementEndpoints } from "EndPoints/UserManagementEndPoints";
-import { UserManagementBuilders } from "Builders/UserManagementBuilders";
-import { UserManagementPage } from "Pages/UserManagementPage";
+import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementEndPoints";
+import { UserManagementBuilders } from "Builders/Anahit Tadevosyan/UserManagementBuilders";
+import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementPage";
 
 describe('User Management API Testing', () => {
     const baseUrl = "http://127.0.0.1:3000/";

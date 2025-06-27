@@ -1,5 +1,5 @@
-import { UserManagementEndpoints } from 'EndPoints/UserManagementEndPoints';
-import {UserData} from "Models/UserManagementModel";
+import { UserManagementEndpoints } from 'EndPoints/Anahit Tadevosyan/UserManagementEndPoints';
+import {UserData} from "Models/Anahit Tadevosyan/UserManagementModel";
 
 
 export class UserManagementBuilders{

@@ -1,10 +1,10 @@
-import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementPage";
-import {AddUser, userTableActions, userTableColumn, Login} from "Models/Anahit Tadevosyan/UserManagementModel";
-import {UserManagementEndpoints} from "EndPoints/Anahit Tadevosyan/UserManagementEndPoints";
-import {UserManagementBuilders} from "Builders/Anahit Tadevosyan/UserManagementBuilders";
+import {UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementV2Page";
+import {UserData, userTableActions, userTableColumn, Login} from "Models/Anahit Tadevosyan/UserManagementV2Model";
+import {UserManagementEndpoints} from "EndPoints/Anahit Tadevosyan/UserManagementV2EndPoints";
+import {UserManagementBuilders} from "Builders/Anahit Tadevosyan/UserManagementV2Builders";
 
 describe("User Management Test Cases", () => {
-    const baseUrl = "http://127.0.0.1:3000/";
+    const baseUrl = "http://localhost:3000/index.html";
     beforeEach("visit the site", () => {
         cy.intercept({method: "GET", url: '/api/users'}).as('getUsers');
         cy.visit(baseUrl);
@@ -15,8 +15,8 @@ describe("User Management Test Cases", () => {
 
     afterEach('Reset the filled in data', () =>{
         cy.intercept({method: "POST", url: UserManagementEndpoints.reset()}).as('postReset');
-    UserManagementPage.resetButton().click();
-    UserManagementPage.confirmResetButton().click()
+        UserManagementPage.resetButton().click();
+        UserManagementPage.confirmResetButton().click()
         cy.wait('@postReset').then((interception) => {
             expect(interception.response.body).to.deep.eq({
                 "success": true,
@@ -57,9 +57,11 @@ describe("User Management Test Cases", () => {
         })
     })
     const login = function (email: string, password: string) {
+        UserManagementPage.loginPopUpOpen().click();
         UserManagementPage.adminEmailInput().type(email);
         UserManagementPage.adminPasswordInput().type(password);
         UserManagementPage.loginButton().click();
+        UserManagementPage
     };
     const addUser = function (
         fullName: string = "",
@@ -86,7 +88,7 @@ describe("User Management Test Cases", () => {
         UserManagementPage.saveButton().click();
     };
 
-    describe("Admin Login", () => {
+    describe.only("Admin Login", () => {
         it("Login with valid credentials", () => {
             cy.intercept({method: "POST", url: "/api/login"}).as('login');
             login("admin@example.com", "admin123");

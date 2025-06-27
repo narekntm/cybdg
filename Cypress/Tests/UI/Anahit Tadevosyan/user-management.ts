@@ -1,5 +1,5 @@
-import { UserManagementPage } from "Pages/UserManagementPage";
-import {AddUser, userTableActions, userTableColumn, Login} from "Models/UserManagementModel";
+import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementPage";
+import {AddUser, userTableActions, userTableColumn, Login} from "Models/Anahit Tadevosyan/UserManagementModel";
 
 describe("User Management Test Cases", () => {
   const baseUrl = "http://127.0.0.1:8080/Resources/htmls/CSS/user_management.html";
