@@ -3,7 +3,7 @@ import { NewUser } from "Pages/Models/UserManagementModels";
 
 
 describe("Users tests", () => {
-    afterEach(() => {
+    beforeEach(() => {
         UserManagementBuilders.ResetData()
     })
 
@@ -78,7 +78,6 @@ describe("Users tests", () => {
                 expect(firstUser.email).to.eq('testemail@123.45')
                 expect(firstUser.gender).to.eq('Other')
             })
-            UserManagementBuilders.ResetData()
         })
         it('Should change user status', () => {
             UserManagementBuilders.ChangeStatus(1, 'Inactive').then(xhr => {

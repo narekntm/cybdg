@@ -3,11 +3,15 @@ export class UserManagementPage {
   static firstSection = () => cy.get("section").eq(0);
   static secondSection = () => cy.get("section").eq(1);
   static thirdSection = () => cy.get("section").eq(3);
+  static loginPopUpButton = () => cy.get("#open-login-modal")
   static adminEmailInput = () => cy.get("#admin-email");
   static adminPasswordInput = () => cy.get("#admin-password");
   static adminSubmitButton = () => cy.get("[class*='btn-primary']").first();
+  static adminSubmitButtonV2 = () => cy.get('#admin-login-form-modal button[type="submit"]')
   static successSignInMessage = () => cy.contains("#admin-controls", "You are logged in as admin.");
   static logoutButton = () => cy.get("[class*='btn-secondary']").first().should("contain.text", "Logout");
+  static logoutButtonV2 = () => cy.get("#logout-btn")
+  static AboutSiteButton = () => cy.get("[class*='btn-secondary']").first().should("contain.text", "About Site");
   static popUpConfirmDeleteButton = () => cy.get("#confirm-delete");
   static userTableRows = () => cy.get("tbody tr");
   static invalidCredentials = () => cy.contains("#login-status", "Invalid credentials");
@@ -32,11 +36,15 @@ export class UserManagementPage {
   static userTableSecondStatusChangeButton = () => cy.get("td button.btn-primary").eq(1);
   static userTableThirdStatusChangeButton = () => cy.get("td button.btn-primary").eq(2);
   static userTableFourthStatusChangeButton = () => cy.get("td button.btn-primary").eq(3);
+  static newUserButtonPopUpOpen = () => cy.get("#open-user-modal")
   static nameField = () => cy.get("#name");
   static roleField = () => cy.get("#role");
   static roleOptionAdmin = () => cy.get('option[value="Admin"]');
+  static roleOptionAdminV2 = () => cy.get('#role option').eq(1)
   static roleOptionEditor = () => cy.get('option[value="Editor"]');
+  static roleOptionEditorV2 = () => cy.get('#role option').eq(2)
   static roleOptionViewer = () => cy.get('option[value="Viewer"]');
+  static roleOptionViewerV2 = () => cy.get('#role option').eq(3)
   static ageField = () => cy.get("#age");
   static emailField = () => cy.get("#email");
   static genderMaleRadioButton = () => cy.get('input[value="Male"]');
@@ -58,5 +66,5 @@ export class UserManagementPage {
   static ageFieldError = () => cy.contains("ul li", "Age must be between 1 and 99.");
   static emailFieldError = () => cy.contains("ul li", "Valid email is required.");
   static genderFieldError = () => cy.contains("ul li", "Gender selection is required.");
-  
+  static successPopUp = () => cy.get('.toast')
 }
