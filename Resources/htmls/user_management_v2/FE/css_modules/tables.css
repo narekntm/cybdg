@@ -1,0 +1,39 @@
+th {
+  grid-column: 1 / -1;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th,
+td {
+  border: 1px solid var(--border-color);
+  padding: 0.6rem;
+  text-align: center;
+}
+
+th {
+  background-color: var(--primary);
+  color: white;
+}
+
+tr:nth-child(even) {
+  background-color: #f0f4f8;
+}
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.action-buttons button {
+  flex: 1 1 auto;
+  min-width: 80px;
+  text-align: center;
+}
+
