@@ -1,8 +1,8 @@
 ﻿import { UserManagementBuilders } from "Builders/Lecture/UserManagementBuilders";
 import Chance from "chance";
 import { UserManagementEndpoints } from "EndPoints/Lecture/UserManagementEndpoints";
-import { UserManagementModels } from 'Models/Lecture/UserManagementModels';
-import { UserManagementPageV2 } from 'Pages/Lecture/UserManagementPageV2';
+import { UserManagementModels } from "Models/Lecture/UserManagementModels";
+import { UserManagementPageV2 } from "Pages/Lecture/UserManagementPageV2";
 
 const chance = new Chance();
 describe("User Management – Cypress Sandbox", () => {
@@ -16,10 +16,13 @@ describe("User Management – Cypress Sandbox", () => {
       age: chance.integer({ min: 1, max: 100 }),
       email: chance.email(),
       gender: chance.pickone(Object.values(UserManagementModels.Gender)),
-      subscriptions: chance.pickset(Object.values(UserManagementModels.Subscription), chance.integer({
-        min: 0,
-        max: 3
-      })),
+      subscriptions: chance.pickset(
+        Object.values(UserManagementModels.Subscription),
+        chance.integer({
+          min: 0,
+          max: 3,
+        })
+      ),
     });
   }
 
@@ -34,21 +37,24 @@ describe("User Management – Cypress Sandbox", () => {
     cy.wait("@getUsers");
   });
 
-
   it("Seed data and verify pagination", () => {
-    UserManagementPageV2.paginationInfo().should("be.visible").and('contain.text', `Page 1 of ${Math.ceil((3 + users.length) / 5)}: (${3 + users.length} Users)`);
-    UserManagementPageV2.prevPage().should(("be.disabled"));
-    UserManagementPageV2.nextPage().should(("be.enabled"));
-    const emails = [...users.map(u => u.email),"alice@site.com",
-      "bob@site.com",
-      "eve@site.com"	];
+    UserManagementPageV2.paginationInfo()
+      .should("be.visible")
+      .and("contain.text", `Page 1 of ${Math.ceil((3 + users.length) / 5)}: (${3 + users.length} Users)`);
+    UserManagementPageV2.prevPage().should("be.disabled");
+    UserManagementPageV2.nextPage().should("be.enabled");
+    const emails = [...users.map((u) => u.email), "alice@site.com", "bob@site.com", "eve@site.com"];
 
-    const pageCount = Math.ceil((3 + users.length) / 5)
-    for (let i = 0; i <pageCount; i++) {
+    const pageCount = Math.ceil((3 + users.length) / 5);
+    for (let i = 0; i < pageCount; i++) {
       cy.get("tbody tr").each((tr) => {
-        cy.wrap(tr).find("td").eq(3).invoke("text").then((email) => {
-          expect(emails.includes(email)).to.be.true;
-        });
+        cy.wrap(tr)
+          .find("td")
+          .eq(3)
+          .invoke("text")
+          .then((email) => {
+            expect(emails.includes(email)).to.be.true;
+          });
       });
       UserManagementPageV2.nextPage().click();
     }

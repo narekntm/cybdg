@@ -30,8 +30,7 @@
   static cancelDeleteButton = () => cy.get("#cancel-delete");
   static confirmDeleteButton = () => cy.get("#confirm-delete");
 
-  static paginationInfo =()=> cy.get("#page-info")
-  static prevPage =()=> cy.get("#prev-page")
-  static nextPage =()=> cy.get("#next-page")
-
+  static paginationInfo = () => cy.get("#page-info");
+  static prevPage = () => cy.get("#prev-page");
+  static nextPage = () => cy.get("#next-page");
 }

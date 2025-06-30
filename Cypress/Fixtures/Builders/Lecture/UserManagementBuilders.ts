@@ -73,7 +73,7 @@ export class UserManagementBuilders {
     return cy.request({
       method: "POST",
       url: UserManagementEndpoints.seed(),
-      body: { users , overwrite: false},
+      body: { users, overwrite: false },
     });
   }
 }
