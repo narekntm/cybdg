@@ -1,6 +1,11 @@
 import { UserFormData } from "Models/Arthur/UserManagementModels";
+import { UserFormDataMock } from "Models/Arthur/UserManagementModels";
 import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
 import { UserManagementPage } from "Pages/Arthur/UserManagementPageV3";
+import { Role, Gender, Subscription, Status, UserInput } from "Models/Arthur/UserManagementModels";
+
+import Chance from "chance";
+const chance = new Chance();
 
 describe("User Management Test Scenarios", () => {
   const baseUrl = "http://localhost:3000/";
@@ -85,6 +90,7 @@ describe("User Management Test Scenarios", () => {
         subscriptions: ["Newsletter", "Product Updates"],
       });
       saveUser();
+      UserManagementPage.toastContainer().should("be.visible").and("contain.text", "User added successfully");
       UserManagementPage.deleteButtonInRow("Arthur").click();
     });
 
@@ -127,6 +133,7 @@ describe("User Management Test Scenarios", () => {
       });
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains("Name must be 1–20 letters only (no spaces or symbols).");
+      UserManagementPage.toastContainer().should("be.visible");
     });
 
     it("Should show error when name is too long", () => {
@@ -140,6 +147,7 @@ describe("User Management Test Scenarios", () => {
       });
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains("Name must be 1–20 letters only (no spaces or symbols).");
+      UserManagementPage.toastContainer().should("be.visible");
     });
 
     it("Should show error when no @ symbol", () => {
@@ -153,6 +161,7 @@ describe("User Management Test Scenarios", () => {
       });
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains("Valid email is required.");
+      UserManagementPage.toastContainer().should("be.visible");
     });
 
     it("Should show error when no domain", () => {
@@ -166,6 +175,7 @@ describe("User Management Test Scenarios", () => {
       });
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains("Valid email is required.");
+      UserManagementPage.toastContainer().should("be.visible");
     });
 
     it("Should show error when no username part", () => {
@@ -179,6 +189,7 @@ describe("User Management Test Scenarios", () => {
       });
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains("Valid email is required.");
+      UserManagementPage.toastContainer().should("be.visible");
     });
 
     it("Should show error when gender is not selected", () => {
@@ -190,6 +201,21 @@ describe("User Management Test Scenarios", () => {
       UserManagementPage.userEmailInput().type("arthur@test.test");
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains("Gender selection is required.");
+      UserManagementPage.toastContainer().should("be.visible");
+    });
+
+    it("Should show error message when email already exists", () => {
+      login();
+      fillUserForm({
+        name: "Arthur",
+        role: "Admin",
+        age: "30",
+        email: "alice@site.com",
+        gender: "Male",
+      });
+      saveUser();
+      UserManagementPage.formErrors().should("be.visible").contains("Email already exists.");
+      UserManagementPage.toastContainer().should("be.visible").and("text", "Email already exists.");
     });
   });
 
@@ -207,6 +233,7 @@ describe("User Management Test Scenarios", () => {
       });
 
       UserManagementPage.saveUserDataButton().click();
+      UserManagementPage.toastContainer().should("be.visible").and("text", "User updated!");
       UserManagementPage.backButton().click();
 
       cy.contains("#user-table tr", "AliceUpdatedName").within(() => {
@@ -238,5 +265,72 @@ describe("User Management Test Scenarios", () => {
       UserManagementPage.statusCellInRow("Alice").should("contain", "Active");
       UserManagementPage.deactivateButtonInRow("Alice").should("exist");
     });
+  });
+
+  context("User detail page", () => {
+    const mockedUser: UserFormDataMock = {
+      name: "GhostUser",
+      email: "ghost@example.com",
+      role: "Viewer",
+      age: "30",
+      gender: "Non-binary",
+      subscriptions: "Newsletter, Product Updates",
+      status: "Active",
+    };
+
+    it("Should display mocked user data and check it", () => {
+      cy.intercept("GET", "/api/users/1", {
+        statusCode: 200,
+        body: mockedUser,
+      }).as("getUser");
+
+      cy.visit("/user_detail.html?id=1");
+      cy.wait("@getUser");
+
+      UserManagementPage.userNameText().should("have.text", mockedUser.name);
+      cy.contains("Name:").next().should("have.text", mockedUser.name);
+      cy.contains("Role:").next().should("have.text", mockedUser.role);
+      cy.contains("Age:").next().should("have.text", mockedUser.age);
+      cy.contains("Email:").next().should("have.text", mockedUser.email);
+      cy.contains("Gender:").next().should("have.text", mockedUser.gender);
+      cy.contains("Subscriptions:").next().should("have.text", mockedUser.subscriptions);
+      cy.contains("Status:").next().should("have.text", mockedUser.status);
+    });
+  });
+
+
+  context("User detail page", () => {
+    it.only("Should seed 50 users and verify total user count is 53", () => {
+      const users: UserInput[] = [];
+
+      for (let i = 0; i < 50; i++) {
+        users.push({
+          name: chance.first(),
+          role: chance.pickone(Object.values(Role)),
+          age: chance.integer({ min: 18, max: 65 }),
+          email: chance.email(),
+          gender: chance.pickone(Object.values(Gender)),
+          subscriptions: chance.pickset(
+            Object.values(Subscription),
+            chance.integer({ min: 0, max: 2 })
+          ),
+          status: chance.pickone(Object.values(Status)),
+        });
+      }
+
+      UserManagementBuilders.seedData(users).then((response) => {
+        expect(response.status).to.eq(200);
+        expect(response.body).to.have.property("success", true);
+      });
+
+      UserManagementBuilders.GetUsers().then((response) => {
+        expect(response.status).to.eq(200);
+        expect(response.body).to.be.an("array").with.length(53);
+      });
+
+      cy.reload();
+      UserManagementPage.userRows().should("have.length.at.most", 10);
+    });
+
   });
 });

@@ -12,4 +12,6 @@ export class UserManagementEndpoints {
         return `${this.Users(id)}/status`;
     }
 
+    static seed = `${root}/seed`;
+
 }

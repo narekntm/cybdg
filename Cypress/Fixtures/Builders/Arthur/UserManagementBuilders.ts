@@ -1,5 +1,6 @@
 import { UserManagementEndpoints } from "EndPoints/Arthur/UserManagementEndpoints";
 import { UserFormData } from "Models/Arthur/UserManagementModels";
+import { Role, Gender, Subscription, Status, UserInput } from "Models/Arthur/UserManagementModels";
 
 export class UserManagementBuilders {
   static AdminLogin = (email: string, password: string) => {
@@ -81,4 +82,15 @@ export class UserManagementBuilders {
       failOnStatusCode: false,
     });
   };
+
+  static seedData(users: UserInput[]) {
+    return cy.request({
+      method: "POST",
+      url: "/api/seed",
+      body: {
+        users,
+        overwrite: false
+      }
+    });
+  }
 }

@@ -56,6 +56,10 @@ export class UserManagementPage {
 
     static editButtonInRow = (username: string) => this.userRow(username).find("button.edit-btn");
 
+    static editButtonInRowById = (id: number) => {
+        return cy.get(`#user-table tr[data-id="${id}"]`).find("button.edit-btn");
+    };
+
     static cancelDeleteButton = () => cy.get("#cancel-delete");
 
     static confirmDeleteButton = () => cy.get("#confirm-delete");
@@ -93,5 +97,21 @@ export class UserManagementPage {
     static newsletterCheckbox = () => cy.get("input[value='Newsletter']");
 
     static productCheckbox = () => cy.get("input[value='Product Updates']");
+
+    static userNameText = () => cy.get("#user-name");
+
+    static userRowById = (id: number) => cy.get(`tr[data-id="${id}"]`);
+
+    static deleteButtonInRowById = (id: number) => this.userRowById(id).find("button.delete-btn");
+
+    static viewButtonInRowById = (id: number) => this.userRowById(id).find("a.btn-neutral");
+
+    static userFormModal = () => cy.get("#user-form-modal");
+
+    static statusCellInRowById = (id: number) => this.userRowById(id).find("td").eq(6);
+
+    static statusButtonInRowById = (id: number) => this.userRowById(id).find("button.status-btn");
+
+    static userRows = () => cy.get("#user-table tbody tr");
 
 }

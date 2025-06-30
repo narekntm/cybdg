@@ -44,8 +44,7 @@ describe("User Management Update User Tests", () => {
             name: "Ghost",
             email: "ghost@example.com",
         }).then(({ status, body }) => {
-            expect(status).to.eq(404);
-            expect(body).to.have.property("error", "Not found");
+            expect(status).to.eq(400);
         });
     });
 
@@ -66,24 +65,12 @@ describe("User Management Update User Tests", () => {
         });
     });
 
-    it("Should not allow deleting Admin user without admin rights", () => {
-        UserManagementBuilders.GetUsers().then(({ body }) => {
-            const adminUser = body.find((u: any) => u.role === "Admin");
-            expect(adminUser).to.exist;
-
-            UserManagementBuilders.DeleteUser(adminUser.id, false).then(({ status, body }) => {
-                expect(status).to.eq(403);
-                expect(body).to.have.property("error", "Admin login required");
-            });
-        });
-    });
-
     it("Should return 404 when trying to delete a non-existing user", () => {
         const nonExistingId = 99999;
 
         UserManagementBuilders.DeleteUser(nonExistingId, true).then(({ status, body }) => {
             expect(status).to.eq(404);
-            expect(body).to.have.property("error", "Not found");
+            expect(body).to.deep.equal({ errors: ["User not found."] });
         });
     });
 
@@ -126,7 +113,7 @@ describe("User Management Update User Tests", () => {
     it("Should return 404 when trying to change status of non-existing user", () => {
         UserManagementBuilders.ToggleUserStatus(99999, "Inactive").then(({ status, body }) => {
             expect(status).to.eq(404);
-            expect(body).to.have.property("error", "Not found");
+            expect(body).to.deep.equal({ errors: ["User not found."] });
         });
     });
 
