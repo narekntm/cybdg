@@ -12,4 +12,6 @@ export class UserManagementEndpoints {
   static users = (id?: number | "*") => (id !== undefined ? `${root}/users/${id}` : `${root}/users`);
   /** Toggle status for specific user */
   static status = (id: number | "*") => `${this.users(id)}/status`;
+  /** Seed data */
+  static seed = () => `${root}/seed`;
 }
