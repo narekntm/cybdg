@@ -359,7 +359,7 @@ describe("User Management Test Scenarios", () => {
       });
     });
 
-    it.only("Should deactivate and activate user", () => {
+    it("Should deactivate and activate user", () => {
       login();
 
       const userId = 1;

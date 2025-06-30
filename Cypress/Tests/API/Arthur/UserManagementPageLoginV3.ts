@@ -1,5 +1,4 @@
 import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
-import { UserManagementEndpoints } from "EndPoints/Arthur/UserManagementEndpoints";
 
 describe("User Management Auth Tests", () => {
   it("Admin login - successfull login", () => {

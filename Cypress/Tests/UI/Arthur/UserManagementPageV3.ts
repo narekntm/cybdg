@@ -1,8 +1,7 @@
 import Chance from "chance";
 import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
-import { Gender , Role , Status, Subscription, UserFormData, UserFormDataMock, UserInput } from "Models/Arthur/UserManagementModels";
+import { Gender, Role, Status, Subscription, UserFormData, UserFormDataMock, UserInput } from "Models/Arthur/UserManagementModels";
 import { UserManagementPage } from "Pages/Arthur/UserManagementPageV3";
-
 
 const chance = new Chance();
 
@@ -298,7 +297,7 @@ describe("User Management Test Scenarios", () => {
   });
 
   context("User detail page", () => {
-    it.only("Should seed 50 users and verify total user count is 53", () => {
+    it("Should seed 50 users and verify total user count is 53", () => {
       const users: UserInput[] = [];
 
       for (let i = 0; i < 50; i++) {

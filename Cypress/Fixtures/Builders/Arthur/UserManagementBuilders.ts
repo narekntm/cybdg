@@ -1,6 +1,5 @@
 import { UserManagementEndpoints } from "EndPoints/Arthur/UserManagementEndpoints";
-import { Gender , Role, Status, Subscription, UserFormData, UserInput } from "Models/Arthur/UserManagementModels";
-
+import { UserFormData, UserInput } from "Models/Arthur/UserManagementModels";
 
 export class UserManagementBuilders {
   static AdminLogin = (email: string, password: string) => {
