@@ -1,0 +1,10 @@
+:root {
+  --primary: #4a90e2;
+  --danger: #e94e77;
+  --bg-light: #f5f7fa;
+  --bg-section: #ffffff;
+  --border-color: #ccc;
+  --text-color: #333;
+  --radius: 6px;
+  --shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
