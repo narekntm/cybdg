@@ -173,6 +173,7 @@
       {
         "selector": "method",
         "format": [
+          "PascalCase",
           "camelCase"
         ]
       },

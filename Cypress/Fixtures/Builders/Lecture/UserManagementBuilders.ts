@@ -68,4 +68,12 @@ export class UserManagementBuilders {
       body: { status },
     });
   }
+
+  static seedData(users: UserManagementModels.UserInput[]) {
+    return cy.request({
+      method: "POST",
+      url: UserManagementEndpoints.seed(),
+      body: { users, overwrite: false },
+    });
+  }
 }
