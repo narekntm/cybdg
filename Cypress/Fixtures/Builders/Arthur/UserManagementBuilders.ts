@@ -1,6 +1,6 @@
 import { UserManagementEndpoints } from "EndPoints/Arthur/UserManagementEndpoints";
-import { UserFormData } from "Models/Arthur/UserManagementModels";
-import { Role, Gender, Subscription, Status, UserInput } from "Models/Arthur/UserManagementModels";
+import { Gender , Role, Status, Subscription, UserFormData, UserInput } from "Models/Arthur/UserManagementModels";
+
 
 export class UserManagementBuilders {
   static AdminLogin = (email: string, password: string) => {
@@ -89,8 +89,8 @@ export class UserManagementBuilders {
       url: "/api/seed",
       body: {
         users,
-        overwrite: false
-      }
+        overwrite: false,
+      },
     });
   }
 }

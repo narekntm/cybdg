@@ -89,7 +89,6 @@ npm run test:run     # Runs headless Cypress on a specific spec
 - `E2E/`: Full-flow scenarios across UI and backend logic
 - `Fixtures/Pages/`: Page Object Model helpers
 - Supports:
-
   - [@cypress/grep](https://github.com/cypress-io/cypress-grep) for test filtering
   - [cypress-terminal-report](https://github.com/archfz/cypress-terminal-report) for logs
   - [cypress-real-events](https://github.com/dmtrKovalenko/cypress-real-events) for real input simulation

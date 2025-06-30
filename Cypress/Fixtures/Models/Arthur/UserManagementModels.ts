@@ -17,7 +17,6 @@ export interface UserFormDataMock {
   status: string;
 }
 
-
 export enum Role {
   Admin = "Admin",
   Editor = "Editor",
@@ -38,7 +37,7 @@ export enum Subscription {
 
 export enum Status {
   Active = "Active",
-  Inactive = "Inactive"
+  Inactive = "Inactive",
 }
 
 export interface UserInput {

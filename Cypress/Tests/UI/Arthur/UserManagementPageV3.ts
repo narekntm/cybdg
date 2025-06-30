@@ -1,10 +1,9 @@
-import { UserFormData } from "Models/Arthur/UserManagementModels";
-import { UserFormDataMock } from "Models/Arthur/UserManagementModels";
-import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
-import { UserManagementPage } from "Pages/Arthur/UserManagementPageV3";
-import { Role, Gender, Subscription, Status, UserInput } from "Models/Arthur/UserManagementModels";
-
 import Chance from "chance";
+import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
+import { Gender , Role , Status, Subscription, UserFormData, UserFormDataMock, UserInput } from "Models/Arthur/UserManagementModels";
+import { UserManagementPage } from "Pages/Arthur/UserManagementPageV3";
+
+
 const chance = new Chance();
 
 describe("User Management Test Scenarios", () => {
@@ -298,7 +297,6 @@ describe("User Management Test Scenarios", () => {
     });
   });
 
-
   context("User detail page", () => {
     it.only("Should seed 50 users and verify total user count is 53", () => {
       const users: UserInput[] = [];
@@ -310,10 +308,7 @@ describe("User Management Test Scenarios", () => {
           age: chance.integer({ min: 18, max: 65 }),
           email: chance.email(),
           gender: chance.pickone(Object.values(Gender)),
-          subscriptions: chance.pickset(
-            Object.values(Subscription),
-            chance.integer({ min: 0, max: 2 })
-          ),
+          subscriptions: chance.pickset(Object.values(Subscription), chance.integer({ min: 0, max: 2 })),
           status: chance.pickone(Object.values(Status)),
         });
       }
@@ -331,6 +326,5 @@ describe("User Management Test Scenarios", () => {
       cy.reload();
       UserManagementPage.userRows().should("have.length.at.most", 10);
     });
-
   });
 });
