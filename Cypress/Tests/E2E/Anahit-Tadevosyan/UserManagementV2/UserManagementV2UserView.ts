@@ -4,8 +4,7 @@ import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagem
 describe("User Management Test Cases", () => {
   const baseUrl = "http://localhost:3000/index.html";
   beforeEach("visit the site", () => {
-    cy.intercept({ method: "GET", url: "/api/users" }).as("getUsers");
-    cy.intercept({ method: "GET", url: "/api/users" }).as("getUsers");
+    cy.intercept({ method: "GET", url: UserManagementEndpoints.users() }).as("getUsers");
     cy.visit(baseUrl);
     cy.wait("@getUsers").then((interception) => {
       expect(interception.response.statusCode).to.eq(304);

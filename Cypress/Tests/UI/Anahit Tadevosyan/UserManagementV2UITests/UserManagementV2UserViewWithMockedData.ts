@@ -3,18 +3,39 @@ import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagem
 
 describe("Editing mocked user data", () => {
   const baseUrl = "http://localhost:3000/index.html";
+  const fakeUser = {
+    id: 2,
+    name: "Anahit",
+    role: "Editor",
+    age: 30,
+    email: "anahit.ru@gmail.com",
+    gender: "Female",
+    subscriptions: "Newsletter",
+    status: "Active"
+  };
+  it("should load user details from mocked data and verify UI", () => {
+
+    cy.intercept("GET", "/api/users", [fakeUser]).as("getUsers");
+    cy.visit(baseUrl);
+    cy.wait("@getUsers");
+
+    cy.intercept("GET", UserManagementEndpoints.users(2), fakeUser).as("getUserById");
+    UserManagementPage.viewButton(2).click();
+    cy.wait("@getUserById");
+
+
+    UserManagementPage.editUserButton().click();
+
+    UserManagementPage.fullNameInput().should("have.value", fakeUser.name);
+    UserManagementPage.roleInput().should("have.value", fakeUser.role);
+    UserManagementPage.ageInput().should("have.value", fakeUser.age.toString());
+    UserManagementPage.emailInput().should("have.value", fakeUser.email);
+    UserManagementPage.genderDropdown(fakeUser.gender).should("have.value", fakeUser.gender);
+    UserManagementPage.subscriptionOption("Newsletter").should("exist");
+    UserManagementPage.statusDropDown(fakeUser.status).should("have.value", fakeUser.status);
+  });
 
   it("should edit the mocked user and verify the updated data", () => {
-    const fakeUser = {
-      id: 2,
-      name: "Anahit",
-      role: "Editor",
-      age: 30,
-      email: "anahit.ru@gmail.com",
-      gender: "Female",
-      subscriptions: "Newsletter",
-      status: "Active"
-    };
 
     const fakeSecondUser = {
       id: 2,
@@ -26,7 +47,6 @@ describe("Editing mocked user data", () => {
       subscriptions: "Product Updates",
       status: "Inactive"
     };
-
 
 
     cy.intercept("GET", "/api/users", [fakeUser]).as("getUsers");
