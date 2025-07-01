@@ -99,12 +99,21 @@ describe("User Management Test Scenarios", () => {
     });
 
     it("Should check error message on delete button without login", () => {
-      UserManagementPage.deleteButtonInRow("Alice").click();
-      UserManagementPage.deleteError().should("be.visible").and("contain", "Admin login required to delete Admin-level users.");
+      UserManagementBuilders.GetUsers().then((response) => {
+        const users = response.body;
+        const adminUser = users.find((u: any) => u.role === "Admin");
+        expect(adminUser).to.exist;
+        UserManagementPage.deleteButtonInRowById(adminUser.id).click();
+        UserManagementPage.deleteError().should("be.visible").and("contain", "Admin login required to delete Admin-level users.");
+      });
     });
   });
 
   context("Adding new user", () => {
+    beforeEach(() => {
+      cy.intercept("POST", UserManagementEndpoints.Users()).as("addUser");
+    });
+
     it("Should add user with valid input", () => {
       login();
       const testUser: UserFormData = {
@@ -116,7 +125,6 @@ describe("User Management Test Scenarios", () => {
         subscriptions: ["Newsletter", "Product Updates"],
       };
       fillUserForm(testUser);
-      cy.intercept("POST", UserManagementEndpoints.Users()).as("addUser");
       saveUser();
       cy.wait("@addUser").then((interception) => {
         const sent = interception.request.body;
@@ -155,6 +163,25 @@ describe("User Management Test Scenarios", () => {
       login();
       UserManagementPage.addNewUserButton().click();
       saveUser();
+      cy.wait("@addUser").then((interception) => {
+        expect(interception.request.body).to.deep.equal({
+          name: "",
+          role: "",
+          age: "",
+          email: "",
+          subscriptions: "None",
+        });
+        expect(interception.response?.statusCode).to.eq(400);
+        expect(interception.response?.body).to.deep.equal({
+          errors: [
+            "Name must be 1–20 letters only (no spaces or symbols).",
+            "Role is required.",
+            "Age must be between 1 and 99.",
+            "Valid email is required.",
+            "Gender selection is required.",
+          ],
+        });
+      });
       UserManagementPage.formErrors().should("be.visible");
       UserManagementPage.formErrors().within(() => {
         cy.contains("Name must be 1–20 letters only (no spaces or symbols).").should("exist");
@@ -175,6 +202,10 @@ describe("User Management Test Scenarios", () => {
         gender: "Male",
       });
       saveUser();
+      cy.wait("@addUser").then((interception) => {
+        expect(interception.response?.statusCode).to.eq(400);
+        expect(interception.response?.body.errors).to.include("Name must be 1–20 letters only (no spaces or symbols).");
+      });
       UserManagementPage.formErrors().should("be.visible").contains("Name must be 1–20 letters only (no spaces or symbols).");
     });
 
@@ -188,6 +219,10 @@ describe("User Management Test Scenarios", () => {
         gender: "Male",
       });
       saveUser();
+      cy.wait("@addUser").then((interception) => {
+        expect(interception.response?.statusCode).to.eq(400);
+        expect(interception.response?.body.errors).to.include("Name must be 1–20 letters only (no spaces or symbols).");
+      });
       UserManagementPage.formErrors().should("be.visible").contains("Name must be 1–20 letters only (no spaces or symbols).");
     });
 
@@ -201,6 +236,10 @@ describe("User Management Test Scenarios", () => {
         gender: "Male",
       });
       saveUser();
+      cy.wait("@addUser").then((interception) => {
+        expect(interception.response?.statusCode).to.eq(400);
+        expect(interception.response?.body.errors).to.include("Name must be 1–20 letters only (no spaces or symbols).");
+      });
       UserManagementPage.formErrors().should("be.visible").contains("Name must be 1–20 letters only (no spaces or symbols).");
     });
 
@@ -214,6 +253,11 @@ describe("User Management Test Scenarios", () => {
         gender: "Male",
       });
       saveUser();
+      cy.wait("@addUser").then((interception) => {
+        expect(interception.response?.statusCode).to.eq(400);
+        expect(interception.response?.body.errors).to.include("Valid email is required.");
+      });
+
       UserManagementPage.formErrors().should("be.visible").contains("Valid email is required.");
     });
 
@@ -227,6 +271,10 @@ describe("User Management Test Scenarios", () => {
         gender: "Male",
       });
       saveUser();
+      cy.wait("@addUser").then((interception) => {
+        expect(interception.response?.statusCode).to.eq(400);
+        expect(interception.response?.body.errors).to.include("Valid email is required.");
+      });
       UserManagementPage.formErrors().should("be.visible").contains("Valid email is required.");
     });
 
@@ -240,6 +288,11 @@ describe("User Management Test Scenarios", () => {
         gender: "Male",
       });
       saveUser();
+
+      cy.wait("@addUser").then((interception) => {
+        expect(interception.response?.statusCode).to.eq(400);
+        expect(interception.response?.body.errors).to.include("Valid email is required.");
+      });
       UserManagementPage.formErrors().should("be.visible").contains("Valid email is required.");
     });
 
@@ -251,7 +304,34 @@ describe("User Management Test Scenarios", () => {
       UserManagementPage.userAgeInput().type("30");
       UserManagementPage.userEmailInput().type("arthur@test.test");
       saveUser();
+      cy.wait("@addUser").then((interception) => {
+        expect(interception.response?.statusCode).to.eq(400);
+        expect(interception.response?.body.errors).to.include("Gender selection is required.");
+      });
+
       UserManagementPage.formErrors().should("be.visible").contains("Gender selection is required.");
+    });
+
+    it("Should show error when email already exists", () => {
+      login();
+
+      UserManagementBuilders.GetUsers().then((response) => {
+        const users = response.body;
+        const existingUser = users[0];
+        expect(existingUser).to.exist;
+        UserManagementPage.addNewUserButton().click();
+        UserManagementPage.userNameInput().type("Arthur");
+        UserManagementPage.userRoleSelect().select("Admin");
+        UserManagementPage.userAgeInput().type("30");
+        UserManagementPage.userGenderRadio("Male").check();
+        UserManagementPage.userEmailInput().type(existingUser.email);
+        saveUser();
+        cy.wait("@addUser").then((interception) => {
+          expect(interception.response?.statusCode).to.eq(409);
+          expect(interception.response?.body.errors).to.include("Email already exists.");
+        });
+        UserManagementPage.formErrors().should("be.visible").contains("Email already exists.");
+      });
     });
   });
 
@@ -338,7 +418,6 @@ describe("User Management Test Scenarios", () => {
         UserManagementPage.confirmModal().should("be.visible");
         UserManagementPage.cancelDeleteButton().should("be.visible").click();
         UserManagementPage.confirmModal().should("not.be.visible");
-
         UserManagementPage.deleteButtonInRowById(user.id).click();
         UserManagementPage.confirmModal().should("be.visible");
 
