@@ -59,7 +59,10 @@ describe("User Management API Testing", () => {
       });
       return UserManagementBuilders.DeleteUser(1, true).then((response) => {
         expect(response.status).to.eq(200);
-        expect(response.body).to.not.include("Alice");
+        expect(response.body).to.deep.eq({ success: true });
+        UserManagementBuilders.GetUserById(1).then((response) => {
+          expect(response.status).to.eq(404);
+        });
       });
     });
   });

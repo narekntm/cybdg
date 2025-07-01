@@ -114,7 +114,10 @@ export class UserManagementPage {
   static tableHeaderCell = (index: number) => cy.get("#user-table thead th").eq(index);
 
   // Table Body Rows
-  static tableRow = (index: number) => cy.get("#user-table tbody tr").eq(index);
+  static tableRow = (index?: number) => cy.get("#user-table tbody tr").eq(index);
+
+  //Table Body Tr
+  static tableTr = () => cy.get("#user-table tbody tr");
 
   //Table Data
   static tableData = (index: number, cell: number) => cy.get("#user-table tbody tr").eq(index).find("td").eq(cell);
@@ -180,5 +183,4 @@ export class UserManagementPage {
 
   //Toast Error
   static toastError = () => cy.get(".toast.error");
-
 }

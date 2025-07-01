@@ -1,3 +1,4 @@
+import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementV2Page";
 export enum userTableColumn {
   Name = 0,
   Role = 1,
@@ -25,6 +26,15 @@ export interface UserData {
   subscriptions: Subscription[];
 }
 
+export interface UserDataFromView {
+  name: string;
+  role: Role;
+  age: string;
+  email: string;
+  gender: Gender;
+  subscriptions: Subscription[];
+  status: Status;
+}
 export enum Role {
   Admin = "Admin",
   Editor = "Editor",
@@ -39,7 +49,7 @@ export enum Gender {
 
 export enum Subscription {
   Newsletter = "Newsletter",
-  ProductUpdates = "Product Updates"
+  ProductUpdates = "Product Updates",
 }
 
 export enum Status {

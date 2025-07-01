@@ -1,7 +1,6 @@
 import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementV2EndPoints";
 import { UserData } from "Models/Anahit Tadevosyan/UserManagementV2Model";
 
-
 export class UserManagementBuilders {
   static AdminLogin = (email: string, password: string) => {
     return cy.request({
@@ -45,7 +44,7 @@ export class UserManagementBuilders {
     });
   }
 
-  static DeleteUser(id: number, isAdmin: true | false) {
+  static DeleteUser(id: number, isAdmin: boolean) {
     return cy.request({
       method: "DELETE",
       url: UserManagementEndpoints.users(id),
@@ -64,7 +63,7 @@ export class UserManagementBuilders {
     });
   }
 
-  static GetUserById(id: number, user: UserData) {
+  static GetUserById(id: number, user?: UserData) {
     return cy.request({
       method: "GET",
       url: UserManagementEndpoints.users(id),
@@ -77,8 +76,8 @@ export class UserManagementBuilders {
     return cy.request({
       method: "POST",
       url: "/api/seed",
-      body: {users, overwrite: false},
-      failOnStatusCode: false
+      body: { users, overwrite: false },
+      failOnStatusCode: false,
     });
   }
 }
