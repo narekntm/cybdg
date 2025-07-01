@@ -42,7 +42,7 @@ describe("User Management Update User Tests", () => {
     UserManagementBuilders.UpdateUser(99999, {
       name: "Ghost",
       email: "ghost@example.com",
-    }).then(({ status}) => {
+    }).then(({ status }) => {
       expect(status).to.eq(400);
     });
   });
