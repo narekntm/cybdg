@@ -52,7 +52,7 @@ describe("User Management API Testing", () => {
         role: "",
         age: "",
         email: "",
-        gender: "",
+        gender: '',
         subscriptions: [],
       };
       UserManagementBuilders.AddUser(invalidEmailUser).then((response) => {

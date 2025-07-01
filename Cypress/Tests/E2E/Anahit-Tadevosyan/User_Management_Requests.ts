@@ -1,6 +1,6 @@
 import { UserManagementBuilders } from "Builders/Anahit Tadevosyan/UserManagementBuilders";
 import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementEndPoints";
-import { AddUser, Login, userTableActions, userTableColumn } from "Models/Anahit Tadevosyan/UserManagementModel";
+import { Login, userTableActions, userTableColumn } from "Models/Anahit Tadevosyan/UserManagementModel";
 import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementPage";
 
 describe("User Management Test Cases", () => {

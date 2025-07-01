@@ -11,10 +11,9 @@ describe("Editing mocked user data", () => {
     email: "anahit.ru@gmail.com",
     gender: "Female",
     subscriptions: "Newsletter",
-    status: "Active"
+    status: "Active",
   };
   it("should load user details from mocked data and verify UI", () => {
-
     cy.intercept("GET", "/api/users", [fakeUser]).as("getUsers");
     cy.visit(baseUrl);
     cy.wait("@getUsers");
@@ -22,7 +21,6 @@ describe("Editing mocked user data", () => {
     cy.intercept("GET", UserManagementEndpoints.users(2), fakeUser).as("getUserById");
     UserManagementPage.viewButton(2).click();
     cy.wait("@getUserById");
-
 
     UserManagementPage.editUserButton().click();
 
@@ -36,7 +34,6 @@ describe("Editing mocked user data", () => {
   });
 
   it("should edit the mocked user and verify the updated data", () => {
-
     const fakeSecondUser = {
       id: 2,
       name: "Mary",
@@ -45,9 +42,8 @@ describe("Editing mocked user data", () => {
       email: "mary@example.com",
       gender: "Female",
       subscriptions: "Product Updates",
-      status: "Inactive"
+      status: "Inactive",
     };
-
 
     cy.intercept("GET", "/api/users", [fakeUser]).as("getUsers");
     cy.visit(baseUrl);
