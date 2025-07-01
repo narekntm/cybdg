@@ -1,4 +1,4 @@
-import { UserManagementBuilders } from "Builders/UserManagementBuilders"
+import { UserManagementBuilders } from "Builders/David Builders/UserManagementBuilders"
 
 describe('Admin auth tests', () => {
   const login = 'admin@example.com';

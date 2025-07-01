@@ -22,6 +22,31 @@ export class UserManagementPage {
   static secondEditButtonInTable = () => cy.get(".btn-secondary.edit-btn").eq(1);
   static thirdEditButtonInTable = () => cy.get(".btn-secondary.edit-btn").eq(2);
   static fourthEditButtonInTable = () => cy.get(".btn-secondary.edit-btn").eq(3);
+  static showButtonInTable = (index: number) => cy.get("[class*=\"btn-neutral\"]").eq(index)
+  static userViewCard = () => cy.get("#user-card")
+  static userViewCardInfo =  () => cy.get("#user-form")
+  static userCardName = () => cy.get("[for=\"name\"]")
+  static userCardRole =  () => cy.get("[for=\"role\"]")
+  static userCardAge = () => cy.get("[for=\"age\"]")
+  static userCardEmail = () => cy.get("[for=\"email\"]")
+  static userCardGender = () => cy.get("[for=\"gender\"]")
+  static userCardSubscriptions = () => cy.get("[for=\"subscriptions\"]")
+  static userCardStatus = () => cy.get("[for=\"status\"]")
+  static userCardEditButton = () => cy.get("#edit-btn")
+  static userCardBackButton = () => cy.get("#back-btn")
+  static userCardNameInput = () => cy.get("input[type=\"text\"][id=\"name\"]")
+  static userCardRoleSelect = () => cy.get("select[id=\"role\"]")
+  static userCardAgeInput = () => cy.get("input[type=\"number\"][id=\"age\"]")
+  static userCardEmailInput = () => cy.get("input[type=\"text\"][id=\"email\"]")
+  static userCardGenderSelect = () => cy.get("select[id=\"gender\"][name=\"gender\"]")
+  static userCardNewsletterCheckbox = () => cy.get("input[type=\"checkbox\"][value=\"Newsletter\"]")
+  static userCardProductUpdatesCheckbox = () => cy.get("input[type=\"checkbox\"][value=\"Product Updates\"]")
+  static userCardStatusSelect = () => cy.get("select[id=\"status\"][name=\"status\"]")
+  static userCardSaveButton = () => cy.get("#save-btn")
+  static userCardCancelButton = () => cy.get("#cancel-btn")
+  static prevPageButton = () => cy.get("#prev-page")
+  static nextPageButton = () => cy.get("#next-page")
+  static paginationInfo = () => cy.get("#page-info")
   static firstRowInUserTable = () => cy.get("tbody tr").eq(0);
   static secondRowInUserTable = () => cy.get("tbody tr").eq(1);
   static thirdRowInUserTable = () => cy.get("tbody tr").eq(2);
@@ -67,4 +92,6 @@ export class UserManagementPage {
   static emailFieldError = () => cy.contains("ul li", "Valid email is required.");
   static genderFieldError = () => cy.contains("ul li", "Gender selection is required.");
   static successPopUp = () => cy.get('.toast')
+  static resetButton = () => cy.get('#reset-btn')
+  static confirmResetButton = () => cy.get('#confirm-reset')
 }

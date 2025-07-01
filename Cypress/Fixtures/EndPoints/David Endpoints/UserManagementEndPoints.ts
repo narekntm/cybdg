@@ -9,4 +9,6 @@ export class UserManagementEndPoints {
     static Users = (id?: number) => `${root}/users${id !== undefined ? `/${id}` : ''}`
 
     static Status = (id: number) => `${this.Users(id)}/status`
+
+    static Seed = () => `${root}/seed`
 }

@@ -1,41 +1,10 @@
 import { UserManagementPage } from "Pages/UserManagementPage";
-import { UserManagementMethods } from "Pages/Methods/UserManagementMethods";
-import { SignIn } from "Pages/Models/UserManagementModels";
+import { UserManagementMethods } from "Pages/David Methods/UserManagementMethods";
+import { SignIn } from "Models/David Models/UserManagementModels";
 
-describe('Auth', () => {
+describe('Add New user section', () => {
     beforeEach(() => {
-        cy.visit('/')
-    })
-    const login = 'admin@example.com';
-    const password = 'admin123';
-    
-    context('Negative cases', () => {
-        it('Empty fields', () => {
-            UserManagementMethods.AuthV2({})
-            UserManagementPage.invalidCredentials().should('be.visible')
-        })
-        it('Wrong email', () => {
-            UserManagementMethods.AuthV2({password: password})
-            UserManagementPage.invalidCredentials().should('be.visible')
-        })
-        it('Wrong password', () => {
-            UserManagementMethods.AuthV2({email: login})
-            UserManagementPage.invalidCredentials().should('be.visible')
-        })
-    })
-    context('Positive cases', () => {
-        it('Should log in and delete admin', () => {
-            UserManagementMethods.AuthV2({email: login, password: password})
-            UserManagementPage.AboutSiteButton().should('be.visible')
-            UserManagementMethods.adminUserDeleteAsAdmin()
-            UserManagementMethods.logoutV2()
-        })
-    })
-})
-
-describe.only('Add New user section', () => {
-    beforeEach(() => {
-        cy.visit('/')
+        cy.visit('http://127.0.0.1:8080/Resources/htmls/CSS/user_management.html')
     })
     const name = "Joe";
     const email = "qwerty123@gmail.com";
@@ -47,13 +16,13 @@ describe.only('Add New user section', () => {
 
     context('Positive cases', () => {
         it('Should check all positive cases with this section', () => {
-            UserManagementPage.newUserButtonPopUpOpen().click()
+            UserManagementPage.secondSection().should('exist')
             UserManagementPage.nameField().type(name)
             UserManagementPage.nameField().should('have.value', name)
             UserManagementPage.roleField().select('')
-            UserManagementPage.roleOptionAdminV2().should('be.visible')
-            UserManagementPage.roleOptionEditorV2().should('be.visible')
-            UserManagementPage.roleOptionViewerV2().should('be.visible')
+            UserManagementPage.roleOptionAdmin().should('be.visible')
+            UserManagementPage.roleOptionEditor().should('be.visible')
+            UserManagementPage.roleOptionViewer().should('be.visible')
             UserManagementPage.roleField().select(role)
             UserManagementPage.roleField().should('have.value', role)
             UserManagementPage.ageField().type(age.toString())
@@ -65,7 +34,15 @@ describe.only('Add New user section', () => {
             UserManagementPage.productUpdatesCheckbox().should('not.be.checked').check()
             UserManagementPage.productUpdatesCheckbox().should('be.checked')
             UserManagementPage.addNewUserSaveButton().click()
-            UserManagementPage.successPopUp().should('be.visible')
+            UserManagementPage.nameField().should('not.have.value')
+            UserManagementPage.roleField().should('not.have.value')
+            UserManagementPage.ageField().should('not.have.value')
+            UserManagementPage.emailField().should('not.have.value')
+            UserManagementPage.genderMaleRadioButton().should('not.be.checked')
+            UserManagementPage.genderFemaleRadioButton().should('not.be.checked')
+            UserManagementPage.genderOtherRadioButton().should('not.be.checked')
+            UserManagementPage.newsletterCheckbox().should('not.be.checked')
+            UserManagementPage.productUpdatesCheckbox().should('not.be.checked')
             UserManagementPage.userTableRows().should('have.length', 4)
             UserManagementPage.fourthRowInUserTable().within(() => {
                 UserManagementPage.nameDataUserTable().should('contain', name)
@@ -83,7 +60,7 @@ describe.only('Add New user section', () => {
     })
     context('Negative cases', () => {
         it('Empty fields', () => {
-            UserManagementMethods.fillUserFormV2({})
+            UserManagementMethods.fillUserForm({})
             UserManagementPage.addNewUserSaveButton().click()
             UserManagementPage.nameFieldError().should('be.visible')
             UserManagementPage.roleFieldError().should('be.visible')
@@ -92,7 +69,7 @@ describe.only('Add New user section', () => {
             UserManagementPage.genderFieldError().should('be.visible')
         })
         it('Only name', () => {
-            UserManagementMethods.fillUserFormV2({name: "qwerty"})
+            UserManagementMethods.fillUserForm({name: "qwerty"})
             UserManagementPage.addNewUserSaveButton().click()
             UserManagementPage.roleFieldError().should('be.visible')
             UserManagementPage.ageFieldError().should('be.visible')
@@ -100,7 +77,6 @@ describe.only('Add New user section', () => {
             UserManagementPage.genderFieldError().should('be.visible')
         })
         it('Name requirements', () => {
-            UserManagementPage.newUserButtonPopUpOpen().click()
             UserManagementPage.nameField().type('    ')
             UserManagementPage.addNewUserSaveButton().click()
             UserManagementPage.nameFieldError().should('be.visible')
@@ -118,17 +94,16 @@ describe.only('Add New user section', () => {
             UserManagementPage.nameFieldError().should('be.visible')
         })
         it('Without role', () => {
-            UserManagementMethods.fillUserFormV2({name: "qwerty", age: "18", email: "qwerty@aa.aa", gender: "Male", subscribtion: "Newsletter"})
+            UserManagementMethods.fillUserForm({name: "qwerty", age: "18", email: "qwerty@aa.aa", gender: "Male", subscribtion: "Newsletter"})
             UserManagementPage.addNewUserSaveButton().click()
             UserManagementPage.roleFieldError().should('be.visible')
         })
         it('Without age', () => {
-            UserManagementMethods.fillUserFormV2({name: "qwerty", role: "Editor", email: "qwerty@aa.aa", gender: "Male", subscribtion: "Newsletter"})
+            UserManagementMethods.fillUserForm({name: "qwerty", role: "Editor", email: "qwerty@aa.aa", gender: "Male", subscribtion: "Newsletter"})
             UserManagementPage.addNewUserSaveButton().click()
             UserManagementPage.ageFieldError().should('be.visible')
         })
         it('Age requirements', () => {
-            UserManagementPage.newUserButtonPopUpOpen().click()
             UserManagementPage.ageField().type('   ')
             UserManagementPage.addNewUserSaveButton().click()
             UserManagementPage.ageFieldError().should('be.visible')
@@ -142,12 +117,11 @@ describe.only('Add New user section', () => {
             UserManagementPage.ageFieldError().should('be.visible')
         })
         it('Without Email', () => {
-            UserManagementMethods.fillUserFormV2({name: "qwerty", role: "Editor", age: "22", gender: "Male", subscribtion: "Newsletter"})
+            UserManagementMethods.fillUserForm({name: "qwerty", role: "Editor", age: "22", gender: "Male", subscribtion: "Newsletter"})
             UserManagementPage.addNewUserSaveButton().click()
             UserManagementPage.emailFieldError().should('be.visible')
         })
         it('Email requirements', () => {
-            UserManagementPage.newUserButtonPopUpOpen().click()
             UserManagementPage.nameField().type('     ')
             UserManagementPage.addNewUserSaveButton().click()
             UserManagementPage.emailFieldError().should('be.visible')
@@ -158,7 +132,7 @@ describe.only('Add New user section', () => {
             UserManagementPage.nameField().clear()
         })
         it('Without gender', () => {
-            UserManagementMethods.fillUserFormV2({name: "qwerty", role: "Editor", age: "23", email: "qwerty@aa.aa", subscribtion: "Newsletter"})
+            UserManagementMethods.fillUserForm({name: "qwerty", role: "Editor", age: "23", email: "qwerty@aa.aa", subscribtion: "Newsletter"})
             UserManagementPage.addNewUserSaveButton().click()
             UserManagementPage.genderFieldError().should('be.visible')
         })
@@ -166,7 +140,7 @@ describe.only('Add New user section', () => {
 })
 describe('User table section', () => {
     beforeEach(() => {
-        cy.visit('/')
+        cy.visit('http://127.0.0.1:8080/Resources/htmls/CSS/user_management.html')
     })
     const uniqueName = 'Alicea';
     const uniqueRole = 'Editor';
@@ -214,6 +188,36 @@ describe('User table section', () => {
         it('Delete admin', () => {
             UserManagementPage.userTableFirstDeleteButton().click()
             UserManagementPage.adminDeleteError().should('have.text', 'Admin login required to delete Admin-level users.')
+        })
+    })
+})
+describe('Auth', () => {
+    beforeEach(() => {
+        cy.visit('http://127.0.0.1:8080/Resources/htmls/CSS/user_management.html')
+    })
+    const login = 'admin@example.com';
+    const password = 'admin123';
+    
+    context('Negative cases', () => {
+        it('Empty fields', () => {
+            UserManagementMethods.Auth({})
+            UserManagementPage.invalidCredentials().should('be.visible')
+        })
+        it('Wrong email', () => {
+            UserManagementMethods.Auth({password: password})
+            UserManagementPage.invalidCredentials().should('be.visible')
+        })
+        it('Wrong password', () => {
+            UserManagementMethods.Auth({email: login})
+            UserManagementPage.invalidCredentials().should('be.visible')
+        })
+    })
+    context('Positive cases', () => {
+        it('Should log in and delete admin', () => {
+            UserManagementMethods.Auth({email: login, password: password})
+            UserManagementPage.logoutButton().should('be.visible')
+            UserManagementMethods.adminUserDeleteAsAdmin()
+            UserManagementMethods.logout()
         })
     })
 })

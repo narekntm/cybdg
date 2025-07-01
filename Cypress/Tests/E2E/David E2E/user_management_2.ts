@@ -1,5 +1,5 @@
-﻿import { UserManagementBuilders } from "Builders/UserManagementBuilders";
-import { UserManagementPage } from "../../Fixtures/Pages/UserManagementPage";
+﻿import { UserManagementBuilders } from "Builders/David Builders/UserManagementBuilders";
+import { UserManagementPage } from "Pages/UserManagementPage";
 
 describe("User Management – Cypress Sandbox", () => {
   const baseUrl = "/";

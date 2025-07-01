@@ -1,5 +1,7 @@
-import { UserManagementEndPoints } from "../Endpoints/UserManagementEndPoints"
-import { NewUser } from "Pages/Models/UserManagementModels"
+import { UserManagementEndPoints } from "Cypress/Fixtures/Endpoints/David Endpoints/UserManagementEndPoints"
+import { NewUser } from "Models/David Models/UserManagementModels"
+import { UserManagementModels } from "Models/Lecture/UserManagementModels";
+import User = UserManagementModels.User;
 
 export class UserManagementBuilders {
     static AdminLogin = (email : string, password: string) => {
@@ -57,6 +59,13 @@ export class UserManagementBuilders {
             body: {
                 status: status
             }
+        })
+    }
+    static seedData = (users: UserManagementModels.User[]) => {
+        return cy.request({
+            method: "POST",
+            url: UserManagementEndPoints.Seed(),
+            body : {users, overwrite: false},
         })
     }
 }
