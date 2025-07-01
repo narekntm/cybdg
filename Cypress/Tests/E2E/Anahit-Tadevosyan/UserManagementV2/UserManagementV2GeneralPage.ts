@@ -1,11 +1,10 @@
-import { UserManagementBuilders } from "Builders/Anahit Tadevosyan/UserManagementBuilders";
-import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementEndPoints";
-import { AddUser, Login, userTableActions, userTableColumn } from "Models/Anahit Tadevosyan/UserManagementModel";
-import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementPage";
+import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementV2Page";
+import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementV2EndPoints";
 
 describe("User Management Test Cases", () => {
-  const baseUrl = "http://127.0.0.1:3000/";
+  const baseUrl = "http://localhost:3000/index.html";
   beforeEach("visit the site", () => {
+    cy.intercept({ method: "GET", url: "/api/users" }).as("getUsers");
     cy.intercept({ method: "GET", url: "/api/users" }).as("getUsers");
     cy.visit(baseUrl);
     cy.wait("@getUsers").then((interception) => {
@@ -57,6 +56,7 @@ describe("User Management Test Cases", () => {
     });
   });
   const login = function (email: string, password: string) {
+    UserManagementPage.loginPopUpOpen().click();
     UserManagementPage.adminEmailInput().type(email);
     UserManagementPage.adminPasswordInput().type(password);
     UserManagementPage.loginButton().click();
@@ -95,7 +95,7 @@ describe("User Management Test Cases", () => {
         expect(interception.response.statusCode).to.eq(200);
         expect(interception.response.body).to.deep.eq({ success: true });
       });
-      UserManagementPage.logoutButton().should("exist");
+      UserManagementPage.logoutButton().click();
     });
 
     it("Login with invalid credentials", () => {
@@ -105,8 +105,9 @@ describe("User Management Test Cases", () => {
       cy.wait("@login").then((interception) => {
         expect(interception.request.body).not.to.deep.eq({ email: "admin@example.com", password: "admin123" });
         expect(interception.response.statusCode).to.eq(401);
-        expect(interception.response.body).to.deep.eq({ success: false });
+        expect(interception.response.body).to.deep.eq({ errors: ["Invalid credentials."] });
       });
+      UserManagementPage.loginPopUpClose().click();
     });
 
     it("Admin delete become active after login", () => {
@@ -133,9 +134,14 @@ describe("User Management Test Cases", () => {
   });
 
   describe("Add New User", () => {
+    beforeEach("open add user", () => {
+      UserManagementPage.addUserPopupOpen().click();
+    });
+
     it("Add user with valid input", () => {
       cy.intercept({ method: "POST", url: "/api/users" }).as("addUser");
       addUser("Anahit", "Admin", "24", "anahit.ru@gmail.com", "Female", ["Newsletter"]);
+      UserManagementPage.toastSuccess().should("exist").and("contain", "User added successfully");
       cy.wait("@addUser").then((interception) => {
         expect(interception.request.body).to.include({
           name: "Anahit",
@@ -164,26 +170,42 @@ describe("User Management Test Cases", () => {
     it("Submit form with all fields empty", () => {
       addUser();
       UserManagementPage.formErrorsMessage().should("exist");
+      UserManagementPage.toastError()
+        .should("exist")
+        .and(
+          "have.text",
+          "Name must be 1–20 letters only (no spaces or symbols). Role is required. Age must be between 1 and 99. Valid email is required. Gender selection is required."
+        );
+      UserManagementPage.addUserPopupClose().click();
     });
 
     it("Invalid name (e.g. symbols, numbers)", () => {
       addUser("@tes%", "Editor", "35", "anahit.com@gmail.com", "Other", ["Newsletter"]);
       UserManagementPage.formErrorsMessage().should("contain", "Name must be 1–20 letters only (no spaces or symbols).");
+      UserManagementPage.toastError().should("exist").and("have.text", "Name must be 1–20 letters only (no spaces or symbols).");
+
+      UserManagementPage.addUserPopupClose().click();
     });
 
     it("Invalid email format", () => {
       addUser("Mary", "Editor", "35", "maryodno$2as", "Other", ["Newsletter"]);
       UserManagementPage.formErrorsMessage().should("contain", "Valid email is required.");
+      UserManagementPage.toastError().should("exist").and("have.text", "Valid email is required.");
+
+      UserManagementPage.addUserPopupClose().click();
     });
 
     it("No gender selected", () => {
       addUser("John", "Admin", "35", "john@gmail.com", null, ["Newsletter"]);
       UserManagementPage.formErrorsMessage().should("contain", "Gender selection is required.");
+      UserManagementPage.toastError().should("exist").and("have.text", "Gender selection is required.");
+      UserManagementPage.addUserPopupClose().click();
     });
 
     it("Submit without selecting subscriptions", () => {
       cy.intercept({ method: "POST", url: "/api/users" }).as("addUser");
       addUser("John", "Admin", "35", "john@gmail.com", "Male", []);
+      UserManagementPage.toastSuccess().should("exist").and("have.text", "User added successfully");
       cy.wait("@addUser").then((interception) => {
         expect(interception.request.body).to.include({
           name: "John",
@@ -220,6 +242,7 @@ describe("User Management Test Cases", () => {
       UserManagementPage.subscribeCheckbox("Newsletter").should("be.checked");
       cy.intercept({ method: "PUT", url: "api/users/1" }).as("EditUser");
       addUser("Alicia", "Editor", "21", "alicia@gmail.com", "Other", []);
+      UserManagementPage.toastSuccess().should("exist").and("have.text", "User updated successfully");
       cy.wait("@EditUser").then((interception) => {
         expect(interception.request.body).to.include({
           name: "Alicia",

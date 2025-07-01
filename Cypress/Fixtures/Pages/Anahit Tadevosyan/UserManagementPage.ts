@@ -1,5 +1,4 @@
 ﻿export class UserManagementPage {
-
   // Login as Admin label
   static loginAsAdminLabel = () => cy.get("section h2").eq(0);
 
@@ -89,7 +88,7 @@
   static tableData = (index: number, cell: number) => cy.get("#user-table tbody tr").eq(index).find("td").eq(cell);
 
   //Table td
-  static tableTd = (index: number) => cy.get('td').eq(index)
+  static tableTd = (index: number) => cy.get("td").eq(index);
 
   // Delete, Edit, and Deactivate/Activate buttons
   static editButton = () => cy.get(".btn-secondary.edit-btn");
@@ -112,23 +111,19 @@
 
   static modalMessage = () => cy.get("#confirm-delete-modal .modal-content p");
 
-
-
   static adminLoginButton = () => cy.get('#admin-login-form button[type="submit"]');
 
   static nameInput = () => {
     return cy.get("#name");
   };
 
-
   //Reset
-  static resetButton = () => cy.get('#reset-btn');
+  static resetButton = () => cy.get("#reset-btn");
 
   //Confirm Reset
-  static confirmResetButton = () => cy.get('#confirm-reset')
+  static confirmResetButton = () => cy.get("#confirm-reset");
 
   //Cancel Reset
 
-  static cancelResetButton = () => cy.get('#cancel-reset')
-
+  static cancelResetButton = () => cy.get("#cancel-reset");
 }

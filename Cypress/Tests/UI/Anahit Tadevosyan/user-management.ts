@@ -1,5 +1,5 @@
+import { AddUser, Login, userTableActions, userTableColumn } from "Models/Anahit Tadevosyan/UserManagementModel";
 import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementPage";
-import {AddUser, userTableActions, userTableColumn, Login} from "Models/Anahit Tadevosyan/UserManagementModel";
 
 describe("User Management Test Cases", () => {
   const baseUrl = "http://127.0.0.1:8080/Resources/htmls/CSS/user_management.html";
@@ -7,19 +7,18 @@ describe("User Management Test Cases", () => {
     cy.visit(baseUrl);
   });
 
-
   const login = function (email: string, password: string) {
     UserManagementPage.adminEmailInput().type(email);
     UserManagementPage.adminPasswordInput().type(password);
     UserManagementPage.loginButton().click();
   };
   const addUser = function (
-      fullName: string = "",
-      role: string = "",
-      age: string = "",
-      email: string = "",
-      gender?: "Male" | "Female" | "Other",
-      subscriptions: string[] = []
+    fullName: string = "",
+    role: string = "",
+    age: string = "",
+    email: string = "",
+    gender?: "Male" | "Female" | "Other",
+    subscriptions: string[] = []
   ) {
     if (fullName) UserManagementPage.fullNameInput().clear().type(fullName);
     if (role) UserManagementPage.roleInput().select(role);
@@ -68,10 +67,9 @@ describe("User Management Test Cases", () => {
   describe("Add New User", () => {
     it("Add user with valid input", () => {
       addUser("Anahit", "Admin", "24", "anahit.ru@gmail.com", "Female", ["Newsletter"]);
-      UserManagementPage.tableRow(3)
-          .within(() => {
-            UserManagementPage.tableTd(0).should("have.text", "Anahit");
-          });
+      UserManagementPage.tableRow(3).within(() => {
+        UserManagementPage.tableTd(0).should("have.text", "Anahit");
+      });
     });
 
     it("Submit form with all fields empty", () => {
@@ -112,12 +110,12 @@ describe("User Management Test Cases", () => {
       UserManagementPage.genderRadio("Female").should("be.checked");
       UserManagementPage.subscribeCheckbox("Newsletter").should("be.checked");
       addUser("Alicia", "Editor", "21", "alicia@gmail.com", "Other", []);
-      UserManagementPage.tableData(0,0).should("have.text", "Alicia");
-      UserManagementPage.tableData(0,1).should("have.text", "Editor");
-      UserManagementPage.tableData(0,2).should("have.text", "21");
-      UserManagementPage.tableData(0,3).should("have.text", "alicia@gmail.com");
-      UserManagementPage.tableData(0,4).should("have.text", "Other");
-      UserManagementPage.tableData(0,5).should("not.have.text");
+      UserManagementPage.tableData(0, 0).should("have.text", "Alicia");
+      UserManagementPage.tableData(0, 1).should("have.text", "Editor");
+      UserManagementPage.tableData(0, 2).should("have.text", "21");
+      UserManagementPage.tableData(0, 3).should("have.text", "alicia@gmail.com");
+      UserManagementPage.tableData(0, 4).should("have.text", "Other");
+      UserManagementPage.tableData(0, 5).should("not.have.text");
     });
   });
 
