@@ -29,7 +29,8 @@ export enum UserRole {
 export enum ActionButtons {
     Edit = "Edit",
     Delete = "Delete",
-    Status = "Status"
+    Status = "Status",
+    View = "View"
 }
 
 export enum ButtonAction {
@@ -43,13 +44,23 @@ export enum Gender {
     Other = "Other"
 }
 
+export enum Subscription {
+    Newsletter = "Newsletter",
+    ProductUpdates = "Product Updates"
+}
+export enum Status {
+    Active = "Active",
+    Inactive = "Inactive"
+}
+
 export interface User {
     name: string,
     role: string,
     age: number,
     email: string,
     gender: Gender,
-    subscription?: string[]
+    subscription?: string[],
+    status?: string
 }
 
 export interface Login {
