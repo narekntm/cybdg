@@ -1,10 +1,13 @@
 import { UserManagementBuilders } from "Builders/Anahit Tadevosyan/UserManagementV2Builders";
 import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementV2EndPoints";
 import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementV2Page";
+import {UserManagementGenerator} from "Generators/Anahit_Tadevosyan/UserManagementV2Generators";
 
 describe("User Management API Testing", () => {
   const baseUrl = "http://127.0.0.1:3000/";
-
+  const user1 = UserManagementGenerator.staticUserOne;
+  const user2 = UserManagementGenerator.staticUserTwo;
+  const user3 = UserManagementGenerator.staticUserThree;
   beforeEach(() => {
     cy.visit(baseUrl);
   });
@@ -22,22 +25,23 @@ describe("User Management API Testing", () => {
 
       UserManagementBuilders.GetUsers().then((response) => {
         expect(response.status).to.eq(200);
-        expect(response.body).to.not.include("Eve");
+        expect(response.body).to.not.include(user3.name);
       });
     });
     it("Delete user as non-admin", () => {
-      it("Delete user as admin", () => {
-        UserManagementBuilders.AdminLogin("admin@example.com", "admin").then((response) => {
-          expect(response.status).to.eq(401);
-        });
-        UserManagementBuilders.DeleteUser(2, true).then((response) => {
-          expect(response.status).to.eq(200);
-        });
 
-        UserManagementBuilders.GetUsers().then((response) => {
-          expect(response.status).to.eq(200);
-          expect(response.body).to.not.include("Eve");
-        });
+      UserManagementBuilders.DeleteUser(2, true).then((response) => {
+        expect(response.status).to.eq(200);
+      });
+
+      UserManagementBuilders.GetUsers().then((response) => {
+        expect(response.status).to.eq(200);
+        expect(response.body).to.not.include(user3.name);
+      });
+    });
+    it("Delete user as admin", () => {
+      UserManagementBuilders.AdminLogin("admin@example.com", "admin").then((response) => {
+        expect(response.status).to.eq(401);
       });
       UserManagementBuilders.DeleteUser(2, true).then((response) => {
         expect(response.status).to.eq(200);
@@ -45,7 +49,7 @@ describe("User Management API Testing", () => {
 
       UserManagementBuilders.GetUsers().then((response) => {
         expect(response.status).to.eq(200);
-        expect(response.body).to.not.include("Eve");
+        expect(response.body).to.not.include(user3.name);
       });
     });
     it("Delete admin as non admin", () => {
@@ -70,31 +74,23 @@ describe("User Management API Testing", () => {
     UserManagementBuilders.ChangeUserStatus(3, "Inactive").then((response) => {
       expect(response.status).to.eq(200);
       expect(response.body).to.include({
-        id: 3,
-        name: "Eve",
-        role: "Editor",
-        age: 28,
-        email: "eve@site.com",
-        gender: "Other",
-        subscriptions: "Newsletter, Product Updates",
-        status: "Inactive",
+        ...user3,
+        age: +user3.age,
+        subscriptions: user3.subscriptions.join(', '),
+        status: "Inactive"
       });
     });
-
+  });
     it("Change the toggle to Active", () => {
       UserManagementBuilders.ChangeUserStatus(2, "Active").then((response) => {
         expect(response.status).to.eq(200);
         expect(response.body).to.include({
-          id: 2,
-          name: "Bob",
-          role: "Viewer",
-          age: 25,
-          email: "bob@site.com",
-          gender: "Male",
-          subscriptions: "Product Updates",
-          status: "Active",
+          ...user2,
+          age: +user2.age,
+          subscriptions: user2.subscriptions.join(','),
+          status: "Active"
         });
       });
     });
   });
-});
+

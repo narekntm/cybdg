@@ -26,13 +26,7 @@ export interface UserData {
   subscriptions: Subscription[];
 }
 
-export interface UserDataFromView {
-  name: string;
-  role: Role;
-  age: string;
-  email: string;
-  gender: Gender;
-  subscriptions: Subscription[];
+export interface UserDataFromView extends UserData{
   status: Status;
 }
 export enum Role {
@@ -58,4 +52,5 @@ export enum Status {
 }
 export interface Login {
   adminEmail: string;
+  password: string;
 }

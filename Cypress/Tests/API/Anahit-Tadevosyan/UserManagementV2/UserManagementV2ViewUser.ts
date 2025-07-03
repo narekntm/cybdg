@@ -1,5 +1,6 @@
 import { UserManagementBuilders } from "Builders/Anahit Tadevosyan/UserManagementV2Builders";
 import { Gender, Role, Status, Subscription, UserDataFromView } from "Models/Anahit Tadevosyan/UserManagementV2Model";
+import {UserManagementGenerator} from "Generators/Anahit_Tadevosyan/UserManagementV2Generators";
 
 describe("User Management API Testing", () => {
   const baseUrl = "http://127.0.0.1:3000/";
@@ -23,18 +24,10 @@ describe("User Management API Testing", () => {
         });
       });
     });
-    it("Click on Edit button and Save with Valid details", () => {
+    it.only("Click on Edit button and Save with Valid details", () => {
       UserManagementBuilders.GetUserById(2).then((response) => {
         const initialUser = response.body[0];
-        const editedUser: UserDataFromView = {
-          name: "Mary",
-          role: Role.Editor,
-          age: "45",
-          email: "mary@gmail.com",
-          gender: Gender.Female,
-          subscriptions: [Subscription.Newsletter],
-          status: Status.Active,
-        };
+        const editedUser: UserDataFromView = UserManagementGenerator.userFormPositiveCase;
         UserManagementBuilders.EditUser(2, editedUser).then((response) => {
           expect(response.body).to.include(editedUser);
         });
