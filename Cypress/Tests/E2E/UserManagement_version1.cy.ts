@@ -1,5 +1,5 @@
-import { UserManagementPage } from "Cypress/Fixtures/UserManagementPage";
 import { UserManagementModels } from "Cypress/Fixtures/Models/UserManagementModels";
+import { UserManagementPage } from "Cypress/Fixtures/UserManagementPage";
 
 describe("User Management Suite", () => {
   let loginPositiveCase: UserManagementModels.Login;
