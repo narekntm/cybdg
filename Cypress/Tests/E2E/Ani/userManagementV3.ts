@@ -1,21 +1,14 @@
+import { UserManagementBuilders } from "Builders/UserManagementBuilders";
+import { UserManagementEndpoints } from "EndPoints/UserManagementEndpoints";
+import { UserManagementGenerators } from "Generators/Ani/UserManagementGenerators";
+import { AdminLoginStatus, UserFormInput } from "Models/UserManagementModels";
 import { UserManagementPageV3 } from "Pages/UserManagementPageV3";
-import { Gender, Role, SubscribeTo, UserFormInput } from "Models/UserManagementModels";
-function getUserFormInput(
-  name: string,
-  role: Role,
-  age: number,
-  email: string,
-  gender: Gender,
-  subscription?: SubscribeTo[]
-): UserFormInput {
-  return { name: name, role: role, age: age, email: email, gender: gender, subscription: subscription };
-}
-const adminUser: UserFormInput = getUserFormInput("Admin", Role.admin, 5, "admin@test.test", Gender.other);
-const viewerUser: UserFormInput = getUserFormInput("Viewer", Role.viewer, 50, "viewer@test.com", Gender.male);
+import { adminEmail, adminPassword, emptySpace, wrongEmail, wrongPassword } from "TestDataAni/testData";
+
 describe("User Management – Cypress Sandbox", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:3000/index.html");
-    cy.intercept({ method: "POST", url: "/api/login" }).as("adminLogin");
+    cy.visit("/");
+    cy.intercept({ method: "POST", url: UserManagementEndpoints.adminLogin }).as("adminLogin");
   });
   function adminLogin(email: string, password: string) {
     UserManagementPageV3.loginBtn().click();
@@ -36,66 +29,63 @@ describe("User Management – Cypress Sandbox", () => {
     UserManagementPageV3.saveBtn().click();
   }
   it("1. Admin login with valid email and password", () => {
-    adminLogin("admin@example.com", "admin123");
+    adminLogin(adminEmail, adminPassword);
     cy.wait("@adminLogin").then((xhr) => {
       expect(xhr.response.statusCode).to.eq(200);
       expect(xhr.response.body).to.have.property("success", true);
-      UserManagementPageV3.adminStatusText().should("contain.text", "Logged in as Admin");
+      UserManagementPageV3.adminStatusText().should("contain.text", AdminLoginStatus.successTitle);
       adminLogout();
     });
   });
   it("2. Admin login with valid email and invalid password", () => {
-    adminLogin("admin@example.com", "wrongPassword");
+    adminLogin(adminEmail, wrongPassword);
     cy.wait("@adminLogin").then((xhr) => {
       expect(xhr.response.statusCode).to.eq(401);
-      expect(xhr.response.body.errors).to.deep.equal(["Invalid credentials."]);
+      expect(xhr.response.body.errors).to.deep.equal([AdminLoginStatus.errorText]);
     });
     UserManagementPageV3.loginBtn().should("be.visible");
   });
   it("3. Admin login with invalid email and valid password", () => {
-    adminLogin("wrongEmail", "admin123");
+    adminLogin(wrongEmail, adminPassword);
     cy.wait("@adminLogin").then((xhr) => {
       expect(xhr.response.statusCode).to.eq(401);
-      expect(xhr.response.body.errors).to.deep.equal(["Invalid credentials."]);
+      expect(xhr.response.body.errors).to.deep.equal([AdminLoginStatus.errorText]);
     });
     UserManagementPageV3.loginBtn().should("be.visible");
   });
   it("4. Admin login with empty credentials", () => {
-    adminLogin(" ", " ");
+    adminLogin(emptySpace, emptySpace);
     cy.wait("@adminLogin").then((xhr) => {
       expect(xhr.response.statusCode).to.eq(401);
-      expect(xhr.response.body.errors).to.deep.equal(["Invalid credentials."]);
+      expect(xhr.response.body.errors).to.deep.equal([AdminLoginStatus.errorText]);
     });
     UserManagementPageV3.loginBtn().should("be.visible");
   });
   it("5. Admin login with empty email and valid password", () => {
-    adminLogin(" ", "admin123");
+    adminLogin(emptySpace, adminPassword);
     cy.wait("@adminLogin").then((xhr) => {
       expect(xhr.response.statusCode).to.eq(401);
-      expect(xhr.response.body.errors).to.deep.equal(["Invalid credentials."]);
+      expect(xhr.response.body.errors).to.deep.equal([AdminLoginStatus.errorText]);
     });
     UserManagementPageV3.loginBtn().should("be.visible");
   });
   it("6. Admin login with valid email and empty password", () => {
-    adminLogin("admin@example.com", " ");
+    adminLogin(adminEmail, emptySpace);
     cy.wait("@adminLogin").then((xhr) => {
       expect(xhr.response.statusCode).to.eq(401);
-      expect(xhr.response.body.errors).to.deep.equal(["Invalid credentials."]);
+      expect(xhr.response.body.errors).to.deep.equal([AdminLoginStatus.errorText]);
     });
     UserManagementPageV3.loginBtn().should("be.visible");
   });
   it("7. Create a Viewer and make sure the user is successfully displayed on the table ", () => {
-    userCreation(viewerUser);
-    UserManagementPageV3.userTableList().should("have.length", 4)
+    userCreation(UserManagementGenerators.viewerUser);
+    UserManagementPageV3.userTableList().should("have.length", 4);
   });
   it("8. Create an Admin and make sure the user is successfully displayed on the table ", () => {
-    userCreation(adminUser);
-    UserManagementPageV3.userTableList().should("have.length", 4)
+    userCreation(UserManagementGenerators.adminUser);
+    UserManagementPageV3.userTableList().should("have.length", 4);
   });
   afterEach(() => {
-    cy.request({
-      method: "POST",
-      url: "/api/reset",
-    });
+    UserManagementBuilders.ResetData();
   });
-})
+});

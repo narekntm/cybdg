@@ -1,7 +1,5 @@
 import { UserManagementBuilders } from "Builders/UserManagementBuilders";
-import { Gender , Role , SubscribeTo , UserFormInput } from "Models/UserManagementModels";
-
-
+import { Gender, Role, SubscribeTo, UserFormInput } from "Models/UserManagementModels";
 
 function getUserFormInput(
   name: string,
