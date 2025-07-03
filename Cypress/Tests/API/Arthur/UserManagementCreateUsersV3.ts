@@ -1,11 +1,10 @@
-import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
-import { UserFormData, Role, Gender, Subscription, Status, UserErrorMessages } from "Models/Arthur/UserManagementModels";
 import Chance from "chance";
+import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
+import { Gender, Role, Status, Subscription, UserErrorMessages, UserFormData } from "Models/Arthur/UserManagementModels";
 
 const chance = new Chance();
 
 describe("User Management Create Users Tests", () => {
-
   beforeEach(() => {
     UserManagementBuilders.ResetData().then((response) => {
       expect(response.status).to.eq(200);
@@ -36,7 +35,7 @@ describe("User Management Create Users Tests", () => {
       age: chance.age({ type: "adult" }).toString(),
       gender: chance.pickone([Gender.Male, Gender.Female, Gender.Other]),
       subscriptions: chance.pickset(
-        [Subscription.Newsletter, Subscription.ProductUpdates, Subscription.Promotions],
+        [Subscription.Newsletter, Subscription.ProductUpdates],
         chance.integer({ min: 1, max: 3 })
       ),
     };

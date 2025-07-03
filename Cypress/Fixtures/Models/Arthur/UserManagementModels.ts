@@ -32,7 +32,6 @@ export enum Gender {
 export enum Subscription {
   Newsletter = "Newsletter",
   ProductUpdates = "Product Updates",
-  Promotions = "Promotions",
 }
 
 export enum Status {
@@ -59,11 +58,15 @@ export enum UserErrorMessages {
   UserNotFound = "User not found.",
   InvalidCredentials = "Invalid credentials.",
   AdminDeleteError = "Admin login required to delete Admin-level users.",
-  ExistingEmail = "Email already exists."
+  ExistingEmail = "Email already exists.",
 }
 
 export enum UserStatusMessages {
   LoggedInAsAdmin = "Logged in as Admin",
   AddNewUserMessage = "User added successfully",
   UpdatedUser = "User updated!",
+}
+
+export interface User extends UserInput {
+  id: number;
 }

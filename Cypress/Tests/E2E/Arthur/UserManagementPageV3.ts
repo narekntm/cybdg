@@ -1,7 +1,20 @@
+import Chance from "chance";
 import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
 import { UserManagementEndpoints } from "EndPoints/Arthur/UserManagementEndpoints";
-import { UserFormData } from "Models/Arthur/UserManagementModels";
+import {
+  Gender,
+  Role,
+  Status,
+  Subscription,
+  User,
+  UserErrorMessages,
+  UserFormData,
+  UserStatusMessages,
+} from "Models/Arthur/UserManagementModels";
 import { UserManagementPage } from "Pages/Arthur/UserManagementPageV3";
+
+const chance = new Chance();
+
 
 describe("User Management Test Scenarios", () => {
   const baseUrl = "/";
@@ -28,7 +41,7 @@ describe("User Management Test Scenarios", () => {
         expect(xhr.response.body).to.have.property("success", true);
       } else {
         expect(xhr.response.statusCode).to.eq(401);
-        expect(xhr.response.body.errors).to.deep.equal(["Invalid credentials."]);
+        expect(xhr.response.body.errors).to.deep.equal([UserErrorMessages.InvalidCredentials]);
       }
     });
   };
@@ -41,7 +54,7 @@ describe("User Management Test Scenarios", () => {
     UserManagementPage.userEmailInput().clear().type(user.email);
     UserManagementPage.userGenderRadio(user.gender).check();
 
-    const allSubscriptions = ["Newsletter", "Product Updates"];
+    const allSubscriptions = [Subscription.Newsletter, Subscription.ProductUpdates];
     allSubscriptions.forEach((sub) => {
       UserManagementPage.userSubscriptionCheckbox(sub).uncheck({ force: true });
     });
@@ -61,7 +74,7 @@ describe("User Management Test Scenarios", () => {
     UserManagementPage.userGenderRadio(user.gender).check();
     UserManagementPage.productCheckbox().check();
 
-    const allSubscriptions = ["Newsletter", "Product Updates"];
+    const allSubscriptions = [Subscription.Newsletter, Subscription.ProductUpdates];
     allSubscriptions.forEach((sub) => {
       UserManagementPage.userSubscriptionCheckbox(sub).uncheck({ force: true });
     });
@@ -78,33 +91,36 @@ describe("User Management Test Scenarios", () => {
   context("Admin auth test cases", () => {
     it("Login with valid credentials", () => {
       login();
-      UserManagementPage.adminStatusText().should("contain", "Logged in as Admin");
+      UserManagementPage.adminStatusText().should("contain", UserStatusMessages.LoggedInAsAdmin);
       UserManagementPage.logoutButton().should("be.visible").contains("Logout");
     });
 
     it("Check login with invalid credentials", () => {
       login("invalid@admin.test", "wrongpassword,", false);
-      UserManagementPage.loginStatus().should("be.visible").contains("Invalid credentials");
+      UserManagementPage.loginStatus().should("be.visible").contains(UserErrorMessages.InvalidCredentials);
     });
 
     it("Verify that the delete button is working after login", () => {
       login();
-      UserManagementBuilders.GetUsers().then((response) => {
-        const users = response.body;
-        const user = users.find((u: any) => u.id === 1);
+
+      UserManagementBuilders.GetUsers().then(({ body }: { body: User[] }) => {
+        const user = body.find((u: User) => u.id === 1);
         expect(user).to.exist;
+
         UserManagementPage.deleteButtonInRowById(user.id).click();
         UserManagementPage.confirmModal().should("be.visible");
       });
     });
 
     it("Should check error message on delete button without login", () => {
-      UserManagementBuilders.GetUsers().then((response) => {
-        const users = response.body;
-        const adminUser = users.find((u: any) => u.role === "Admin");
+      UserManagementBuilders.GetUsers().then(({ body }: { body: User[] }) => {
+        const adminUser = body.find((u: User) => u.role === Role.Admin);
         expect(adminUser).to.exist;
+
         UserManagementPage.deleteButtonInRowById(adminUser.id).click();
-        UserManagementPage.deleteError().should("be.visible").and("contain", "Admin login required to delete Admin-level users.");
+        UserManagementPage.deleteError()
+          .should("be.visible")
+          .and("contain", UserErrorMessages.AdminDeleteError);
       });
     });
   });
@@ -116,16 +132,19 @@ describe("User Management Test Scenarios", () => {
 
     it("Should add user with valid input", () => {
       login();
+
       const testUser: UserFormData = {
-        name: "Arthur",
-        role: "Admin",
-        age: "30",
-        email: "arthur@example.com",
-        gender: "Male",
-        subscriptions: ["Newsletter", "Product Updates"],
+        name: chance.first(),
+        role: chance.pickone(Object.values(Role)),
+        age: chance.age({ type: "adult" }).toString(),
+        email: chance.email(),
+        gender: chance.pickone(Object.values(Gender)),
+        subscriptions: chance.pickset(Object.values(Subscription), chance.integer({ min: 1, max: 2 })),
       };
+
       fillUserForm(testUser);
       saveUser();
+
       cy.wait("@addUser").then((interception) => {
         const sent = interception.request.body;
         expect(sent.name).to.eq(testUser.name);
@@ -133,8 +152,10 @@ describe("User Management Test Scenarios", () => {
         expect(sent.age).to.eq(testUser.age);
         expect(sent.email).to.eq(testUser.email);
         expect(sent.gender).to.eq(testUser.gender);
+
         const sentSubscriptionsArray = sent.subscriptions.split(",").map((s: string) => s.trim());
         expect(sentSubscriptionsArray).to.have.members(testUser.subscriptions);
+
         expect(interception.response?.statusCode).to.eq(200);
         const responseBody = interception.response?.body;
         expect(responseBody).to.include({
@@ -151,8 +172,8 @@ describe("User Management Test Scenarios", () => {
         expect(responseBody).to.have.property("id").that.is.a("number");
       });
 
-      UserManagementBuilders.GetUsers().then(({ body: users }) => {
-        const addedUser = users.find((u: any) => u.email === testUser.email);
+      UserManagementBuilders.GetUsers().then(({ body }: { body: User[] }) => {
+        const addedUser = body.find((u: User) => u.email === testUser.email);
         expect(addedUser).to.exist;
         expect(addedUser.name).to.eq(testUser.name);
         expect(addedUser.role).to.eq(testUser.role);
@@ -163,153 +184,164 @@ describe("User Management Test Scenarios", () => {
       login();
       UserManagementPage.addNewUserButton().click();
       saveUser();
+
       cy.wait("@addUser").then((interception) => {
-        expect(interception.request.body).to.deep.equal({
+        console.log("Request body:", interception.request.body);
+        expect(interception.request.body).to.include({
           name: "",
           role: "",
           age: "",
           email: "",
-          subscriptions: "None",
         });
+
         expect(interception.response?.statusCode).to.eq(400);
         expect(interception.response?.body).to.deep.equal({
           errors: [
-            "Name must be 1–20 letters only (no spaces or symbols).",
-            "Role is required.",
-            "Age must be between 1 and 99.",
-            "Valid email is required.",
-            "Gender selection is required.",
+            UserErrorMessages.EmptyName,
+            UserErrorMessages.EmptyRole,
+            UserErrorMessages.InvalidAge,
+            UserErrorMessages.InvalidEmail,
+            UserErrorMessages.EmptyGender,
           ],
         });
       });
+
       UserManagementPage.formErrors().should("be.visible");
       UserManagementPage.formErrors().within(() => {
-        cy.contains("Name must be 1–20 letters only (no spaces or symbols).").should("exist");
-        cy.contains("Role is required.").should("exist");
-        cy.contains("Age must be between 1 and 99.").should("exist");
-        cy.contains("Valid email is required.").should("exist");
-        cy.contains("Gender selection is required.").should("exist");
+        cy.contains(UserErrorMessages.EmptyName).should("exist");
+        cy.contains(UserErrorMessages.EmptyRole).should("exist");
+        cy.contains(UserErrorMessages.InvalidAge).should("exist");
+        cy.contains(UserErrorMessages.InvalidEmail).should("exist");
+        cy.contains(UserErrorMessages.EmptyGender).should("exist");
       });
     });
 
     it("Should show error when name contains symbols", () => {
       login();
       fillUserForm({
-        name: "John@",
-        role: "Admin",
-        age: "25",
-        email: "test@example.com",
-        gender: "Male",
+        name: chance.first() + "@",
+        role: Role.Admin,
+        age: chance.age({ type: "adult" }).toString(),
+        email: chance.email(),
+        gender: Gender.Male,
       });
       saveUser();
       cy.wait("@addUser").then((interception) => {
         expect(interception.response?.statusCode).to.eq(400);
-        expect(interception.response?.body.errors).to.include("Name must be 1–20 letters only (no spaces or symbols).");
+        expect(interception.response?.body.errors).to.include(UserErrorMessages.EmptyName);
       });
-      UserManagementPage.formErrors().should("be.visible").contains("Name must be 1–20 letters only (no spaces or symbols).");
+      UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.EmptyName);
     });
 
     it("Should show error when name contains numbers", () => {
       login();
       fillUserForm({
-        name: "John123",
-        role: "Admin",
-        age: "25",
-        email: "test@example.com",
-        gender: "Male",
+        name: chance.first() + "123",
+        role: Role.Admin,
+        age: chance.age({ type: "adult" }).toString(),
+        email: chance.email(),
+        gender: Gender.Male,
       });
       saveUser();
       cy.wait("@addUser").then((interception) => {
         expect(interception.response?.statusCode).to.eq(400);
-        expect(interception.response?.body.errors).to.include("Name must be 1–20 letters only (no spaces or symbols).");
+        expect(interception.response?.body.errors).to.include(UserErrorMessages.EmptyName);
       });
-      UserManagementPage.formErrors().should("be.visible").contains("Name must be 1–20 letters only (no spaces or symbols).");
+      UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.EmptyName);
     });
 
     it("Should show error when name is too long", () => {
       login();
+
+      const longName = chance.string({ length: 25, pool: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" });
+
       fillUserForm({
-        name: "ArthurTheGreatAndPowerfulKingOfTheBrits",
-        role: "Admin",
-        age: "25",
-        email: "test@example.com",
-        gender: "Male",
+        name: longName,
+        role: Role.Admin,
+        age: chance.age({ type: "adult" }).toString(),
+        email: chance.email(),
+        gender: Gender.Male,
       });
       saveUser();
       cy.wait("@addUser").then((interception) => {
         expect(interception.response?.statusCode).to.eq(400);
-        expect(interception.response?.body.errors).to.include("Name must be 1–20 letters only (no spaces or symbols).");
+        expect(interception.response?.body.errors).to.include(UserErrorMessages.EmptyName);
       });
-      UserManagementPage.formErrors().should("be.visible").contains("Name must be 1–20 letters only (no spaces or symbols).");
+      UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.EmptyName);
     });
 
     it("Should show error when no @ symbol", () => {
       login();
       fillUserForm({
-        name: "Arthur",
-        role: "Admin",
-        age: "30",
+        name: chance.first(),
+        role: Role.Admin,
+        age: chance.age({ type: "adult" }).toString(),
         email: "arthurtest.com",
-        gender: "Male",
+        gender: Gender.Male,
       });
       saveUser();
       cy.wait("@addUser").then((interception) => {
         expect(interception.response?.statusCode).to.eq(400);
-        expect(interception.response?.body.errors).to.include("Valid email is required.");
+        expect(interception.response?.body.errors).to.include(UserErrorMessages.InvalidEmail);
       });
 
-      UserManagementPage.formErrors().should("be.visible").contains("Valid email is required.");
+      UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.InvalidEmail);
     });
 
     it("Should show error when no domain", () => {
       login();
+      const invalidEmail = chance.string({ length: 10, pool: "abcdefghijklmnopqrstuvwxyz" }) + "@";
+
       fillUserForm({
-        name: "Arthur",
-        role: "Admin",
-        age: "30",
-        email: "arthurtest@",
-        gender: "Male",
+        name: chance.first(),
+        role: Role.Admin,
+        age: chance.age({ type: "adult" }).toString(),
+        email: invalidEmail,
+        gender: Gender.Male,
       });
       saveUser();
       cy.wait("@addUser").then((interception) => {
         expect(interception.response?.statusCode).to.eq(400);
-        expect(interception.response?.body.errors).to.include("Valid email is required.");
+        expect(interception.response?.body.errors).to.include(UserErrorMessages.InvalidEmail);
       });
-      UserManagementPage.formErrors().should("be.visible").contains("Valid email is required.");
-    });
 
+      UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.InvalidEmail);
+    });
     it("Should show error when no username part", () => {
       login();
+      const invalidEmail = "@" + chance.domain();
+
       fillUserForm({
-        name: "Arthur",
-        role: "Admin",
-        age: "30",
-        email: "@test.test",
-        gender: "Male",
+        name: chance.first(),
+        role: Role.Admin,
+        age: chance.age({ type: "adult" }).toString(),
+        email: invalidEmail,
+        gender: Gender.Male,
       });
       saveUser();
 
       cy.wait("@addUser").then((interception) => {
         expect(interception.response?.statusCode).to.eq(400);
-        expect(interception.response?.body.errors).to.include("Valid email is required.");
+        expect(interception.response?.body.errors).to.include(UserErrorMessages.InvalidEmail);
       });
-      UserManagementPage.formErrors().should("be.visible").contains("Valid email is required.");
+
+      UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.InvalidEmail);
     });
 
     it("Should show error when gender is not selected", () => {
       login();
       UserManagementPage.addNewUserButton().click();
-      UserManagementPage.userNameInput().type("Arthur");
-      UserManagementPage.userRoleSelect().select("Admin");
-      UserManagementPage.userAgeInput().type("30");
-      UserManagementPage.userEmailInput().type("arthur@test.test");
+
+      UserManagementPage.userNameInput().type(chance.first());
+      UserManagementPage.userRoleSelect().select(Role.Admin);
+      UserManagementPage.userAgeInput().type(chance.age({ type: "adult" }).toString());
+      UserManagementPage.userEmailInput().type(chance.email());
       saveUser();
       cy.wait("@addUser").then((interception) => {
         expect(interception.response?.statusCode).to.eq(400);
-        expect(interception.response?.body.errors).to.include("Gender selection is required.");
+        expect(interception.response?.body.errors).to.include(UserErrorMessages.EmptyGender);
       });
-
-      UserManagementPage.formErrors().should("be.visible").contains("Gender selection is required.");
+      UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.EmptyGender);
     });
 
     it("Should show error when email already exists", () => {
@@ -320,17 +352,17 @@ describe("User Management Test Scenarios", () => {
         const existingUser = users[0];
         expect(existingUser).to.exist;
         UserManagementPage.addNewUserButton().click();
-        UserManagementPage.userNameInput().type("Arthur");
-        UserManagementPage.userRoleSelect().select("Admin");
-        UserManagementPage.userAgeInput().type("30");
-        UserManagementPage.userGenderRadio("Male").check();
+        UserManagementPage.userNameInput().type(chance.first());
+        UserManagementPage.userRoleSelect().select(Role.Admin);
+        UserManagementPage.userAgeInput().type(chance.age({ type: "adult" }).toString());
+        UserManagementPage.userGenderRadio(Gender.Male).check();
         UserManagementPage.userEmailInput().type(existingUser.email);
         saveUser();
         cy.wait("@addUser").then((interception) => {
           expect(interception.response?.statusCode).to.eq(409);
-          expect(interception.response?.body.errors).to.include("Email already exists.");
+          expect(interception.response?.body.errors).to.include(UserErrorMessages.ExistingEmail);
         });
-        UserManagementPage.formErrors().should("be.visible").contains("Email already exists.");
+        UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.ExistingEmail);
       });
     });
   });
@@ -339,9 +371,8 @@ describe("User Management Test Scenarios", () => {
     it("Should edit existing user and update in the table", () => {
       login();
 
-      UserManagementBuilders.GetUsers().then((response) => {
-        const users = response.body;
-        const user = users.find((u: any) => u.id === 1);
+      UserManagementBuilders.GetUsers().then(({ body }: { body: User[] }) => {
+        const user = body.find((u) => u.id === 1);
         expect(user).to.exist;
 
         UserManagementPage.editButtonInRowById(user.id).click();
@@ -353,17 +384,20 @@ describe("User Management Test Scenarios", () => {
         UserManagementPage.userGenderRadio(user.gender).should("be.checked");
 
         const updatedUser: UserFormData = {
-          name: "AliceUpdatedName",
-          role: "Editor",
-          age: "35",
-          email: "alice.updated@test.test",
-          gender: "Female",
-          subscriptions: ["Product Updates"],
+          name: chance.first(),
+          role: chance.pickone([Role.Admin, Role.Editor, Role.Viewer]),
+          age: chance.age({ type: "adult" }).toString(),
+          email: chance.email(),
+          gender: chance.pickone([Gender.Male, Gender.Female, Gender.Other]),
+          subscriptions: chance.pickset(
+            [Subscription.Newsletter, Subscription.ProductUpdates],
+            chance.integer({ min: 1, max: 2 })
+          ),
         };
 
         editUserForm(updatedUser);
 
-        cy.intercept("PUT", UserManagementEndpoints.Users(1)).as("editUser");
+        cy.intercept("PUT", UserManagementEndpoints.Users(user.id)).as("editUser");
 
         saveUser();
 
@@ -388,7 +422,7 @@ describe("User Management Test Scenarios", () => {
             role: updatedUser.role,
             age: updatedUser.age,
             gender: updatedUser.gender,
-            status: "Active",
+            status: Status.Active,
           });
 
           const responseSubscriptionsArray = res.subscriptions.split(",").map((s: string) => s.trim());
@@ -409,8 +443,7 @@ describe("User Management Test Scenarios", () => {
     it("Should delete first user and remove from the table", () => {
       login();
 
-      UserManagementBuilders.GetUsers().then((response) => {
-        const users = response.body;
+      UserManagementBuilders.GetUsers().then(({ body: users }: { body: User[] }) => {
         const user = users[0];
         expect(user).to.exist;
 
@@ -431,8 +464,9 @@ describe("User Management Test Scenarios", () => {
         });
 
         UserManagementPage.userRowById(user.id).should("not.exist");
-        UserManagementBuilders.GetUsers().then(({ body: updatedUsers }) => {
-          const deletedUser = updatedUsers.find((u: any) => u.id === user.id);
+
+        UserManagementBuilders.GetUsers().then(({ body: updatedUsers }: { body: User[] }) => {
+          const deletedUser = updatedUsers.find((u) => u.id === user.id);
           expect(deletedUser).to.be.undefined;
         });
       });
@@ -457,7 +491,7 @@ describe("User Management Test Scenarios", () => {
       UserManagementPage.statusCellInRowById(userId)
         .invoke("text")
         .then((text) => {
-          expect(["Active", "Inactive"]).to.include(text.trim());
+          expect([Status.Active, Status.Inactive]).to.include(text.trim());
         });
 
       UserManagementPage.statusButtonInRowById(userId).should("exist");

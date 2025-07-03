@@ -113,11 +113,7 @@ export class UserManagementPage {
 
   static userRows = () => cy.get("#user-table tbody tr");
 
-  static deleteButtonInRowByRole = (role: string) =>
-    this.userRows()
-      .contains("td", role)
-      .parent("tr")
-      .find("button.delete-btn");
+  static deleteButtonInRowByRole = (role: string) => this.userRows().contains("td", role).parent("tr").find("button.delete-btn");
 
   static userRowByName = (name: string) => cy.contains("#user-table tr", name);
 
@@ -128,7 +124,6 @@ export class UserManagementPage {
   static paginationInfo = () => cy.get("#page-info");
 
   static prevPage = () => cy.get("#prev-page");
-  
-  static nextPage = () => cy.get("#next-page");
 
+  static nextPage = () => cy.get("#next-page");
 }

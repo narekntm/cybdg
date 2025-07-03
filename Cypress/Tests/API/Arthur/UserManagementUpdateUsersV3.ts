@@ -1,6 +1,6 @@
-import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
-import { UserFormData, Role, Gender, Subscription, Status, UserErrorMessages } from "Models/Arthur/UserManagementModels";
 import Chance from "chance";
+import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
+import { Gender, Role, Status, Subscription, User, UserErrorMessages, UserFormData } from "Models/Arthur/UserManagementModels";
 
 const chance = new Chance();
 
@@ -23,7 +23,7 @@ describe("User Management Update User Tests", () => {
         age: chance.age({ type: "adult" }).toString(),
         gender: chance.pickone([Gender.Male, Gender.Female, Gender.Other]),
         subscriptions: chance.pickset(
-          [Subscription.Newsletter, Subscription.ProductUpdates, Subscription.Promotions],
+          [Subscription.Newsletter, Subscription.ProductUpdates],
           chance.integer({ min: 1, max: 3 })
         ),
       };
@@ -61,8 +61,8 @@ describe("User Management Update User Tests", () => {
   });
 
   it("Should delete user as admin and verify in the list", () => {
-    UserManagementBuilders.GetUsers().then(({ body }) => {
-      const userToDelete = body.find((u: any) => u.role !== Role.Admin);
+    UserManagementBuilders.GetUsers().then(({ body }: { body: User[] }) => {
+      const userToDelete = body.find((u: User) => u.role !== Role.Admin);
       expect(userToDelete).to.exist;
 
       UserManagementBuilders.DeleteUser(userToDelete.id, true).then(({ status, body }) => {
@@ -70,8 +70,8 @@ describe("User Management Update User Tests", () => {
         expect(body).to.have.property("success", true);
       });
 
-      UserManagementBuilders.GetUsers().then(({ body }) => {
-        const ids = body.map((u: any) => u.id);
+      UserManagementBuilders.GetUsers().then(({ body }: { body: User[] }) => {
+        const ids = body.map((u: User) => u.id);
         expect(ids).to.not.include(userToDelete.id);
       });
     });
@@ -87,8 +87,8 @@ describe("User Management Update User Tests", () => {
   });
 
   it("Should change status to Inactive and verify in list", () => {
-    UserManagementBuilders.GetUsers().then(({ body }) => {
-      const user = body.find((u: any) => u.status === Status.Active);
+    UserManagementBuilders.GetUsers().then(({ body }: { body: User[] }) => {
+      const user = body.find((u: User) => u.status === Status.Active);
       expect(user).to.exist;
 
       UserManagementBuilders.ToggleUserStatus(user.id, Status.Inactive).then(({ status, body }) => {
@@ -96,8 +96,8 @@ describe("User Management Update User Tests", () => {
         expect(body).to.include({ id: user.id, status: Status.Inactive });
       });
 
-      UserManagementBuilders.GetUsers().then(({ body }) => {
-        const updatedUser = body.find((u: any) => u.id === user.id);
+      UserManagementBuilders.GetUsers().then(({ body }: { body: User[] }) => {
+        const updatedUser = body.find((u: User) => u.id === user.id);
         expect(updatedUser).to.exist;
         expect(updatedUser.status).to.eq(Status.Inactive);
       });
@@ -105,8 +105,8 @@ describe("User Management Update User Tests", () => {
   });
 
   it("Should change status to Active and verify in list", () => {
-    UserManagementBuilders.GetUsers().then(({ body }) => {
-      const user = body.find((u: any) => u.status === Status.Inactive);
+    UserManagementBuilders.GetUsers().then(({ body }: { body: User[] }) => {
+      const user = body.find((u: User) => u.status === Status.Inactive);
       expect(user).to.exist;
 
       UserManagementBuilders.ToggleUserStatus(user.id, Status.Active).then(({ status, body }) => {
@@ -114,8 +114,8 @@ describe("User Management Update User Tests", () => {
         expect(body).to.include({ id: user.id, status: Status.Active });
       });
 
-      UserManagementBuilders.GetUsers().then(({ body }) => {
-        const updatedUser = body.find((u: any) => u.id === user.id);
+      UserManagementBuilders.GetUsers().then(({ body }: { body: User[] }) => {
+        const updatedUser = body.find((u: User) => u.id === user.id);
         expect(updatedUser).to.exist;
         expect(updatedUser.status).to.eq(Status.Active);
       });

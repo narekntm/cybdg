@@ -1,8 +1,18 @@
 import Chance from "chance";
 import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
-import { Gender, Role, Status, Subscription, UserFormData, UserFormDataMock, UserInput, UserStatusMessages, UserErrorMessages } from "Models/Arthur/UserManagementModels";
-import { UserManagementPage } from "Pages/Arthur/UserManagementPageV3";
 import { UserManagementEndpoints } from "EndPoints/Arthur/UserManagementEndpoints";
+import {
+  Gender,
+  Role,
+  Status,
+  Subscription,
+  UserErrorMessages,
+  UserFormData,
+  UserFormDataMock,
+  UserInput,
+  UserStatusMessages,
+} from "Models/Arthur/UserManagementModels";
+import { UserManagementPage } from "Pages/Arthur/UserManagementPageV3";
 
 const chance = new Chance();
 
@@ -183,7 +193,7 @@ describe("User Management Test Scenarios", () => {
         role: Role.Admin,
         age: chance.age({ type: "adult" }).toString(),
         email: "@test.test",
-        gender: Gender.Male
+        gender: Gender.Male,
       });
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.InvalidEmail);
@@ -231,9 +241,11 @@ describe("User Management Test Scenarios", () => {
   context("Edit,Delete, Deactivate user", () => {
     it("Should edit existing user and update in the table", () => {
       login();
-      UserManagementPage.userRows().first().within(() => {
-        UserManagementPage.firstViewButton().click();
-      });
+      UserManagementPage.userRows()
+        .first()
+        .within(() => {
+          UserManagementPage.firstViewButton().click();
+        });
 
       const updatedUser = {
         name: chance.first({ gender: "female" }),
@@ -257,7 +269,6 @@ describe("User Management Test Scenarios", () => {
       });
     });
 
-
     it("Should delete existing user and remove from the table", () => {
       login();
       UserManagementPage.firstDeleteButton().click();
@@ -270,35 +281,33 @@ describe("User Management Test Scenarios", () => {
       UserManagementPage.userRows().should("have.length.lessThan", 3);
     });
 
-
     it("Should deactivate and activate user", () => {
       login();
 
-      UserManagementPage.userRows().first().then($row => {
-        const username = $row.find("td").eq(0).text().trim();
-        const statusText = $row.find("td").eq(6).text().trim();
-        if (statusText === Status.Active) {
-          UserManagementPage.deactivateButtonInRow(username).click();
-          UserManagementPage.statusCellInRow(username).should("contain", Status.Inactive);
+      UserManagementPage.userRows()
+        .first()
+        .then(($row) => {
+          const username = $row.find("td").eq(0).text().trim();
+          const statusText = $row.find("td").eq(6).text().trim();
+          if (statusText === Status.Active.toString()) {
+            UserManagementPage.deactivateButtonInRow(username).click();
+            UserManagementPage.statusCellInRow(username).should("contain", Status.Inactive);
 
-          UserManagementPage.activateButtonInRow(username).click();
-          UserManagementPage.statusCellInRow(username).should("contain", Status.Active);
+            UserManagementPage.activateButtonInRow(username).click();
+            UserManagementPage.statusCellInRow(username).should("contain", Status.Active);
 
-          UserManagementPage.deactivateButtonInRow(username).should("exist");
-
-        } else if (statusText === Status.Inactive) {
-          UserManagementPage.activateButtonInRow(username).click();
-          UserManagementPage.statusCellInRow(username).should("contain", Status.Active);
-          UserManagementPage.deactivateButtonInRow(username).click();
-          UserManagementPage.statusCellInRow(username).should("contain", Status.Inactive);
-          UserManagementPage.activateButtonInRow(username).should("exist");
-
-        } else {
-          throw new Error(`Unexpected user status: ${statusText}`);
-        }
-      });
+            UserManagementPage.deactivateButtonInRow(username).should("exist");
+          } else if (statusText === Status.Inactive.toString()) {
+            UserManagementPage.activateButtonInRow(username).click();
+            UserManagementPage.statusCellInRow(username).should("contain", Status.Active);
+            UserManagementPage.deactivateButtonInRow(username).click();
+            UserManagementPage.statusCellInRow(username).should("contain", Status.Inactive);
+            UserManagementPage.activateButtonInRow(username).should("exist");
+          } else {
+            throw new Error(`Unexpected user status: ${statusText}`);
+          }
+        });
     });
-
   });
 
   context("User detail page", () => {
@@ -337,7 +346,7 @@ describe("User Management Test Scenarios", () => {
       cy.contains("Status:").next().should("have.text", mockedUser.status);
     });
 
-    it.only("Should seed 50 users and verify total user count is 53", () => {
+    it("Should seed 50 users and verify total user count is 53", () => {
       const users: UserInput[] = [];
 
       for (let i = 0; i < 50; i++) {
@@ -392,7 +401,5 @@ describe("User Management Test Scenarios", () => {
         }
       }
     });
-
   });
-
 });

@@ -1,3 +1,1 @@
-export class UserManagementPageGenerators {
-
-}
+export class UserManagementPageGenerators {}

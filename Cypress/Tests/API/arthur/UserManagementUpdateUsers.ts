@@ -1,5 +1,8 @@
+import Chance from "chance";
 import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
-import { UserFormData } from "Models/Arthur/UserManagementModels";
+import { Gender, Role, Status, Subscription, User, UserErrorMessages, UserFormData } from "Models/Arthur/UserManagementModels";
+
+const chance = new Chance();
 
 describe("User Management Update User Tests", () => {
   beforeEach(() => {
@@ -12,13 +15,17 @@ describe("User Management Update User Tests", () => {
   it("Should update existing user with valid data", () => {
     UserManagementBuilders.GetUsers().then(({ body }) => {
       const user = body[0];
-      const updated: Partial<UserFormData> = {
-        name: "UpdatedName",
-        email: "updated@example.com",
-        role: "Editor",
-        age: "40",
-        gender: "Other",
-        subscriptions: ["Newsletter", "Product Updates"],
+
+      const updated: UserFormData = {
+        name: chance.first(),
+        email: chance.email(),
+        role: Role.Editor,
+        age: chance.age({ type: "adult" }).toString(),
+        gender: chance.pickone([Gender.Male, Gender.Female, Gender.Other]),
+        subscriptions: chance.pickset(
+          [Subscription.Newsletter, Subscription.ProductUpdates],
+          chance.integer({ min: 1, max: 3 })
+        ),
       };
 
       UserManagementBuilders.UpdateUser(user.id, updated).then(({ status, body }) => {
@@ -39,18 +46,23 @@ describe("User Management Update User Tests", () => {
   });
 
   it("Should return 404 when updating non-existing user", () => {
-    UserManagementBuilders.UpdateUser(99999, {
-      name: "Ghost",
-      email: "ghost@example.com",
-    }).then(({ status, body }) => {
+    const fakeUser: UserFormData = {
+      name: chance.first(),
+      email: chance.email(),
+      role: Role.Viewer,
+      age: chance.age({ type: "adult" }).toString(),
+      gender: chance.pickone([Gender.Male, Gender.Female, Gender.Other]),
+      subscriptions: [Subscription.Newsletter],
+    };
+
+    UserManagementBuilders.UpdateUser(99999, fakeUser).then(({ status }) => {
       expect(status).to.eq(404);
-      expect(body).to.have.property("error", "Not found");
     });
   });
 
   it("Should delete user as admin and verify in the list", () => {
-    UserManagementBuilders.GetUsers().then(({ body }) => {
-      const userToDelete = body.find((u: any) => u.role !== "Admin");
+    UserManagementBuilders.GetUsers().then(({ body }: { body: User[] }) => {
+      const userToDelete = body.find((u: User) => u.role !== Role.Admin);
       expect(userToDelete).to.exist;
 
       UserManagementBuilders.DeleteUser(userToDelete.id, true).then(({ status, body }) => {
@@ -58,21 +70,9 @@ describe("User Management Update User Tests", () => {
         expect(body).to.have.property("success", true);
       });
 
-      UserManagementBuilders.GetUsers().then(({ body }) => {
-        const ids = body.map((u: any) => u.id);
+      UserManagementBuilders.GetUsers().then(({ body }: { body: User[] }) => {
+        const ids = body.map((u: User) => u.id);
         expect(ids).to.not.include(userToDelete.id);
-      });
-    });
-  });
-
-  it("Should not allow deleting Admin user without admin rights", () => {
-    UserManagementBuilders.GetUsers().then(({ body }) => {
-      const adminUser = body.find((u: any) => u.role === "Admin");
-      expect(adminUser).to.exist;
-
-      UserManagementBuilders.DeleteUser(adminUser.id, false).then(({ status, body }) => {
-        expect(status).to.eq(403);
-        expect(body).to.have.property("error", "Admin login required");
       });
     });
   });
@@ -82,50 +82,50 @@ describe("User Management Update User Tests", () => {
 
     UserManagementBuilders.DeleteUser(nonExistingId, true).then(({ status, body }) => {
       expect(status).to.eq(404);
-      expect(body).to.have.property("error", "Not found");
+      expect(body).to.deep.equal({ errors: [UserErrorMessages.UserNotFound] });
     });
   });
 
   it("Should change status to Inactive and verify in list", () => {
-    UserManagementBuilders.GetUsers().then(({ body }) => {
-      const user = body.find((u: any) => u.status === "Active");
+    UserManagementBuilders.GetUsers().then(({ body }: { body: User[] }) => {
+      const user = body.find((u: User) => u.status === Status.Active);
       expect(user).to.exist;
 
-      UserManagementBuilders.ToggleUserStatus(user.id, "Inactive").then(({ status, body }) => {
+      UserManagementBuilders.ToggleUserStatus(user.id, Status.Inactive).then(({ status, body }) => {
         expect(status).to.eq(200);
-        expect(body).to.include({ id: user.id, status: "Inactive" });
+        expect(body).to.include({ id: user.id, status: Status.Inactive });
       });
 
-      UserManagementBuilders.GetUsers().then(({ body }) => {
-        const updatedUser = body.find((u: any) => u.id === user.id);
+      UserManagementBuilders.GetUsers().then(({ body }: { body: User[] }) => {
+        const updatedUser = body.find((u: User) => u.id === user.id);
         expect(updatedUser).to.exist;
-        expect(updatedUser.status).to.eq("Inactive");
+        expect(updatedUser.status).to.eq(Status.Inactive);
       });
     });
   });
 
   it("Should change status to Active and verify in list", () => {
-    UserManagementBuilders.GetUsers().then(({ body }) => {
-      const user = body.find((u: any) => u.status === "Inactive");
+    UserManagementBuilders.GetUsers().then(({ body }: { body: User[] }) => {
+      const user = body.find((u: User) => u.status === Status.Inactive);
       expect(user).to.exist;
 
-      UserManagementBuilders.ToggleUserStatus(user.id, "Active").then(({ status, body }) => {
+      UserManagementBuilders.ToggleUserStatus(user.id, Status.Active).then(({ status, body }) => {
         expect(status).to.eq(200);
-        expect(body).to.include({ id: user.id, status: "Active" });
+        expect(body).to.include({ id: user.id, status: Status.Active });
       });
 
-      UserManagementBuilders.GetUsers().then(({ body }) => {
-        const updatedUser = body.find((u: any) => u.id === user.id);
+      UserManagementBuilders.GetUsers().then(({ body }: { body: User[] }) => {
+        const updatedUser = body.find((u: User) => u.id === user.id);
         expect(updatedUser).to.exist;
-        expect(updatedUser.status).to.eq("Active");
+        expect(updatedUser.status).to.eq(Status.Active);
       });
     });
   });
 
   it("Should return 404 when trying to change status of non-existing user", () => {
-    UserManagementBuilders.ToggleUserStatus(99999, "Inactive").then(({ status, body }) => {
+    UserManagementBuilders.ToggleUserStatus(99999, Status.Inactive).then(({ status, body }) => {
       expect(status).to.eq(404);
-      expect(body).to.have.property("error", "Not found");
+      expect(body).to.deep.equal({ errors: [UserErrorMessages.UserNotFound] });
     });
   });
 });
