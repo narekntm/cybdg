@@ -1,0 +1,36 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>User Details</title>
+    <link rel="stylesheet" href="./css_modules/variables.css" />
+    <link rel="stylesheet" href="./css_modules/typography.css" />
+    <link rel="stylesheet" href="./css_modules/layout.css" />
+    <link rel="stylesheet" href="./css_modules/userDetail.css" />
+    <link rel="stylesheet" href="./css_modules/modals.css" />
+  </head>
+  <body>
+    <div class="profile-card" id="user-card">
+      <img alt="User Photo" class="profile-pic" id="profile-pic" src="" />
+      <h2 id="user-name">User Details</h2>
+
+      <div id="form-errors" style="display: none; color: var(--danger); font-size: 0.9rem; margin-bottom: 1rem"></div>
+      <form id="user-form" class="user-form"></form>
+
+      <div class="button-row" id="view-mode-buttons">
+        <button class="back-btn" id="back-btn">← Back</button>
+        <button class="edit-btn" id="edit-btn">✎ Edit</button>
+      </div>
+
+      <div class="button-row" id="edit-mode-buttons" style="display: none">
+        <button class="back-btn" id="cancel-btn">Cancel</button>
+        <button class="edit-btn" id="save-btn">💾 Save</button>
+      </div>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+    <div id="error"></div>
+
+    <script type="module" src="./modules/userDetail.js"></script>
+  </body>
+</html>

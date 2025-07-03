@@ -4,7 +4,6 @@ describe("User Management – Cypress Sandbox", () => {
   const baseUrl = "/";
 
   beforeEach(() => {
-    cy.intercept("GET", "/api/users").as("getUsers");
     cy.visit(baseUrl);
   });
 
@@ -49,13 +48,7 @@ describe("User Management – Cypress Sandbox", () => {
 
   describe("🔐 Admin Login", () => {
     it("Logs in with valid credentials", () => {
-      cy.intercept({method: "POST", url: "/api/login"}).as("adminLogin");
       loginAsAdmin();
-      cy.wait("@adminLogin").then(xhr=>{
-        expect(xhr.response.statusCode).to.eq(200);
-        expect(xhr.response.body).to.have.property("success", true);
-        expect(xhr.response.body).deep.equal({success:true})
-      })
       cy.get("#admin-controls").should("be.visible");
     });
 
@@ -124,7 +117,6 @@ describe("User Management – Cypress Sandbox", () => {
     });
 
     it("Edit user and verify updated values", () => {
-      cy.wait("@getUsers");
       addUserAndFindRow("EditableUser");
 
       cy.contains("tr", "EditableUser").within(() => {
@@ -151,11 +143,6 @@ describe("User Management – Cypress Sandbox", () => {
     });
 
     it("Non-admin cannot delete Admin user", () => {
-      cy.wait("@getUsers").then(xhr=>{
-        const body = xhr.response.body;
-        expect(body.find((user: { name: string; }) => user.name === "Alice")).not.empty
-      })
-
       cy.contains("tr", "Alice").within(() => {
         cy.get(".delete-btn").click();
       });

@@ -173,6 +173,7 @@
       {
         "selector": "method",
         "format": [
+          "PascalCase",
           "camelCase"
         ]
       },
@@ -199,5 +200,13 @@
       }
     ],
     "no-only-tests/no-only-tests": "error"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["Cypress/Fixtures/Models/**/*.ts"],
+      "rules": {
+        "@typescript-eslint/no-namespace": "off"
+      }
+    }
+  ]
 }
