@@ -112,4 +112,17 @@ export class UserManagementPage {
   static statusButtonInRowById = (id: number) => this.userRowById(id).find("button.status-btn");
 
   static userRows = () => cy.get("#user-table tbody tr");
+
+  static deleteButtonInRowByRole = (role: string) =>
+    this.userRows()
+      .contains("td", role)
+      .parent("tr")
+      .find("button.delete-btn");
+
+  static userRowByName = (name: string) => cy.contains("#user-table tr", name);
+
+  static firstViewButton = () => cy.get("a.btn-neutral").contains("View");
+
+  static firstDeleteButton = () => cy.get("button.delete-btn").first();
+
 }

@@ -28,37 +28,25 @@ export class UserManagementBuilders {
     });
   };
 
-  //chatGPT suggested to use overrides, need to clarify with Narek
-
-  static CreateUser = (overrides: Partial<UserFormData> = {}) => {
-    const user: UserFormData = {
-      name: "TestUser",
-      email: "test@example.com",
-      role: "Viewer",
-      age: "25",
-      gender: "Male",
-      subscriptions: ["Product Updates"],
-      ...overrides,
-    };
-
+  static CreateUser = (user: UserFormData) => {
     return cy.request({
       method: "POST",
       url: UserManagementEndpoints.Users(),
       body: {
         ...user,
-        subscriptions: user.subscriptions?.join(","),
+        subscriptions: user.subscriptions.join(","),
       },
       failOnStatusCode: false,
     });
   };
 
-  static UpdateUser = (id: number, overrides: Partial<UserFormData> = {}) => {
+  static UpdateUser = (id: number, user: UserFormData) => {
     return cy.request({
       method: "PUT",
       url: UserManagementEndpoints.Users(id),
       body: {
-        ...overrides,
-        subscriptions: overrides.subscriptions?.join(","),
+        ...user,
+        subscriptions: user.subscriptions.join(","),
       },
       failOnStatusCode: false,
     });

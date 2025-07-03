@@ -1,15 +1,17 @@
 import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
-import { UserFormData } from "Models/Arthur/UserManagementModels";
+import { UserFormData, Role, Gender, Subscription, Status, UserErrorMessages } from "Models/Arthur/UserManagementModels";
+import Chance from "chance";
+
+const chance = new Chance();
 
 describe("User Management Create Users Tests", () => {
-  const baseUser: UserFormData = {
-    name: "Fail",
-    email: "failcase@example.com",
-    role: "Viewer",
-    age: "25",
-    gender: "Male",
-    subscriptions: ["Newsletter"],
-  };
+
+  beforeEach(() => {
+    UserManagementBuilders.ResetData().then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body).to.have.property("success", true);
+    });
+  });
 
   function checkUserNotCreated(email: string) {
     UserManagementBuilders.GetUsers().then(({ status, body }) => {
@@ -20,10 +22,6 @@ describe("User Management Create Users Tests", () => {
   }
 
   it("Should check user reset", () => {
-    UserManagementBuilders.ResetData().then((response) => {
-      expect(response.status).to.eq(200);
-      expect(response.body).to.have.property("success", true);
-    });
     UserManagementBuilders.GetUsers().then((response) => {
       expect(response.status).to.eq(200);
       expect(response.body).to.be.an("array").with.length(3);
@@ -31,97 +29,125 @@ describe("User Management Create Users Tests", () => {
   });
 
   it("Should create user with valid data", () => {
-    UserManagementBuilders.CreateUser({
-      name: "Arthur",
-      email: "arthur@example.com",
-      role: "Admin",
-      age: "30",
-      gender: "Male",
-      subscriptions: ["Newsletter", "Product Updates"],
-    }).then(({ status, body }) => {
+    const user: UserFormData = {
+      name: chance.first(),
+      email: chance.email(),
+      role: Role.Admin,
+      age: chance.age({ type: "adult" }).toString(),
+      gender: chance.pickone([Gender.Male, Gender.Female, Gender.Other]),
+      subscriptions: chance.pickset(
+        [Subscription.Newsletter, Subscription.ProductUpdates, Subscription.Promotions],
+        chance.integer({ min: 1, max: 3 })
+      ),
+    };
+
+    UserManagementBuilders.CreateUser(user).then(({ status, body }) => {
       expect(status).to.eq(200);
       expect(body).to.include({
-        name: "Arthur",
-        email: "arthur@example.com",
-        role: "Admin",
-        age: "30",
-        gender: "Male",
-        status: "Active",
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        age: user.age,
+        gender: user.gender,
+        status: Status.Active,
       });
 
       const subs = body.subscriptions.split(",").map((s: string) => s.trim());
-      expect(subs).to.have.members(["Newsletter", "Product Updates"]);
+      expect(subs).to.have.members(user.subscriptions);
     });
   });
 
   it("Should not create user when name is empty", () => {
-    const user: Partial<UserFormData> = {
-      ...baseUser,
+    const user: UserFormData = {
       name: "",
-      email: "empty-name@example.com",
+      email: chance.email(),
+      role: Role.Viewer,
+      age: chance.age({ type: "adult" }).toString(),
+      gender: Gender.Male,
+      subscriptions: [Subscription.Newsletter],
     };
+
     UserManagementBuilders.CreateUser(user).then(({ status, body }) => {
       expect(status).to.eq(400);
-      expect(body).to.deep.equal({ errors: ["Name must be 1–20 letters only (no spaces or symbols)."] });
+      expect(body).to.deep.equal({ errors: [UserErrorMessages.EmptyName] });
     });
+
     checkUserNotCreated(user.email);
   });
 
   it("Should not create user when role is empty string", () => {
-    UserManagementBuilders.CreateUser({
-      ...baseUser,
-      email: "empty-role@example.com",
+    const user: UserFormData = {
+      name: chance.first(),
+      email: chance.email(),
       role: "",
-    }).then(({ status, body }) => {
+      age: chance.age({ type: "adult" }).toString(),
+      gender: Gender.Male,
+      subscriptions: [Subscription.Newsletter],
+    };
+
+    UserManagementBuilders.CreateUser(user).then(({ status, body }) => {
       expect(status).to.eq(400);
-      expect(body).to.deep.equal({ errors: ["Role is required."] });
+      expect(body).to.deep.equal({ errors: [UserErrorMessages.EmptyRole] });
     });
 
-    checkUserNotCreated("empty-role@example.com");
+    checkUserNotCreated(user.email);
   });
 
   it("Should not create user when age is empty", () => {
-    UserManagementBuilders.CreateUser({
-      ...baseUser,
-      email: "empty-age@example.com",
+    const user: UserFormData = {
+      name: chance.first(),
+      email: chance.email(),
+      role: Role.Viewer,
       age: "",
-    }).then(({ status, body }) => {
+      gender: Gender.Male,
+      subscriptions: [Subscription.Newsletter],
+    };
+
+    UserManagementBuilders.CreateUser(user).then(({ status, body }) => {
       expect(status).to.eq(400);
-      expect(body).to.deep.equal({ errors: ["Age must be between 1 and 99."] });
+      expect(body).to.deep.equal({ errors: [UserErrorMessages.InvalidAge] });
     });
 
-    checkUserNotCreated("empty-age@example.com");
+    checkUserNotCreated(user.email);
   });
 
   it("Should not create user when email is empty", () => {
-    const invalidUserName = "EmptyEmail";
-
-    UserManagementBuilders.CreateUser({
-      ...baseUser,
+    const user: UserFormData = {
+      name: chance.first(),
       email: "",
-      name: invalidUserName,
-    }).then(({ status, body }) => {
+      role: Role.Viewer,
+      age: chance.age({ type: "adult" }).toString(),
+      gender: Gender.Male,
+      subscriptions: [Subscription.Newsletter],
+    };
+
+    UserManagementBuilders.CreateUser(user).then(({ status, body }) => {
       expect(status).to.eq(400);
-      expect(body).to.deep.equal({ errors: ["Valid email is required."] });
+      expect(body).to.deep.equal({ errors: [UserErrorMessages.InvalidEmail] });
     });
 
     UserManagementBuilders.GetUsers().then(({ status, body }) => {
       expect(status).to.eq(200);
       const names = (body as { name: string }[]).map((u) => u.name);
-      expect(names).to.not.include(invalidUserName);
+      expect(names).to.not.include(user.name);
     });
   });
 
   it("Should not create user when gender is empty", () => {
-    UserManagementBuilders.CreateUser({
-      ...baseUser,
-      email: "empty-gender@example.com",
+    const user: UserFormData = {
+      name: chance.first(),
+      email: chance.email(),
+      role: Role.Viewer,
+      age: chance.age({ type: "adult" }).toString(),
       gender: "",
-    }).then(({ status, body }) => {
+      subscriptions: [Subscription.Newsletter],
+    };
+
+    UserManagementBuilders.CreateUser(user).then(({ status, body }) => {
       expect(status).to.eq(400);
-      expect(body).to.deep.equal({ errors: ["Gender selection is required."] });
+      expect(body).to.deep.equal({ errors: [UserErrorMessages.EmptyGender] });
     });
 
-    checkUserNotCreated("empty-gender@example.com");
+    checkUserNotCreated(user.email);
   });
 });
