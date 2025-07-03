@@ -1,6 +1,7 @@
 import Chance from "chance";
 import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
 import { UserManagementEndpoints } from "EndPoints/Arthur/UserManagementEndpoints";
+import { UserManagementGenerators } from "Generators/Arthur/UserManagementGenerator";
 import {
   Gender,
   Role,
@@ -130,14 +131,7 @@ describe("User Management Test Scenarios", () => {
     it("Should add user with valid input", () => {
       login();
 
-      const testUser: UserFormData = {
-        name: chance.first(),
-        role: chance.pickone(Object.values(Role)),
-        age: chance.age({ type: "adult" }).toString(),
-        email: chance.email(),
-        gender: chance.pickone(Object.values(Gender)),
-        subscriptions: chance.pickset(Object.values(Subscription), chance.integer({ min: 1, max: 2 })),
-      };
+      const testUser: UserFormData = UserManagementGenerators.validUser();
 
       fillUserForm(testUser);
       saveUser();
@@ -215,13 +209,8 @@ describe("User Management Test Scenarios", () => {
 
     it("Should show error when name contains symbols", () => {
       login();
-      fillUserForm({
-        name: chance.first() + "@",
-        role: Role.Admin,
-        age: chance.age({ type: "adult" }).toString(),
-        email: chance.email(),
-        gender: Gender.Male,
-      });
+      const userWithSymbols = UserManagementGenerators.withSymbolsInName();
+      fillUserForm(userWithSymbols);
       saveUser();
       cy.wait("@addUser").then((interception) => {
         expect(interception.response?.statusCode).to.eq(400);
@@ -232,13 +221,8 @@ describe("User Management Test Scenarios", () => {
 
     it("Should show error when name contains numbers", () => {
       login();
-      fillUserForm({
-        name: chance.first() + "123",
-        role: Role.Admin,
-        age: chance.age({ type: "adult" }).toString(),
-        email: chance.email(),
-        gender: Gender.Male,
-      });
+      const userWithNumbers = UserManagementGenerators.withNumbersInName();
+      fillUserForm(userWithNumbers);
       saveUser();
       cy.wait("@addUser").then((interception) => {
         expect(interception.response?.statusCode).to.eq(400);
@@ -250,15 +234,9 @@ describe("User Management Test Scenarios", () => {
     it("Should show error when name is too long", () => {
       login();
 
-      const longName = chance.string({ length: 25, pool: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" });
+      const userWithLongName = UserManagementGenerators.withLongRandomName(25);
 
-      fillUserForm({
-        name: longName,
-        role: Role.Admin,
-        age: chance.age({ type: "adult" }).toString(),
-        email: chance.email(),
-        gender: Gender.Male,
-      });
+      fillUserForm(userWithLongName);
       saveUser();
       cy.wait("@addUser").then((interception) => {
         expect(interception.response?.statusCode).to.eq(400);
@@ -269,13 +247,9 @@ describe("User Management Test Scenarios", () => {
 
     it("Should show error when no @ symbol", () => {
       login();
-      fillUserForm({
-        name: chance.first(),
-        role: Role.Admin,
-        age: chance.age({ type: "adult" }).toString(),
-        email: "arthurtest.com",
-        gender: Gender.Male,
-      });
+      const userNoAt = UserManagementGenerators.validUser();
+      userNoAt.email = "arthurtest.com";
+      fillUserForm(userNoAt);
       saveUser();
       cy.wait("@addUser").then((interception) => {
         expect(interception.response?.statusCode).to.eq(400);
@@ -287,15 +261,10 @@ describe("User Management Test Scenarios", () => {
 
     it("Should show error when no domain", () => {
       login();
-      const invalidEmail = chance.string({ length: 10, pool: "abcdefghijklmnopqrstuvwxyz" }) + "@";
+      const userNoDomain = UserManagementGenerators.validUser();
+      userNoDomain.email = chance.string({ length: 10, pool: "abcdefghijklmnopqrstuvwxyz" }) + "@";
 
-      fillUserForm({
-        name: chance.first(),
-        role: Role.Admin,
-        age: chance.age({ type: "adult" }).toString(),
-        email: invalidEmail,
-        gender: Gender.Male,
-      });
+      fillUserForm(userNoDomain);
       saveUser();
       cy.wait("@addUser").then((interception) => {
         expect(interception.response?.statusCode).to.eq(400);
@@ -306,15 +275,10 @@ describe("User Management Test Scenarios", () => {
     });
     it("Should show error when no username part", () => {
       login();
-      const invalidEmail = "@" + chance.domain();
+      const userNoUsername = UserManagementGenerators.validUser();
+      userNoUsername.email = "@" + chance.domain();
 
-      fillUserForm({
-        name: chance.first(),
-        role: Role.Admin,
-        age: chance.age({ type: "adult" }).toString(),
-        email: invalidEmail,
-        gender: Gender.Male,
-      });
+      fillUserForm(userNoUsername);
       saveUser();
 
       cy.wait("@addUser").then((interception) => {
@@ -328,7 +292,6 @@ describe("User Management Test Scenarios", () => {
     it("Should show error when gender is not selected", () => {
       login();
       UserManagementPage.addNewUserButton().click();
-
       UserManagementPage.userNameInput().type(chance.first());
       UserManagementPage.userRoleSelect().select(Role.Admin);
       UserManagementPage.userAgeInput().type(chance.age({ type: "adult" }).toString());
@@ -349,9 +312,11 @@ describe("User Management Test Scenarios", () => {
         const existingUser = users[0];
         expect(existingUser).to.exist;
         UserManagementPage.addNewUserButton().click();
-        UserManagementPage.userNameInput().type(chance.first());
-        UserManagementPage.userRoleSelect().select(Role.Admin);
-        UserManagementPage.userAgeInput().type(chance.age({ type: "adult" }).toString());
+
+        const user = UserManagementGenerators.validUser();
+        UserManagementPage.userNameInput().type(user.name);
+        UserManagementPage.userRoleSelect().select(user.role);
+        UserManagementPage.userAgeInput().type(user.age);
         UserManagementPage.userGenderRadio(Gender.Male).check();
         UserManagementPage.userEmailInput().type(existingUser.email);
         saveUser();
@@ -371,6 +336,7 @@ describe("User Management Test Scenarios", () => {
       UserManagementBuilders.GetUsers().then(({ body }: { body: User[] }) => {
         const user = body.find((u) => u.id === 1);
         expect(user).to.exist;
+        const updatedUser = UserManagementGenerators.validUser();
 
         UserManagementPage.editButtonInRowById(user.id).click();
         UserManagementPage.userFormModal().should("be.visible");
@@ -379,15 +345,6 @@ describe("User Management Test Scenarios", () => {
         UserManagementPage.userAgeInput().should("have.value", String(user.age));
         UserManagementPage.userEmailInput().should("have.value", user.email);
         UserManagementPage.userGenderRadio(user.gender).should("be.checked");
-
-        const updatedUser: UserFormData = {
-          name: chance.first(),
-          role: chance.pickone([Role.Admin, Role.Editor, Role.Viewer]),
-          age: chance.age({ type: "adult" }).toString(),
-          email: chance.email(),
-          gender: chance.pickone([Gender.Male, Gender.Female, Gender.Other]),
-          subscriptions: chance.pickset([Subscription.Newsletter, Subscription.ProductUpdates], chance.integer({ min: 1, max: 2 })),
-        };
 
         editUserForm(updatedUser);
 

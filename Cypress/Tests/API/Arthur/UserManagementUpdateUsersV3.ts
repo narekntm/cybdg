@@ -1,8 +1,6 @@
-import Chance from "chance";
 import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
-import { Gender, Role, Status, Subscription, User, UserErrorMessages, UserFormData } from "Models/Arthur/UserManagementModels";
-
-const chance = new Chance();
+import { UserManagementGenerators } from "Generators/Arthur/UserManagementGenerator";
+import { Role, Status, User, UserErrorMessages } from "Models/Arthur/UserManagementModels";
 
 describe("User Management Update User Tests", () => {
   beforeEach(() => {
@@ -15,15 +13,7 @@ describe("User Management Update User Tests", () => {
   it("Should update existing user with valid data", () => {
     UserManagementBuilders.GetUsers().then(({ body }) => {
       const user = body[0];
-
-      const updated: UserFormData = {
-        name: chance.first(),
-        email: chance.email(),
-        role: Role.Editor,
-        age: chance.age({ type: "adult" }).toString(),
-        gender: chance.pickone([Gender.Male, Gender.Female, Gender.Other]),
-        subscriptions: chance.pickset([Subscription.Newsletter, Subscription.ProductUpdates], chance.integer({ min: 1, max: 3 })),
-      };
+      const updated = UserManagementGenerators.validUser();
 
       UserManagementBuilders.UpdateUser(user.id, updated).then(({ status, body }) => {
         expect(status).to.eq(200);
@@ -43,14 +33,7 @@ describe("User Management Update User Tests", () => {
   });
 
   it("Should return 404 when updating non-existing user", () => {
-    const fakeUser: UserFormData = {
-      name: chance.first(),
-      email: chance.email(),
-      role: Role.Viewer,
-      age: chance.age({ type: "adult" }).toString(),
-      gender: chance.pickone([Gender.Male, Gender.Female, Gender.Other]),
-      subscriptions: [Subscription.Newsletter],
-    };
+    const fakeUser = UserManagementGenerators.validUser();
 
     UserManagementBuilders.UpdateUser(99999, fakeUser).then(({ status }) => {
       expect(status).to.eq(404);

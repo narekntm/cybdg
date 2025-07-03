@@ -1,6 +1,7 @@
 import Chance from "chance";
 import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
 import { UserManagementEndpoints } from "EndPoints/Arthur/UserManagementEndpoints";
+import { UserManagementGenerators } from "Generators/Arthur/UserManagementGenerator";
 import {
   Gender,
   Role,
@@ -8,7 +9,6 @@ import {
   Subscription,
   UserErrorMessages,
   UserFormData,
-  UserFormDataMock,
   UserInput,
   UserStatusMessages,
 } from "Models/Arthur/UserManagementModels";
@@ -41,7 +41,9 @@ describe("User Management Test Scenarios", () => {
     UserManagementPage.userRoleSelect().select(user.role);
     UserManagementPage.userAgeInput().clear().type(user.age);
     UserManagementPage.userEmailInput().clear().type(user.email);
-    UserManagementPage.userGenderRadio(user.gender).check();
+    if (user.gender) {
+      UserManagementPage.userGenderRadio(user.gender).check();
+    }
 
     if (user.subscriptions && user.subscriptions.length > 0) {
       user.subscriptions.forEach((sub) => {
@@ -88,14 +90,7 @@ describe("User Management Test Scenarios", () => {
   context("Adding new user", () => {
     it("Should add user with valid input", () => {
       login();
-      fillUserForm({
-        name: chance.first({ nationality: "en" }),
-        role: Role.Admin,
-        age: chance.age({ type: "adult" }).toString(),
-        email: chance.email(),
-        gender: Gender.Male,
-        subscriptions: [Subscription.Newsletter, Subscription.ProductUpdates],
-      });
+      fillUserForm(UserManagementGenerators.validUser());
       saveUser();
       UserManagementPage.toastContainer().should("be.visible").and("contain.text", UserStatusMessages.AddNewUserMessage);
     });
@@ -119,26 +114,14 @@ describe("User Management Test Scenarios", () => {
 
     it("Should show error when name contains symbols", () => {
       login();
-      fillUserForm({
-        name: "John@",
-        role: Role.Admin,
-        age: chance.age({ type: "adult" }).toString(),
-        email: chance.email(),
-        gender: Gender.Male,
-      });
+      fillUserForm(UserManagementGenerators.withSymbolsInName());
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.EmptyName);
     });
 
     it("Should show error when name contains numbers", () => {
       login();
-      fillUserForm({
-        name: "John123",
-        role: Role.Admin,
-        age: chance.age({ type: "adult" }).toString(),
-        email: chance.email(),
-        gender: Gender.Male,
-      });
+      fillUserForm(UserManagementGenerators.withNumbersInName());
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.EmptyName);
       UserManagementPage.toastContainer().should("be.visible");
@@ -146,13 +129,7 @@ describe("User Management Test Scenarios", () => {
 
     it("Should show error when name is too long", () => {
       login();
-      fillUserForm({
-        name: "ArthurTheGreatAndPowerfulKingOfTheBrits",
-        role: Role.Admin,
-        age: chance.age({ type: "adult" }).toString(),
-        email: chance.email(),
-        gender: Gender.Male,
-      });
+      fillUserForm(UserManagementGenerators.withTooLongName());
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.EmptyName);
       UserManagementPage.toastContainer().should("be.visible");
@@ -160,13 +137,7 @@ describe("User Management Test Scenarios", () => {
 
     it("Should show error when no @ symbol", () => {
       login();
-      fillUserForm({
-        name: chance.first({ nationality: "en" }),
-        role: Role.Admin,
-        age: chance.age({ type: "adult" }).toString(),
-        email: "invalidemail.com",
-        gender: Gender.Male,
-      });
+      fillUserForm(UserManagementGenerators.withEmailMissingAt());
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.InvalidEmail);
       UserManagementPage.toastContainer().should("be.visible");
@@ -174,13 +145,7 @@ describe("User Management Test Scenarios", () => {
 
     it("Should show error when no domain", () => {
       login();
-      fillUserForm({
-        name: chance.first({ nationality: "en" }),
-        role: Role.Admin,
-        age: chance.age({ type: "adult" }).toString(),
-        email: "invalid@emailcom",
-        gender: Gender.Male,
-      });
+      fillUserForm(UserManagementGenerators.withEmailMissingDomain());
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.InvalidEmail);
       UserManagementPage.toastContainer().should("be.visible");
@@ -188,13 +153,7 @@ describe("User Management Test Scenarios", () => {
 
     it("Should show error when no username part", () => {
       login();
-      fillUserForm({
-        name: chance.first({ nationality: "en" }),
-        role: Role.Admin,
-        age: chance.age({ type: "adult" }).toString(),
-        email: "@test.test",
-        gender: Gender.Male,
-      });
+      fillUserForm(UserManagementGenerators.withEmailMissingUsername());
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.InvalidEmail);
       UserManagementPage.toastContainer().should("be.visible");
@@ -202,11 +161,7 @@ describe("User Management Test Scenarios", () => {
 
     it("Should show error when gender is not selected", () => {
       login();
-      UserManagementPage.addNewUserButton().click();
-      UserManagementPage.userNameInput().type("Arthur");
-      UserManagementPage.userRoleSelect().select("Admin");
-      UserManagementPage.userAgeInput().type("30");
-      UserManagementPage.userEmailInput().type("arthur@test.test");
+      fillUserForm(UserManagementGenerators.withEmptyGender());
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.EmptyGender);
       UserManagementPage.toastContainer().should("be.visible");
@@ -214,24 +169,11 @@ describe("User Management Test Scenarios", () => {
 
     it("Should show error message when email already exists", () => {
       login();
-      const duplicateEmail = chance.email();
-      fillUserForm({
-        name: chance.first({ nationality: "en" }),
-        role: Role.Admin,
-        age: chance.age({ type: "adult" }).toString(),
-        email: duplicateEmail,
-        gender: Gender.Male,
-        subscriptions: [Subscription.Newsletter, Subscription.ProductUpdates],
-      });
+      const user = UserManagementGenerators.validUser();
+      fillUserForm(user);
       saveUser();
       UserManagementPage.toastContainer().should("be.visible").and("contain.text", UserStatusMessages.AddNewUserMessage);
-      fillUserForm({
-        name: chance.first({ nationality: "en" }),
-        role: Role.Admin,
-        age: chance.age({ type: "adult" }).toString(),
-        email: duplicateEmail,
-        gender: Gender.Male,
-      });
+      fillUserForm(UserManagementGenerators.withDuplicateEmail(user.email));
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.ExistingEmail);
       UserManagementPage.toastContainer().should("be.visible").and("text", UserErrorMessages.ExistingEmail);
@@ -240,21 +182,13 @@ describe("User Management Test Scenarios", () => {
 
   context("Edit,Delete, Deactivate user", () => {
     it("Should edit existing user and update in the table", () => {
+      const updatedUser = UserManagementGenerators.validUser();
       login();
       UserManagementPage.userRows()
         .first()
         .within(() => {
           UserManagementPage.firstViewButton().click();
         });
-
-      const updatedUser = {
-        name: chance.first({ gender: "female" }),
-        role: Role.Editor,
-        age: chance.age({ type: "adult" }).toString(),
-        email: chance.email({ domain: "example.com" }),
-        gender: Gender.Female,
-        subscriptions: [Subscription.ProductUpdates],
-      };
       UserManagementPage.editButton().click();
       editUserForm(updatedUser);
       UserManagementPage.saveUserDataButton().click();
@@ -312,19 +246,9 @@ describe("User Management Test Scenarios", () => {
 
   context("User detail page", () => {
     it("Should display mocked user data and check it", () => {
-      const roles = Object.values(Role);
-      const randomRole = chance.pickone(roles);
-      const genders = Object.values(Gender);
-      const randomGender = chance.pickone(genders);
-      const allSubscriptions = Object.values(Subscription);
-      const randomSubscriptions = chance.pickset(allSubscriptions, chance.integer({ min: 1, max: allSubscriptions.length }));
-      const mockedUser: UserFormDataMock = {
-        name: chance.name(),
-        email: chance.email(),
-        role: randomRole,
-        age: chance.age({ type: "adult" }).toString(),
-        gender: randomGender,
-        subscriptions: randomSubscriptions.join(", "),
+      const mockedUser = {
+        ...UserManagementGenerators.validUser(),
+        subscriptions: UserManagementGenerators.validUser().subscriptions.join(", "),
         status: Status.Active,
       };
 

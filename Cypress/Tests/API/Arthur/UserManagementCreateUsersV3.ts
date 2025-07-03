@@ -1,8 +1,6 @@
-import Chance from "chance";
 import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
-import { Gender, Role, Status, Subscription, UserErrorMessages, UserFormData } from "Models/Arthur/UserManagementModels";
-
-const chance = new Chance();
+import { UserManagementGenerators } from "Generators/Arthur/UserManagementGenerator";
+import { Status, UserErrorMessages, UserFormData } from "Models/Arthur/UserManagementModels";
 
 describe("User Management Create Users Tests", () => {
   beforeEach(() => {
@@ -28,14 +26,7 @@ describe("User Management Create Users Tests", () => {
   });
 
   it("Should create user with valid data", () => {
-    const user: UserFormData = {
-      name: chance.first(),
-      email: chance.email(),
-      role: Role.Admin,
-      age: chance.age({ type: "adult" }).toString(),
-      gender: chance.pickone([Gender.Male, Gender.Female, Gender.Other]),
-      subscriptions: chance.pickset([Subscription.Newsletter, Subscription.ProductUpdates], chance.integer({ min: 1, max: 3 })),
-    };
+    const user = UserManagementGenerators.validUser();
 
     UserManagementBuilders.CreateUser(user).then(({ status, body }) => {
       expect(status).to.eq(200);
@@ -54,14 +45,7 @@ describe("User Management Create Users Tests", () => {
   });
 
   it("Should not create user when name is empty", () => {
-    const user: UserFormData = {
-      name: "",
-      email: chance.email(),
-      role: Role.Viewer,
-      age: chance.age({ type: "adult" }).toString(),
-      gender: Gender.Male,
-      subscriptions: [Subscription.Newsletter],
-    };
+    const user = UserManagementGenerators.withEmptyName();
 
     UserManagementBuilders.CreateUser(user).then(({ status, body }) => {
       expect(status).to.eq(400);
@@ -72,14 +56,7 @@ describe("User Management Create Users Tests", () => {
   });
 
   it("Should not create user when role is empty string", () => {
-    const user: UserFormData = {
-      name: chance.first(),
-      email: chance.email(),
-      role: "",
-      age: chance.age({ type: "adult" }).toString(),
-      gender: Gender.Male,
-      subscriptions: [Subscription.Newsletter],
-    };
+    const user = UserManagementGenerators.withEmptyRole();
 
     UserManagementBuilders.CreateUser(user).then(({ status, body }) => {
       expect(status).to.eq(400);
@@ -90,14 +67,7 @@ describe("User Management Create Users Tests", () => {
   });
 
   it("Should not create user when age is empty", () => {
-    const user: UserFormData = {
-      name: chance.first(),
-      email: chance.email(),
-      role: Role.Viewer,
-      age: "",
-      gender: Gender.Male,
-      subscriptions: [Subscription.Newsletter],
-    };
+    const user = UserManagementGenerators.withEmptyAge();
 
     UserManagementBuilders.CreateUser(user).then(({ status, body }) => {
       expect(status).to.eq(400);
@@ -108,14 +78,7 @@ describe("User Management Create Users Tests", () => {
   });
 
   it("Should not create user when email is empty", () => {
-    const user: UserFormData = {
-      name: chance.first(),
-      email: "",
-      role: Role.Viewer,
-      age: chance.age({ type: "adult" }).toString(),
-      gender: Gender.Male,
-      subscriptions: [Subscription.Newsletter],
-    };
+    const user = UserManagementGenerators.withEmptyEmail();
 
     UserManagementBuilders.CreateUser(user).then(({ status, body }) => {
       expect(status).to.eq(400);
@@ -130,14 +93,7 @@ describe("User Management Create Users Tests", () => {
   });
 
   it("Should not create user when gender is empty", () => {
-    const user: UserFormData = {
-      name: chance.first(),
-      email: chance.email(),
-      role: Role.Viewer,
-      age: chance.age({ type: "adult" }).toString(),
-      gender: "",
-      subscriptions: [Subscription.Newsletter],
-    };
+    const user = UserManagementGenerators.withEmptyGender();
 
     UserManagementBuilders.CreateUser(user).then(({ status, body }) => {
       expect(status).to.eq(400);
