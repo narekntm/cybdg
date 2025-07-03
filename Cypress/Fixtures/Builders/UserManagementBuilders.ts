@@ -1,41 +1,35 @@
-import { Login, User } from "Cypress/Fixtures/Models/UserManagementModels";
-import { UserManagementEndPoints } from 'EndPoints/UserManagementEndPoints';
+import { UserManagementModels } from "Cypress/Fixtures/Models/UserManagementModels";
+import { UserManagementEndPoints } from "EndPoints/UserManagementEndPoints";
 
 export class UserManagementBuilders {
-
-  static AdminLogin = (login: Login) => {
+  static AdminLogin = (login: UserManagementModels.Login) => {
     return cy.request({
       method: "POST",
       url: UserManagementEndPoints.adminLogin,
       body: {
         email: login.email,
-        password: login.password
+        password: login.password,
       },
-      failOnStatusCode: false
-    })
+      failOnStatusCode: false,
+    });
   };
 
   static ResetData = () => {
     return cy.request({
       method: "POST",
-      url: UserManagementEndPoints.reset
-    })
+      url: UserManagementEndPoints.reset,
+    });
   };
 
-  static PostUser = (user: User) => {
-    console.log('user: ', user)
+  static PostUser = (user: UserManagementModels.User) => {
+    console.log("user: ", user);
     return cy.request({
       method: "POST",
       url: UserManagementEndPoints.Users(),
       body: {
-        name: user.name,
-        role: user.role,
-        age: user.age,
-        email: user.email,
-        gender: user.gender,
-        subscription: user.subscription
+        user,
       },
-      failOnStatusCode: false
+      failOnStatusCode: false,
     });
   };
 
@@ -46,28 +40,23 @@ export class UserManagementBuilders {
     });
   };
 
-  static PutUser = (id: number, updatedUser: User ) => {
+  static PutUser = (id: number, updatedUser: UserManagementModels.User) => {
     return cy.request({
       method: "PUT",
       url: UserManagementEndPoints.Users(id),
       body: {
-        name: updatedUser.name,
-        role: updatedUser.role,
-        age: updatedUser.age,
-        email: updatedUser.email,
-        gender: updatedUser.gender,
-        subscription: updatedUser.subscription
-      }
+        updatedUser,
+      },
     });
   };
 
   static DeleteUser = (id: number, isAdmin: boolean) => {
     return cy.request({
-      method: 'DELETE',
+      method: "DELETE",
       url: UserManagementEndPoints.Users(id),
       body: {
-        isAdmin: isAdmin
-      }
+        isAdmin: isAdmin,
+      },
     });
   };
 
@@ -76,8 +65,8 @@ export class UserManagementBuilders {
       method: "PATCH",
       url: UserManagementEndPoints.Status(id),
       body: {
-        status: status
-      }
+        status: status,
+      },
     });
   };
 }

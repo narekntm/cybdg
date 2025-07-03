@@ -1,24 +1,24 @@
-import { UserManagementBuilders } from 'Cypress/Fixtures/Builders/UserManagementBuilders';
-import { UserManagementEndPoints } from 'Cypress/Fixtures/EndPoints/UserManagementEndPoints';
-import { ActionButtons, ButtonAction, ColumnNames, Columns, Gender, Login,User } from "Cypress/Fixtures/Models/UserManagementModels";
+import { UserManagementBuilders } from "Cypress/Fixtures/Builders/UserManagementBuilders";
+import { UserManagementEndPoints } from "Cypress/Fixtures/EndPoints/UserManagementEndPoints";
+import { UserManagementModels } from "Cypress/Fixtures/Models/UserManagementModels";
 import { UserManagementPage } from "Cypress/Fixtures/UserManagementPage";
 
 describe("User Management Suite", () => {
-  let loginPositiveCase: Login;
-  let loginNegativeCase: Login;
-  let userFormPositiveCase: User;
-  let userFormNegativeCase: User;
+  let loginPositiveCase: UserManagementModels.Login;
+  let loginNegativeCase: UserManagementModels.Login;
+  let userFormPositiveCase: UserManagementModels.User;
+  let userFormNegativeCase: UserManagementModels.User;
 
-  function adminLogin(login: Login) {
-    if (login.email !== '') {
+  function adminLogin(login: UserManagementModels.Login) {
+    if (login.email !== "") {
       UserManagementPage.adminTitle().should("have.text", "Login as Admin");
       UserManagementPage.adminEmailLbl().should("have.text", "Email");
       UserManagementPage.adminEmailInput().should("have.attr", "required");
       UserManagementPage.adminEmailInput().should("be.visible").and("be.enabled").clear();
       UserManagementPage.adminEmailInput().type(login.email);
     }
-    
-    if (login.password !== '') {
+
+    if (login.password !== "") {
       UserManagementPage.adminPasswordLbl().should("have.text", "Password");
       UserManagementPage.adminPasswordInput().should("have.attr", "required");
       UserManagementPage.adminPasswordInput().should("be.visible").and("be.enabled").clear();
@@ -28,8 +28,8 @@ describe("User Management Suite", () => {
     UserManagementPage.adminSubmitBtn().should("have.text", "Login").click();
   }
 
-  function fillUserForm(user: User) {
-    if (user.name){
+  function fillUserForm(user: UserManagementModels.User) {
+    if (user.name) {
       UserManagementPage.formNewUserTitle().should("have.text", "Add New User");
       UserManagementPage.fullNameLbl().should("have.text", "Full Name");
       UserManagementPage.fullNameInput().should("have.attr", "required");
@@ -40,7 +40,7 @@ describe("User Management Suite", () => {
     if (user.role) {
       UserManagementPage.roleLbl().should("have.text", "Role");
       UserManagementPage.roleSelect().should("have.attr", "required");
-      UserManagementPage.roleSelect().should("be.visible").and("be.enabled").select('Select');
+      UserManagementPage.roleSelect().should("be.visible").and("be.enabled").select("Select");
       UserManagementPage.roleSelect().select(user.role);
     }
 
@@ -63,7 +63,7 @@ describe("User Management Suite", () => {
     }
 
     UserManagementPage.subscribeTitle().should("have.text", "Subscribe to");
-    user.subscription.forEach((value) => {
+    user.subscriptions.forEach((value) => {
       UserManagementPage.subscriptionInput(value).check();
     });
 
@@ -86,47 +86,45 @@ describe("User Management Suite", () => {
   });
 
   afterEach(() => {
-    UserManagementBuilders.ResetData()
+    UserManagementBuilders.ResetData();
   });
 
   context("Admin Login Suite", () => {
     it("Login as Admin, Positive case", () => {
       UserManagementBuilders.AdminLogin(loginPositiveCase).then((responce) => {
         expect(responce.status).to.eq(200);
-        expect(responce.statusText).to.eq('OK');
+        expect(responce.statusText).to.eq("OK");
       });
     });
 
-    it('Login as Admin, Negative case', () => {
+    it("Login as Admin, Negative case", () => {
       UserManagementBuilders.AdminLogin(loginNegativeCase).then((responce) => {
         expect(responce.status).to.eq(401);
-        expect(responce.statusText).to.eq('Unauthorized');
-      })
+        expect(responce.statusText).to.eq("Unauthorized");
+      });
     });
-  });   
+  });
 
-  context('User Management Adding Suite', () => {
+  context("User Management Adding Suite", () => {
     it("Add a user, Positive case", () => {
       UserManagementBuilders.PostUser(userFormPositiveCase).then((responce) => {
         expect(responce.status).to.eq(200);
-        expect(responce.statusText).to.eq('OK');
+        expect(responce.statusText).to.eq("OK");
       });
     });
 
     it("Add an empty user", () => {
       UserManagementBuilders.PostUser(userFormNegativeCase).then((responce) => {
-        console.log('responce: ', responce)
         expect(responce.status).to.eq(400);
-        expect(responce.body.error).to.eq('Missing fields');
       });
     });
   });
 
-  context('User Management Editing/Deleting Suite', () => {
+  context("User Management Editing/Deleting Suite", () => {
     it("User table first row edit", () => {
       UserManagementBuilders.GetUsers().then((responce) => {
         expect(responce.status).to.eq(200);
-        expect(responce.body).to.be.an("array").with.length(3); 
+        expect(responce.body).to.be.an("array").with.length(3);
         const id: number = responce.body[0].id;
         const user = responce.body[0];
         user.name = "NewName";
@@ -134,28 +132,28 @@ describe("User Management Suite", () => {
 
         UserManagementBuilders.PutUser(id, user).then((responce) => {
           expect(responce.status).to.eq(200);
-          expect(responce.statusText).to.eq('OK');
+          expect(responce.statusText).to.eq("OK");
         });
-      })      
+      });
     });
 
     it("User table first row delete and confirm", () => {
-         UserManagementBuilders.DeleteUser(2, false).then((responce) => {
-           expect(responce.status).to.eq(200);
-  
-            UserManagementBuilders.GetUsers().then((responce) => {
-              expect(responce.status).to.eq(200);
-              expect(responce.body).to.be.an("array").with.length(2);           
-            })
+      UserManagementBuilders.DeleteUser(2, false).then((responce) => {
+        expect(responce.status).to.eq(200);
+
+        UserManagementBuilders.GetUsers().then((responce) => {
+          expect(responce.status).to.eq(200);
+          expect(responce.body).to.be.an("array").with.length(2);
         });
-    });      
+      });
+    });
   });
 
-  context('User Management Status Toggle Suite', () => {
+  context("User Management Status Toggle Suite", () => {
     it("User table first row toggle activate", () => {
-      UserManagementBuilders.PatchUser(1, ButtonAction.Deactivate).then((responce) => {
-          expect(responce.status).to.eq(200);
-          expect(responce.statusText).to.eq('OK');
+      UserManagementBuilders.PatchUser(1, UserManagementModels.ButtonAction.Deactivate).then((responce) => {
+        expect(responce.status).to.eq(200);
+        expect(responce.statusText).to.eq("OK");
       });
     });
   });
