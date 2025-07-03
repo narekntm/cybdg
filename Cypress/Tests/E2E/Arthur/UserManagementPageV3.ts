@@ -15,7 +15,6 @@ import { UserManagementPage } from "Pages/Arthur/UserManagementPageV3";
 
 const chance = new Chance();
 
-
 describe("User Management Test Scenarios", () => {
   const baseUrl = "/";
 
@@ -118,9 +117,7 @@ describe("User Management Test Scenarios", () => {
         expect(adminUser).to.exist;
 
         UserManagementPage.deleteButtonInRowById(adminUser.id).click();
-        UserManagementPage.deleteError()
-          .should("be.visible")
-          .and("contain", UserErrorMessages.AdminDeleteError);
+        UserManagementPage.deleteError().should("be.visible").and("contain", UserErrorMessages.AdminDeleteError);
       });
     });
   });
@@ -389,10 +386,7 @@ describe("User Management Test Scenarios", () => {
           age: chance.age({ type: "adult" }).toString(),
           email: chance.email(),
           gender: chance.pickone([Gender.Male, Gender.Female, Gender.Other]),
-          subscriptions: chance.pickset(
-            [Subscription.Newsletter, Subscription.ProductUpdates],
-            chance.integer({ min: 1, max: 2 })
-          ),
+          subscriptions: chance.pickset([Subscription.Newsletter, Subscription.ProductUpdates], chance.integer({ min: 1, max: 2 })),
         };
 
         editUserForm(updatedUser);

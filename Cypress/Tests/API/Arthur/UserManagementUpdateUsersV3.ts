@@ -22,10 +22,7 @@ describe("User Management Update User Tests", () => {
         role: Role.Editor,
         age: chance.age({ type: "adult" }).toString(),
         gender: chance.pickone([Gender.Male, Gender.Female, Gender.Other]),
-        subscriptions: chance.pickset(
-          [Subscription.Newsletter, Subscription.ProductUpdates],
-          chance.integer({ min: 1, max: 3 })
-        ),
+        subscriptions: chance.pickset([Subscription.Newsletter, Subscription.ProductUpdates], chance.integer({ min: 1, max: 3 })),
       };
 
       UserManagementBuilders.UpdateUser(user.id, updated).then(({ status, body }) => {

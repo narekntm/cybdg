@@ -34,10 +34,7 @@ describe("User Management Create Users Tests", () => {
       role: Role.Admin,
       age: chance.age({ type: "adult" }).toString(),
       gender: chance.pickone([Gender.Male, Gender.Female, Gender.Other]),
-      subscriptions: chance.pickset(
-        [Subscription.Newsletter, Subscription.ProductUpdates],
-        chance.integer({ min: 1, max: 3 })
-      ),
+      subscriptions: chance.pickset([Subscription.Newsletter, Subscription.ProductUpdates], chance.integer({ min: 1, max: 3 })),
     };
 
     UserManagementBuilders.CreateUser(user).then(({ status, body }) => {
