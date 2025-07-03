@@ -364,7 +364,35 @@ describe("User Management Test Scenarios", () => {
 
       cy.reload();
       UserManagementPage.userRows().should("have.length.at.most", 10);
+
+      UserManagementPage.paginationInfo()
+        .should("be.visible")
+        .and("contain.text", `Page 1 of ${Math.ceil((3 + users.length) / 5)}: (${3 + users.length} Users)`);
+
+      UserManagementPage.prevPage().should("be.disabled");
+      UserManagementPage.nextPage().should("be.enabled");
+
+      const emails = [...users.map((u) => u.email), "alice@site.com", "bob@site.com", "eve@site.com"];
+
+      const pageCount = Math.ceil((3 + users.length) / 5);
+
+      for (let i = 0; i < pageCount; i++) {
+        cy.get("tbody tr").each((tr) => {
+          cy.wrap(tr)
+            .find("td")
+            .eq(3)
+            .invoke("text")
+            .then((email) => {
+              expect(emails.includes(email)).to.be.true;
+            });
+        });
+
+        if (i < pageCount - 1) {
+          UserManagementPage.nextPage().should("not.be.disabled").click();
+        }
+      }
     });
+
   });
 
 });

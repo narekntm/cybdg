@@ -125,4 +125,10 @@ export class UserManagementPage {
 
   static firstDeleteButton = () => cy.get("button.delete-btn").first();
 
+  static paginationInfo = () => cy.get("#page-info");
+
+  static prevPage = () => cy.get("#prev-page");
+  
+  static nextPage = () => cy.get("#next-page");
+
 }
