@@ -44,7 +44,7 @@ export class UserManagementGenerator {
     age: "25",
     email: "john.smith@gmail.com",
     gender: Gender.Male,
-    subscriptions: [Subscription.Newsletter],2
+    subscriptions: [Subscription.Newsletter],
     }
     static userFormPositiveCase: UserData & { status: Status } = {
         ...UserManagementGenerator.userPositiveCase,
@@ -58,6 +58,11 @@ export class UserManagementGenerator {
         gender: Gender.Male,
         subscriptions: [Subscription.Newsletter],
     }
+
+    static userFormNegativeName: UserData & {status: Status} ={
+        ...UserManagementGenerator.userNegativeName,
+        status: Status.Active,
+    }
     static userNegativeEmail: UserData = {
         name: "John",
         role: Role.Editor,
@@ -66,6 +71,10 @@ export class UserManagementGenerator {
         gender: Gender.Male,
         subscriptions: [Subscription.Newsletter],
     }
+    static userFormNegativeEmail: UserData & {status: Status} ={
+        ...UserManagementGenerator.userNegativeEmail,
+        status: Status.Active,
+    }
     static userNegativeAge: UserData = {
         name: "John",
         role: Role.Editor,
@@ -73,6 +82,11 @@ export class UserManagementGenerator {
         email: "john.smith@gmail.com",
         gender: Gender.Male,
         subscriptions: [Subscription.Newsletter],
+    }
+
+    static userFormNegativeAge: UserData & {status: Status} ={
+        ...UserManagementGenerator.userNegativeAge,
+        status: Status.Active,
     }
     static userEmptyDetails: UserData = {
         name: "",
@@ -83,6 +97,10 @@ export class UserManagementGenerator {
         subscriptions: [],
     }
 
+    static userFormEmptyDetails: UserData & {status: Status} ={
+        ...UserManagementGenerator.userEmptyDetails,
+        status: Status.Active,
+    }
     static randomUser: UserData = {
         name: chance.name().split(" ")[0],
         role: chance.pickone(Object.values(Role)),
