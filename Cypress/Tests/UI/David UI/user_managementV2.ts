@@ -1,5 +1,5 @@
 import { UserManagementPage } from "Pages/UserManagementPage";
-import { UserManagementMethods } from "Pages/David Methods/UserManagementMethods";
+import { UserManagementMethods } from "../../../Fixtures/David Methods/UserManagementMethods";
 import { SignIn } from "Models/David Models/UserManagementModels";
 import { UserManagementModels } from "Models/Lecture/UserManagementModels";
 import Chance from "chance";
