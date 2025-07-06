@@ -1,4 +1,4 @@
-﻿import { UserManagementBuilders } from "Builders/Lecture/UserManagementBuilders";
+import { UserManagementBuilders } from "Builders/Lecture/UserManagementBuilders";
 import { UserManagementModels } from "Models/Lecture/UserManagementModels";
 
 /**
