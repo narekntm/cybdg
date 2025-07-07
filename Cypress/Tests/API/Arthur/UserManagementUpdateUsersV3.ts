@@ -12,6 +12,7 @@ describe("User Management Update User Tests", () => {
 
   it("Should update existing user with valid data", () => {
     UserManagementBuilders.GetUsers().then(({ body }) => {
+      expect(body, "Users list should not be empty").to.be.an("array").that.is.not.empty;
       const user = body[0];
       const updated = UserManagementGenerators.validUser();
 
@@ -35,8 +36,16 @@ describe("User Management Update User Tests", () => {
   it("Should return 404 when updating non-existing user", () => {
     const fakeUser = UserManagementGenerators.validUser();
 
-    UserManagementBuilders.UpdateUser(99999, fakeUser).then(({ status }) => {
-      expect(status).to.eq(404);
+    UserManagementBuilders.GetUsers().then(({ body }) => {
+      expect(body, "Users list should not be empty").to.be.an("array").that.is.not.empty;
+
+      const maxId = Math.max(...body.map((u: User) => u.id));
+      const nonExistingId = maxId + 1;
+
+      UserManagementBuilders.UpdateUser(nonExistingId, fakeUser, false).then(({ status, body }) => {
+        expect(status).to.eq(404);
+        expect(body).to.deep.equal({ errors: [UserErrorMessages.UserNotFound] });
+      });
     });
   });
 
@@ -58,11 +67,16 @@ describe("User Management Update User Tests", () => {
   });
 
   it("Should return 404 when trying to delete a non-existing user", () => {
-    const nonExistingId = 99999;
+    UserManagementBuilders.GetUsers().then(({ body }) => {
+      expect(body, "Users list should not be empty").to.be.an("array").that.is.not.empty;
 
-    UserManagementBuilders.DeleteUser(nonExistingId, true).then(({ status, body }) => {
-      expect(status).to.eq(404);
-      expect(body).to.deep.equal({ errors: [UserErrorMessages.UserNotFound] });
+      const maxId = Math.max(...body.map((u: User) => u.id));
+      const nonExistingId = maxId + 1;
+
+      UserManagementBuilders.DeleteUser(nonExistingId, true, false).then(({ status, body }) => {
+        expect(status).to.eq(404);
+        expect(body).to.deep.equal({ errors: [UserErrorMessages.UserNotFound] });
+      });
     });
   });
 
@@ -103,9 +117,16 @@ describe("User Management Update User Tests", () => {
   });
 
   it("Should return 404 when trying to change status of non-existing user", () => {
-    UserManagementBuilders.ToggleUserStatus(99999, Status.Inactive).then(({ status, body }) => {
-      expect(status).to.eq(404);
-      expect(body).to.deep.equal({ errors: [UserErrorMessages.UserNotFound] });
+    UserManagementBuilders.GetUsers().then(({ body }) => {
+      expect(body, "Users list should not be empty").to.be.an("array").that.is.not.empty;
+
+      const maxId = Math.max(...body.map((u: User) => u.id));
+      const nonExistingId = maxId + 1;
+
+      UserManagementBuilders.ToggleUserStatus(nonExistingId, Status.Inactive, false).then(({ status, body }) => {
+        expect(status).to.eq(404);
+        expect(body).to.deep.equal({ errors: [UserErrorMessages.UserNotFound] });
+      });
     });
   });
 });

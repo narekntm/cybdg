@@ -47,7 +47,7 @@ describe("User Management Create Users Tests", () => {
   it("Should not create user when name is empty", () => {
     const user = UserManagementGenerators.withEmptyName();
 
-    UserManagementBuilders.CreateUser(user).then(({ status, body }) => {
+    UserManagementBuilders.CreateUser(user, false).then(({ status, body }) => {
       expect(status).to.eq(400);
       expect(body).to.deep.equal({ errors: [UserErrorMessages.EmptyName] });
     });
@@ -58,7 +58,7 @@ describe("User Management Create Users Tests", () => {
   it("Should not create user when role is empty string", () => {
     const user = UserManagementGenerators.withEmptyRole();
 
-    UserManagementBuilders.CreateUser(user).then(({ status, body }) => {
+    UserManagementBuilders.CreateUser(user, false).then(({ status, body }) => {
       expect(status).to.eq(400);
       expect(body).to.deep.equal({ errors: [UserErrorMessages.EmptyRole] });
     });
@@ -69,7 +69,7 @@ describe("User Management Create Users Tests", () => {
   it("Should not create user when age is empty", () => {
     const user = UserManagementGenerators.withEmptyAge();
 
-    UserManagementBuilders.CreateUser(user).then(({ status, body }) => {
+    UserManagementBuilders.CreateUser(user, false).then(({ status, body }) => {
       expect(status).to.eq(400);
       expect(body).to.deep.equal({ errors: [UserErrorMessages.InvalidAge] });
     });
@@ -80,7 +80,7 @@ describe("User Management Create Users Tests", () => {
   it("Should not create user when email is empty", () => {
     const user = UserManagementGenerators.withEmptyEmail();
 
-    UserManagementBuilders.CreateUser(user).then(({ status, body }) => {
+    UserManagementBuilders.CreateUser(user, false).then(({ status, body }) => {
       expect(status).to.eq(400);
       expect(body).to.deep.equal({ errors: [UserErrorMessages.InvalidEmail] });
     });
@@ -95,7 +95,7 @@ describe("User Management Create Users Tests", () => {
   it("Should not create user when gender is empty", () => {
     const user = UserManagementGenerators.withEmptyGender();
 
-    UserManagementBuilders.CreateUser(user).then(({ status, body }) => {
+    UserManagementBuilders.CreateUser(user, false).then(({ status, body }) => {
       expect(status).to.eq(400);
       expect(body).to.deep.equal({ errors: [UserErrorMessages.EmptyGender] });
     });

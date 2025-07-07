@@ -1,17 +1,9 @@
 import Chance from "chance";
 import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
+import { fillUserForm } from "Cypress/Support/Helpers/Arthur/UserManagementPageHelpers";
 import { UserManagementEndpoints } from "EndPoints/Arthur/UserManagementEndpoints";
 import { UserManagementGenerators } from "Generators/Arthur/UserManagementGenerator";
-import {
-  Gender,
-  Role,
-  Status,
-  Subscription,
-  UserErrorMessages,
-  UserFormData,
-  UserInput,
-  UserStatusMessages,
-} from "Models/Arthur/UserManagementModels";
+import { Gender, Role, Status, Subscription, UserErrorMessages, UserInput, UserStatusMessages } from "Models/Arthur/UserManagementModels";
 import { UserManagementPage } from "Pages/Arthur/UserManagementPageV3";
 
 const chance = new Chance();
@@ -35,31 +27,31 @@ describe("User Management Test Scenarios", () => {
     UserManagementPage.loginButton().click();
   };
 
-  function fillUserForm(user: UserFormData) {
-    UserManagementPage.addNewUserButton().click();
-    UserManagementPage.userNameInput().clear().type(user.name);
-    UserManagementPage.userRoleSelect().select(user.role);
-    UserManagementPage.userAgeInput().clear().type(user.age);
-    UserManagementPage.userEmailInput().clear().type(user.email);
-    if (user.gender) {
-      UserManagementPage.userGenderRadio(user.gender).check();
-    }
+  // function fillUserForm(user: UserFormData) {
+  //   UserManagementPage.addNewUserButton().click();
+  //   UserManagementPage.userNameInput().clear().type(user.name);
+  //   UserManagementPage.userRoleSelect().select(user.role);
+  //   UserManagementPage.userAgeInput().clear().type(user.age);
+  //   UserManagementPage.userEmailInput().clear().type(user.email);
+  //   if (user.gender) {
+  //     UserManagementPage.userGenderRadio(user.gender).check();
+  //   }
 
-    if (user.subscriptions && user.subscriptions.length > 0) {
-      user.subscriptions.forEach((sub) => {
-        UserManagementPage.userSubscriptionCheckbox(sub).uncheck().check();
-      });
-    }
-  }
+  //   if (user.subscriptions && user.subscriptions.length > 0) {
+  //     user.subscriptions.forEach((sub) => {
+  //       UserManagementPage.userSubscriptionCheckbox(sub).uncheck().check();
+  //     });
+  //   }
+  // }
 
-  function editUserForm(user: UserFormData) {
-    UserManagementPage.userNameInput().clear().type(user.name);
-    UserManagementPage.userRoleSelect().select(user.role);
-    UserManagementPage.userAgeInput().clear().type(user.age);
-    UserManagementPage.userEmailInput().clear().type(user.email);
-    UserManagementPage.genderSelect().select(user.gender);
-    UserManagementPage.productCheckbox().check();
-  }
+  // function editUserForm(user: UserFormData) {
+  //   UserManagementPage.userNameInput().clear().type(user.name);
+  //   UserManagementPage.userRoleSelect().select(user.role);
+  //   UserManagementPage.userAgeInput().clear().type(user.age);
+  //   UserManagementPage.userEmailInput().clear().type(user.email);
+  //   UserManagementPage.genderSelect().select(user.gender);
+  //   UserManagementPage.productCheckbox().check();
+  // }
 
   const saveUser = () => UserManagementPage.saveButton().contains("Save").click();
 
@@ -90,6 +82,7 @@ describe("User Management Test Scenarios", () => {
   context("Adding new user", () => {
     it("Should add user with valid input", () => {
       login();
+      UserManagementPage.addNewUserButton().click();
       fillUserForm(UserManagementGenerators.validUser());
       saveUser();
       UserManagementPage.toastContainer().should("be.visible").and("contain.text", UserStatusMessages.AddNewUserMessage);
@@ -114,6 +107,7 @@ describe("User Management Test Scenarios", () => {
 
     it("Should show error when name contains symbols", () => {
       login();
+      UserManagementPage.addNewUserButton().click();
       fillUserForm(UserManagementGenerators.withSymbolsInName());
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.EmptyName);
@@ -121,6 +115,7 @@ describe("User Management Test Scenarios", () => {
 
     it("Should show error when name contains numbers", () => {
       login();
+      UserManagementPage.addNewUserButton().click();
       fillUserForm(UserManagementGenerators.withNumbersInName());
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.EmptyName);
@@ -129,6 +124,7 @@ describe("User Management Test Scenarios", () => {
 
     it("Should show error when name is too long", () => {
       login();
+      UserManagementPage.addNewUserButton().click();
       fillUserForm(UserManagementGenerators.withTooLongName());
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.EmptyName);
@@ -137,6 +133,7 @@ describe("User Management Test Scenarios", () => {
 
     it("Should show error when no @ symbol", () => {
       login();
+      UserManagementPage.addNewUserButton().click();
       fillUserForm(UserManagementGenerators.withEmailMissingAt());
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.InvalidEmail);
@@ -145,6 +142,7 @@ describe("User Management Test Scenarios", () => {
 
     it("Should show error when no domain", () => {
       login();
+      UserManagementPage.addNewUserButton().click();
       fillUserForm(UserManagementGenerators.withEmailMissingDomain());
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.InvalidEmail);
@@ -153,6 +151,7 @@ describe("User Management Test Scenarios", () => {
 
     it("Should show error when no username part", () => {
       login();
+      UserManagementPage.addNewUserButton().click();
       fillUserForm(UserManagementGenerators.withEmailMissingUsername());
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.InvalidEmail);
@@ -161,6 +160,7 @@ describe("User Management Test Scenarios", () => {
 
     it("Should show error when gender is not selected", () => {
       login();
+      UserManagementPage.addNewUserButton().click();
       fillUserForm(UserManagementGenerators.withEmptyGender());
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.EmptyGender);
@@ -170,9 +170,11 @@ describe("User Management Test Scenarios", () => {
     it("Should show error message when email already exists", () => {
       login();
       const user = UserManagementGenerators.validUser();
+      UserManagementPage.addNewUserButton().click();
       fillUserForm(user);
       saveUser();
       UserManagementPage.toastContainer().should("be.visible").and("contain.text", UserStatusMessages.AddNewUserMessage);
+      UserManagementPage.addNewUserButton().click();
       fillUserForm(UserManagementGenerators.withDuplicateEmail(user.email));
       saveUser();
       UserManagementPage.formErrors().should("be.visible").contains(UserErrorMessages.ExistingEmail);
@@ -187,13 +189,11 @@ describe("User Management Test Scenarios", () => {
       UserManagementPage.userRows()
         .first()
         .within(() => {
-          UserManagementPage.firstViewButton().click();
+          UserManagementPage.firstEditButton().click();
         });
-      UserManagementPage.editButton().click();
-      editUserForm(updatedUser);
-      UserManagementPage.saveUserDataButton().click();
-      UserManagementPage.toastContainer().should("be.visible").and("contain.text", UserStatusMessages.UpdatedUser);
-      UserManagementPage.backButton().click();
+      fillUserForm(updatedUser, { isEdit: true });
+      saveUser();
+      UserManagementPage.toastContainer().should("be.visible").and("contain.text", UserStatusMessages.UpdatedUserMainPage);
       UserManagementPage.userRowByName(updatedUser.name).within(() => {
         cy.contains(updatedUser.role);
         cy.contains(updatedUser.age);

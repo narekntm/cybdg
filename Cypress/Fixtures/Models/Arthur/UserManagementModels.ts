@@ -65,6 +65,7 @@ export enum UserStatusMessages {
   LoggedInAsAdmin = "Logged in as Admin",
   AddNewUserMessage = "User added successfully",
   UpdatedUser = "User updated!",
+  UpdatedUserMainPage = "User updated successfully",
 }
 
 export interface User extends UserInput {

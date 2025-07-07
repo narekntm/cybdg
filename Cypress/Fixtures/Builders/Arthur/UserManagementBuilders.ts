@@ -1,5 +1,5 @@
 import { UserManagementEndpoints } from "EndPoints/Arthur/UserManagementEndpoints";
-import { UserFormData, UserInput } from "Models/Arthur/UserManagementModels";
+import { Status, UserFormData, UserInput } from "Models/Arthur/UserManagementModels";
 
 export class UserManagementBuilders {
   static AdminLogin = (email: string, password: string, failOnStatusCode: boolean = false) => {
@@ -27,7 +27,7 @@ export class UserManagementBuilders {
     });
   };
 
-  static CreateUser = (user: UserFormData, failOnStatusCode: boolean = false) => {
+  static CreateUser = (user: UserFormData, failOnStatusCode: boolean = true) => {
     return cy.request({
       method: "POST",
       url: UserManagementEndpoints.Users(),
@@ -39,7 +39,7 @@ export class UserManagementBuilders {
     });
   };
 
-  static UpdateUser = (id: number, user: UserFormData, failOnStatusCode: boolean = false) => {
+  static UpdateUser = (id: number, user: UserFormData, failOnStatusCode: boolean = true) => {
     return cy.request({
       method: "PUT",
       url: UserManagementEndpoints.Users(id),
@@ -51,7 +51,7 @@ export class UserManagementBuilders {
     });
   };
 
-  static DeleteUser = (id: number, isAdmin: boolean = true, failOnStatusCode: boolean = false) => {
+  static DeleteUser = (id: number, isAdmin: boolean = false, failOnStatusCode: boolean = true) => {
     return cy.request({
       method: "DELETE",
       url: UserManagementEndpoints.Users(id),
@@ -60,7 +60,7 @@ export class UserManagementBuilders {
     });
   };
 
-  static ToggleUserStatus = (id: number, status: "Active" | "Inactive", failOnStatusCode: boolean = false) => {
+  static ToggleUserStatus = (id: number, status: Status.Active | Status.Inactive, failOnStatusCode: boolean = true) => {
     return cy.request({
       method: "PATCH",
       url: UserManagementEndpoints.Status(id),

@@ -119,6 +119,8 @@ export class UserManagementPage {
 
   static firstViewButton = () => cy.get("a.btn-neutral").contains("View");
 
+  static firstEditButton = () => cy.get(".btn-secondary.edit-btn").contains("Edit");
+
   static firstDeleteButton = () => cy.get("button.delete-btn").first();
 
   static paginationInfo = () => cy.get("#page-info");
