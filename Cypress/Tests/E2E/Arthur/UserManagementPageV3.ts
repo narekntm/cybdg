@@ -298,7 +298,7 @@ describe("User Management Test Scenarios", () => {
         UserManagementPage.userEmailInput().should("have.value", user.email);
         UserManagementPage.userGenderRadio(user.gender).should("be.checked");
 
-        fillUserForm(updatedUser, { isEdit: true });
+        fillUserForm(updatedUser);
 
         cy.intercept("PUT", UserManagementEndpoints.Users(user.id)).as("editUser");
 

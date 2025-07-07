@@ -191,7 +191,7 @@ describe("User Management Test Scenarios", () => {
         .within(() => {
           UserManagementPage.firstEditButton().click();
         });
-      fillUserForm(updatedUser, { isEdit: true });
+      fillUserForm(updatedUser);
       saveUser();
       UserManagementPage.toastContainer().should("be.visible").and("contain.text", UserStatusMessages.UpdatedUserMainPage);
       UserManagementPage.userRowByName(updatedUser.name).within(() => {
