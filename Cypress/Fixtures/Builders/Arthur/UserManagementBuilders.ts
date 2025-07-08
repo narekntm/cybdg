@@ -1,87 +1,83 @@
-import { UserManagementEndpoints } from "EndPoints/UserManagementEndpoints";
-import { UserFormData } from "Models/UserManagementModels";
-
+import { UserManagementEndpoints } from "EndPoints/Arthur/UserManagementEndpoints";
+import { Status, UserFormData, UserInput } from "Models/Arthur/UserManagementModels";
 
 export class UserManagementBuilders {
+  static AdminLogin = (email: string, password: string, failOnStatusCode: boolean = false) => {
+    return cy.request({
+      method: "POST",
+      url: UserManagementEndpoints.adminLogin,
+      body: { email, password },
+      failOnStatusCode,
+    });
+  };
 
-    static AdminLogin = (email: string, password: string) => {
-        return cy.request({
-            method: "POST",
-            url: UserManagementEndpoints.adminLogin,
-            body: {
-                email,
-                password
-            },
-            failOnStatusCode: false
-        });
-    }
+  static ResetData = (failOnStatusCode: boolean = true) => {
+    return cy.request({
+      method: "POST",
+      url: UserManagementEndpoints.reset,
+      failOnStatusCode,
+    });
+  };
 
-    static ResetData = () => {
-        return cy.request({
-            method: "POST",
-            url: UserManagementEndpoints.reset,
-        });
-    }
+  static GetUsers = (id?: number, failOnStatusCode: boolean = true) => {
+    return cy.request({
+      method: "GET",
+      url: UserManagementEndpoints.Users(id),
+      failOnStatusCode,
+    });
+  };
 
-    static GetUsers = (id?: number) => {
-        return cy.request({
-            method: "GET",
-            url: UserManagementEndpoints.Users(id),
-        });
-    }
+  static CreateUser = (user: UserFormData, failOnStatusCode: boolean = true) => {
+    return cy.request({
+      method: "POST",
+      url: UserManagementEndpoints.Users(),
+      body: {
+        ...user,
+        subscriptions: user.subscriptions?.join(",") || "",
+      },
+      failOnStatusCode,
+    });
+  };
 
-    //chatGPT suggested to use overrides, need to clarify with Narek
+  static UpdateUser = (id: number, user: UserFormData, failOnStatusCode: boolean = true) => {
+    return cy.request({
+      method: "PUT",
+      url: UserManagementEndpoints.Users(id),
+      body: {
+        ...user,
+        subscriptions: user.subscriptions?.join(",") || "",
+      },
+      failOnStatusCode,
+    });
+  };
 
-    static CreateUser = (overrides: Partial<UserFormData> = {}) => {
-        const user: UserFormData = {
-            name: "TestUser",
-            email: "test@example.com",
-            role: "Viewer",
-            age: "25",
-            gender: "Male",
-            subscriptions: ["Product Updates"],
-            ...overrides,
-        };
+  static DeleteUser = (id: number, isAdmin: boolean = false, failOnStatusCode: boolean = true) => {
+    return cy.request({
+      method: "DELETE",
+      url: UserManagementEndpoints.Users(id),
+      body: { isAdmin },
+      failOnStatusCode,
+    });
+  };
 
-        return cy.request({
-            method: "POST",
-            url: UserManagementEndpoints.Users(),
-            body: {
-                ...user,
-                subscriptions: user.subscriptions?.join(","),
-            },
-            failOnStatusCode: false,
-        });
-    }
+  static ToggleUserStatus = (id: number, status: Status.Active | Status.Inactive, failOnStatusCode: boolean = true) => {
+    return cy.request({
+      method: "PATCH",
+      url: UserManagementEndpoints.Status(id),
+      body: { status },
+      failOnStatusCode,
+    });
+  };
 
-    static UpdateUser = (id: number, overrides: Partial<UserFormData> = {}) => {
-        return cy.request({
-            method: "PUT",
-            url: UserManagementEndpoints.Users(id),
-            body: {
-                ...overrides,
-                subscriptions: overrides.subscriptions?.join(","),
-            },
-            failOnStatusCode: false,
-        });
-    };
-
-    static DeleteUser = (id: number, isAdmin: boolean = true) => {
-        return cy.request({
-            method: "DELETE",
-            url: UserManagementEndpoints.Users(id),
-            body: { isAdmin },
-            failOnStatusCode: false,
-        });
-    };
-
-    static ToggleUserStatus = (id: number, status: "Active" | "Inactive") => {
-        return cy.request({
-            method: "PATCH",
-            url: UserManagementEndpoints.Status(id),
-            body: { status },
-            failOnStatusCode: false,
-        });
-    };
-
+  static seedData = (users: UserInput[], overwrite = false, failOnStatusCode = true) => {
+    return cy.request({
+      method: "POST",
+      url: "/api/seed",
+      body: {
+        users,
+        overwrite,
+      },
+      failOnStatusCode,
+    });
+  };
 }

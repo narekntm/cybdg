@@ -1,14 +1,13 @@
-import { UserFormData } from "Models/Arthur/UserManagementModels";
-import { UserManagementPage } from "Pages/Arthur/UserManagementPageV2";
 import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
 import { UserManagementEndpoints } from "EndPoints/Arthur/UserManagementEndpoints";
-
+import { UserFormData } from "Models/Arthur/UserManagementModels";
+import { UserManagementPage } from "Pages/Arthur/UserManagementPageV2";
 
 describe("User Management Test Scenarios", () => {
   const baseUrl = "/";
 
   afterEach(() => {
-    UserManagementBuilders.ResetData()
+    UserManagementBuilders.ResetData();
   });
 
   beforeEach(() => {
