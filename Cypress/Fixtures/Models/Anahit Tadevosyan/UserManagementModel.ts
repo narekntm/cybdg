@@ -19,7 +19,7 @@ export enum userTableActions {
 export interface UserData {
   name: string;
   role: string;
-  age: string;
+  age: number;
   email: string;
   gender: "Male" | "Female" | "Other";
   subscriptions: string[];

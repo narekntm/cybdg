@@ -1,3 +1,5 @@
+import {userTableColumn} from "Models/Anahit Tadevosyan/UserManagementV2Model";
+
 export class UserManagementPage {
   // Login as Admin label
   static loginAsAdminLabel = () => cy.get("section h2").eq(0);
@@ -121,6 +123,10 @@ export class UserManagementPage {
 
   //Table Data
   static tableData = (index: number, cell: number) => cy.get("#user-table tbody tr").eq(index).find("td").eq(cell);
+
+  //Table data by id
+  static tableDataByUserId = (userId: number, column: userTableColumn) =>
+      cy.get(`#user-table tbody tr[data-id="${userId}"] td`).eq(column);
 
   //Table td
   static tableTd = (index: number) => cy.get("td").eq(index);

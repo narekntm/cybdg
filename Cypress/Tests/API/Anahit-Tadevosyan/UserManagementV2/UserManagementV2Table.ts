@@ -2,12 +2,10 @@ import { UserManagementBuilders } from "Builders/Anahit Tadevosyan/UserManagemen
 import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementV2EndPoints";
 import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementV2Page";
 import {UserManagementGenerator} from "Generators/Anahit_Tadevosyan/UserManagementV2Generators";
+import {UserManagementModels} from "Models/Lecture/UserManagementModels";
 
 describe("User Management API Testing", () => {
   const baseUrl = "http://127.0.0.1:3000/";
-  const user1 = UserManagementGenerator.staticUserOne;
-  const user2 = UserManagementGenerator.staticUserTwo;
-  const user3 = UserManagementGenerator.staticUserThree;
   beforeEach(() => {
     cy.visit(baseUrl);
   });
@@ -25,7 +23,7 @@ describe("User Management API Testing", () => {
 
       UserManagementBuilders.GetUsers().then((response) => {
         expect(response.status).to.eq(200);
-        expect(response.body).to.not.include(user3.name);
+        expect(response.body).to.not.include(UserManagementGenerator.staticUserThree.name);
       });
     });
     it("Delete user as non-admin", () => {
@@ -36,7 +34,7 @@ describe("User Management API Testing", () => {
 
       UserManagementBuilders.GetUsers().then((response) => {
         expect(response.status).to.eq(200);
-        expect(response.body).to.not.include(user3.name);
+        expect(response.body).to.not.include(UserManagementGenerator.staticUserThree.name);
       });
     });
     it("Delete user as admin", () => {
@@ -49,7 +47,7 @@ describe("User Management API Testing", () => {
 
       UserManagementBuilders.GetUsers().then((response) => {
         expect(response.status).to.eq(200);
-        expect(response.body).to.not.include(user3.name);
+        expect(response.body).to.not.include(UserManagementGenerator.staticUserThree.name);
       });
     });
     it("Delete admin as non admin", () => {
@@ -74,10 +72,10 @@ describe("User Management API Testing", () => {
     UserManagementBuilders.ChangeUserStatus(3, "Inactive").then((response) => {
       expect(response.status).to.eq(200);
       expect(response.body).to.include({
-        ...user3,
-        age: +user3.age,
-        subscriptions: user3.subscriptions.join(', '),
-        status: "Inactive"
+        ...UserManagementGenerator.staticUserThree,
+        age: UserManagementGenerator.staticUserThree.age,
+        subscriptions: UserManagementGenerator.staticUserThree.subscriptions.join(', '),
+        status: UserManagementModels.Status.Inactive
       });
     });
   });
@@ -85,10 +83,10 @@ describe("User Management API Testing", () => {
       UserManagementBuilders.ChangeUserStatus(2, "Active").then((response) => {
         expect(response.status).to.eq(200);
         expect(response.body).to.include({
-          ...user2,
-          age: +user2.age,
-          subscriptions: user2.subscriptions.join(','),
-          status: "Active"
+          ...UserManagementGenerator.staticUserTwo,
+          age: UserManagementGenerator.staticUserTwo.age,
+          subscriptions: UserManagementGenerator.staticUserTwo.subscriptions.join(','),
+          status: UserManagementModels.Status.Active
         });
       });
     });

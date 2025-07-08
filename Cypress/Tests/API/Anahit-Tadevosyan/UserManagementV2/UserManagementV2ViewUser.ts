@@ -24,7 +24,7 @@ describe("User Management API Testing", () => {
         });
       });
     });
-    it.only("Click on Edit button and Save with Valid details", () => {
+    it("Click on Edit button and Save with Valid details", () => {
       UserManagementBuilders.GetUserById(2).then((response) => {
         const initialUser = response.body[0];
         const editedUser: UserDataFromView = UserManagementGenerator.userFormPositiveCase;
