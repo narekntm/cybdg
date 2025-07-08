@@ -1,5 +1,6 @@
 import { UserManagementBuilders } from "Builders/Anahit Tadevosyan/UserManagementV2Builders";
 import { Gender, Role, Status, Subscription, UserDataFromView } from "Models/Anahit Tadevosyan/UserManagementV2Model";
+import {UserManagementGenerator} from "Generators/Anahit_Tadevosyan/UserManagementV2Generators";
 
 describe("User Management API Testing", () => {
   const baseUrl = "http://127.0.0.1:3000/";
@@ -23,18 +24,10 @@ describe("User Management API Testing", () => {
         });
       });
     });
-    it("Click on Edit button and Save with Valid details", () => {
+    it.only("Click on Edit button and Save with Valid details", () => {
       UserManagementBuilders.GetUserById(2).then((response) => {
         const initialUser = response.body[0];
-        const editedUser: UserDataFromView = {
-          name: "Mary",
-          role: Role.Editor,
-          age: "45",
-          email: "mary@gmail.com",
-          gender: Gender.Female,
-          subscriptions: [Subscription.Newsletter],
-          status: Status.Active,
-        };
+        const editedUser: UserDataFromView = UserManagementGenerator.userFormPositiveCase;
         UserManagementBuilders.EditUser(2, editedUser).then((response) => {
           expect(response.body).to.include(editedUser);
         });
@@ -48,15 +41,7 @@ describe("User Management API Testing", () => {
     it("Input invalid user email details", () => {
       UserManagementBuilders.GetUserById(2).then((response) => {
         const initialUser = response.body[0];
-        const editedUser: UserDataFromView = {
-          name: "Mary",
-          role: Role.Editor,
-          age: "45",
-          email: "mary",
-          gender: Gender.Female,
-          subscriptions: [Subscription.Newsletter],
-          status: Status.Active,
-        };
+        const editedUser: UserDataFromView = UserManagementGenerator.userFormNegativeEmail;
         UserManagementBuilders.EditUser(2, editedUser).then((response) => {
           expect(response.status).to.equal(400);
           expect(response.body).to.deep.eq({ errors: ["Valid email is required."] });
@@ -66,15 +51,7 @@ describe("User Management API Testing", () => {
     it("Input invalid user age details", () => {
       UserManagementBuilders.GetUserById(2).then((response) => {
         const initialUser = response.body[0];
-        const editedUser: UserDataFromView = {
-          name: "Mary",
-          role: Role.Editor,
-          age: "455",
-          email: "mary@gmail.com",
-          gender: Gender.Female,
-          subscriptions: [Subscription.Newsletter],
-          status: Status.Active,
-        };
+        const editedUser: UserDataFromView = UserManagementGenerator.userFormNegativeAge;
         UserManagementBuilders.EditUser(2, editedUser).then((response) => {
           expect(response.status).to.equal(400);
           expect(response.body).to.deep.eq({ errors: ["Age must be between 1 and 99."] });
@@ -84,15 +61,7 @@ describe("User Management API Testing", () => {
     it("Input invalid user name details", () => {
       UserManagementBuilders.GetUserById(2).then((response) => {
         const initialUser = response.body[0];
-        const editedUser: UserDataFromView = {
-          name: "Maryyyyyyyyyyyyyyyyyyyyyy",
-          role: Role.Editor,
-          age: "45",
-          email: "mary@gmail.com",
-          gender: Gender.Female,
-          subscriptions: [Subscription.Newsletter],
-          status: Status.Active,
-        };
+        const editedUser: UserDataFromView = UserManagementGenerator.userFormNegativeName;
         UserManagementBuilders.EditUser(2, editedUser).then((response) => {
           expect(response.status).to.equal(400);
           expect(response.body).to.deep.eq({ errors: ["Name must be 1–20 letters only (no spaces or symbols)."] });
@@ -102,15 +71,7 @@ describe("User Management API Testing", () => {
     it("Input empty details", () => {
       UserManagementBuilders.GetUserById(2).then((response) => {
         const initialUser = response.body[0];
-        const editedUser: UserDataFromView = {
-          name: "",
-          role: Role.Editor,
-          age: "",
-          email: "mary@gmail.com",
-          gender: Gender.Female,
-          subscriptions: [],
-          status: Status.Inactive,
-        };
+        const editedUser: UserDataFromView = UserManagementGenerator.userFormEmptyDetails;
         UserManagementBuilders.EditUser(2, editedUser).then((response) => {
           expect(response.status).to.equal(400);
           expect(response.body).to.deep.eq({

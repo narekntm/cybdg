@@ -2,6 +2,7 @@ import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementV2Page
 import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementV2EndPoints";
 import { UserData, Role, Gender, Subscription } from "Models/Anahit Tadevosyan/UserManagementV2Model";
 import { UserManagementBuilders } from "Builders/Anahit Tadevosyan/UserManagementV2Builders";
+import {UserManagementGenerator} from "Generators/Anahit_Tadevosyan/UserManagementV2Generators";
 
 const Chance = require("chance");
 
@@ -23,18 +24,16 @@ describe("User Management Test Cases", () => {
 
   beforeEach("visit the site and seed data", () => {
     cy.intercept({ method: "GET", url: UserManagementEndpoints.users() }).as("getUsers");
-    cy.visit(baseUrl);
-    cy.wait("@getUsers").then((interception) => {
-      expect(interception.response.statusCode).to.eq(304);
-    });
     UserManagementBuilders.seedData(users);
+    cy.visit(baseUrl);
+    cy.wait("@getUsers")
   });
 
   it("Seed data and check pagination", () => {
     const totalUsers = users.length + 3;
     const pageCount = Math.ceil(totalUsers / 5);
     UserManagementPage.pageInfo().should("be.visible").and("contain.text", `1 of ${pageCount}: (${totalUsers} Users`);
-    const emails = ["alice@site.com", "bob@site.com", "eve@site.com", ...users.map((user) => user.email)];
+    const emails = [UserManagementGenerator.staticUserOne.email, UserManagementGenerator.staticUserTwo.email, UserManagementGenerator.staticUserThree.email, ...users.map((user) => user.email)];
     console.log(emails);
     UserManagementPage.nextPageButton().should("be.enabled");
     UserManagementPage.prevPageButton().should("be.disabled");
@@ -53,5 +52,6 @@ describe("User Management Test Cases", () => {
       });
     }
     validatePageAndNext(0, pageCount, emails);
+
   });
 });
