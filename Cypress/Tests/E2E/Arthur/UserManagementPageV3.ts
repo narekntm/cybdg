@@ -3,7 +3,16 @@ import { UserManagementBuilders } from "Builders/Arthur/UserManagementBuilders";
 import { fillUserForm } from "Cypress/Support/Helpers/Arthur/UserManagementPageHelpers";
 import { UserManagementEndpoints } from "EndPoints/Arthur/UserManagementEndpoints";
 import { UserManagementGenerators } from "Generators/Arthur/UserManagementGenerator";
-import { Gender, Role, Status, User, UserErrorMessages, UserFormData, UserStatusMessages } from "Models/Arthur/UserManagementModels";
+import {
+  Gender,
+  Role,
+  Status,
+  Subscription,
+  User,
+  UserErrorMessages,
+  UserFormData,
+  UserStatusMessages,
+} from "Models/Arthur/UserManagementModels";
 import { UserManagementPage } from "Pages/Arthur/UserManagementPageV3";
 
 const chance = new Chance();
@@ -288,17 +297,35 @@ describe("User Management Test Scenarios", () => {
       UserManagementBuilders.GetUsers().then(({ body }: { body: User[] }) => {
         const user = body.find((u) => u.id === 1);
         expect(user).to.exist;
+
         const updatedUser = UserManagementGenerators.validUser();
 
         UserManagementPage.editButtonInRowById(user.id).click();
         UserManagementPage.userFormModal().should("be.visible");
+
         UserManagementPage.userNameInput().should("have.value", user.name);
         UserManagementPage.userRoleSelect().should("have.value", user.role);
         UserManagementPage.userAgeInput().should("have.value", String(user.age));
         UserManagementPage.userEmailInput().should("have.value", user.email);
         UserManagementPage.userGenderRadio(user.gender).should("be.checked");
 
-        fillUserForm(updatedUser);
+        UserManagementPage.userNameInput().clear().type(updatedUser.name);
+        UserManagementPage.userRoleSelect().select(updatedUser.role);
+        UserManagementPage.userAgeInput().clear().type(updatedUser.age);
+        UserManagementPage.userEmailInput().clear().type(updatedUser.email);
+        UserManagementPage.userGenderRadio(updatedUser.gender).check();
+
+        const allSubscriptions = [Subscription.Newsletter, Subscription.ProductUpdates];
+        allSubscriptions.forEach((sub) => {
+          const shouldBeChecked = updatedUser.subscriptions.includes(sub);
+          const checkbox = UserManagementPage.userSubscriptionCheckbox(sub);
+
+          if (shouldBeChecked) {
+            checkbox.check({ force: true });
+          } else {
+            checkbox.uncheck({ force: true });
+          }
+        });
 
         cy.intercept("PUT", UserManagementEndpoints.Users(user.id)).as("editUser");
 
@@ -318,7 +345,6 @@ describe("User Management Test Scenarios", () => {
           expect(sentSubscriptionsArray).to.have.members(updatedUser.subscriptions);
 
           const res = interception.response?.body;
-
           expect(res).to.include({
             name: updatedUser.name,
             email: updatedUser.email,

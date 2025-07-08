@@ -60,7 +60,7 @@ export class UserManagementBuilders {
     });
   };
 
-  static ToggleUserStatus = (id: number, status: Status.Active | Status.Inactive, failOnStatusCode: boolean = true) => {
+  static ToggleUserStatus = (id: number, status: Status, failOnStatusCode: boolean = true) => {
     return cy.request({
       method: "PATCH",
       url: UserManagementEndpoints.Status(id),
