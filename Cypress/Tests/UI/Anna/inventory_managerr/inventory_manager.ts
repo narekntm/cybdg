@@ -1,4 +1,4 @@
-import { ProductCategory , ProductStatus } from "Models/InventoryManagerModels";
+import { ProductCategory, ProductStatus } from "Models/InventoryManagerModels";
 import { InventoryManagerPage } from "Pages/InventoryManagerPage";
 
 describe("Inventory Manager", () => {
@@ -6,7 +6,6 @@ describe("Inventory Manager", () => {
   beforeEach(() => {
     cy.visit(url);
   });
-
 
   describe("Validate Dropdowns", () => {
     it("should show validation messages when submitting an empty form", () => {
@@ -16,12 +15,18 @@ describe("Inventory Manager", () => {
       InventoryManagerPage.errorCategory().should("contain", "Please select a category.");
       InventoryManagerPage.errorQuantity().should("contain", "Quantity must be at least 1.");
       InventoryManagerPage.errorStatus().should("contain", "Please select a status.");
-  
-      InventoryManagerPage.tableRows().should("have.length", 0); 
+
+      InventoryManagerPage.tableRows().should("have.length", 0);
     });
-  
+
     it("Should Check the data on the Category dropdown", () => {
-      const options = [ProductCategory.Select, ProductCategory.Electronics, ProductCategory.Books,ProductCategory.Clothing, ProductCategory.Other,];
+      const options = [
+        ProductCategory.Select,
+        ProductCategory.Electronics,
+        ProductCategory.Books,
+        ProductCategory.Clothing,
+        ProductCategory.Other,
+      ];
       InventoryManagerPage.getCategoryOptions().each(($option, i) => {
         expect($option.text().trim()).to.equal(options[i]);
       });
@@ -34,7 +39,6 @@ describe("Inventory Manager", () => {
     });
   });
   it("Add and Verify Product", () => {
-    
     const product = {
       name: "dynamic",
       category: ProductCategory.Electronics,
@@ -42,19 +46,17 @@ describe("Inventory Manager", () => {
       status: ProductStatus.Available,
     };
 
-  
-  
-      InventoryManagerPage.nameInput().clear().type(product.name);
-      InventoryManagerPage.categorySelect().select(product.category);
-      InventoryManagerPage.quantityInput().clear().type(product.quantity.toString());
-      InventoryManagerPage.statusSelect().select(product.status);
-      InventoryManagerPage.submitButton().click()
-  
-      InventoryManagerPage.rowProductName(product.name).within(() => {
-        InventoryManagerPage.getCell(0).should("contain", product.name);
-        InventoryManagerPage.getCell(1).should("contain", product.category);
-        InventoryManagerPage.getCell(2).should("contain", product.quantity.toString());
-        InventoryManagerPage.getCell(3).should("contain", product.status);
+    InventoryManagerPage.nameInput().clear().type(product.name);
+    InventoryManagerPage.categorySelect().select(product.category);
+    InventoryManagerPage.quantityInput().clear().type(product.quantity.toString());
+    InventoryManagerPage.statusSelect().select(product.status);
+    InventoryManagerPage.submitButton().click();
+
+    InventoryManagerPage.rowProductName(product.name).within(() => {
+      InventoryManagerPage.getCell(0).should("contain", product.name);
+      InventoryManagerPage.getCell(1).should("contain", product.category);
+      InventoryManagerPage.getCell(2).should("contain", product.quantity.toString());
+      InventoryManagerPage.getCell(3).should("contain", product.status);
     });
   });
 });

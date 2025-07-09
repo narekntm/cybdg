@@ -1,4 +1,5 @@
 ﻿import { UserManagementEndpoints } from "EndPoints/Lecture/UserManagementEndpoints";
+import { UserManagementGenerators } from "Generators/Lecture/UserManagementGenerators";
 import { UserManagementModels } from "Models/Lecture/UserManagementModels";
 
 export class UserManagementBuilders {
@@ -50,13 +51,12 @@ export class UserManagementBuilders {
   }
 
   /** Delete a user by ID */
-  static deleteUser(id: number, isAdmin: boolean = false ) {
+  static deleteUser(id: number, isAdmin: boolean = false) {
     cy.log(`Deleting user #${id}`);
     return cy.request({
       method: "DELETE",
       url: UserManagementEndpoints.users(id),
       body: { isAdmin },
-      failOnStatusCode: false
     });
   }
 
@@ -70,11 +70,23 @@ export class UserManagementBuilders {
     });
   }
 
-  static seedData(users: UserManagementModels.UserInput[]) {
+  static seedData() {
     return cy.request({
       method: "POST",
       url: UserManagementEndpoints.seed(),
-      body: { users, overwrite: false },
+      body: { user: UserManagementGenerators.userDataPositive(50), overwrite: false },
     });
   }
+
+  static AdminLogin = (email: string, password: string, failOnStatusCode: boolean = true) => {
+    return cy.request({
+      method: "POST",
+      url: UserManagementEndpoints.adminLogin,
+      body: {
+        email,
+        password,
+      },
+      failOnStatusCode: failOnStatusCode,
+    });
+  };
 }

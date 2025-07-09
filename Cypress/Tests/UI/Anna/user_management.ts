@@ -1,15 +1,18 @@
-﻿import { UserManagementPage } from "Pages/UserManagementPage";
+﻿import { UserManagementEndpoints } from "EndPoints/Anna/UserManagementEndpoints";
+import { UserManagementPage } from "Pages/UserManagementPage";
+//import { intersection } from "lodash";
 
 describe("User Management – Cypress Sandbox", () => {
   const baseUrl = "/";
 
   beforeEach(() => {
+    cy.intercept("GET", UserManagementEndpoints.Users()).as("getUsers");
     cy.visit(baseUrl);
   });
 
   afterEach(() => {
     // reset the state after each test
-    cy.request({
+    return cy.request({
       method: "POST",
       url: "/api/reset",
     });
@@ -48,15 +51,29 @@ describe("User Management – Cypress Sandbox", () => {
 
   describe("🔐 Admin Login", () => {
     it("Logs in with valid credentials", () => {
+      cy.intercept({ method: "POST", url: UserManagementEndpoints.adminLogin }).as("postLogin");
       loginAsAdmin();
+      cy.wait("@postLogin").then((interseption) => {
+        expect(interseption.response.statusCode).to.eq(200);
+        expect(interseption.response.body).deep.equal({ success: true });
+      });
+
       cy.get("#admin-controls").should("be.visible");
     });
 
     it("Fails with invalid credentials", () => {
+      cy.intercept({ method: "POST", url: UserManagementEndpoints.adminLogin }).as("postLoginFail");
+
       cy.get("#admin-email").type("wrong@admin.com");
       cy.get("#admin-password").type("wrongpass");
       cy.get('#admin-login-form button[type="submit"]').click();
       cy.get("#login-status").should("be.visible");
+
+      cy.wait("@postLoginFail").then((xhr) => {
+        expect(xhr.response.statusCode).to.eq(401);
+        expect(xhr.response.body).deep.eq({ email: "wrong@admin.com", password: "wrongpass" });
+        expect(xhr.response.body).deep.eq({ success: false });
+      });
     });
 
     it("Logs out and hides admin controls", () => {
@@ -68,6 +85,8 @@ describe("User Management – Cypress Sandbox", () => {
 
   describe("👤 Add/Edit User Form", () => {
     it("Adds a valid user", () => {
+      cy.intercept({ method: "POST", url: UserManagementEndpoints.Users() }).as("postUserForm");
+
       fillUserForm({
         name: "John",
         role: "Editor",
@@ -77,6 +96,12 @@ describe("User Management – Cypress Sandbox", () => {
         subscriptions: ["Newsletter"],
       });
       cy.get('#user-form button[type="submit"]').click();
+
+      cy.wait("@postUserForm").then((xhr) => {
+        expect(xhr.response.statusCode).deep.equal(200);
+        expect(xhr.request.body.name).to.eq("john");
+        expect(xhr.request.body.email).to.equal("john@example.com");
+      });
       cy.contains("td", "John").should("exist");
     });
 
@@ -104,6 +129,7 @@ describe("User Management – Cypress Sandbox", () => {
     });
 
     it("Allows adding user with no subscriptions", () => {
+      cy.intercept({ method: "POST", url: UserManagementEndpoints.Users() }).as("PostNewUser");
       fillUserForm({
         name: "Anna",
         role: "Viewer",
@@ -113,18 +139,39 @@ describe("User Management – Cypress Sandbox", () => {
         subscriptions: [],
       });
       cy.get('#user-form button[type="submit"]').click();
+
+      cy.wait("@PostNewUser").then((xhr) => {
+        expect(xhr.response.statusCode).to.eq(200);
+        expect(xhr.response.body.name).deep.eq("Anna");
+        expect(xhr.response.body.email).deep.eq("anna@example.com");
+      });
       cy.contains("td", "Anna").should("exist");
     });
 
     it("Edit user and verify updated values", () => {
+      cy.intercept({ method: "POST", url: UserManagementEndpoints.Users() }).as("PostEditUser");
+
       addUserAndFindRow("EditableUser");
 
+      cy.wait("@PostEditUser").then((xhr) => {
+        expect(xhr.response.statusCode).deep.eq(200);
+        expect(xhr.response.body.name).to.eq("EditableUser");
+        expect(xhr.response.body.email).to.eq("EditableUser@example.com");
+      });
       cy.contains("tr", "EditableUser").within(() => {
         cy.get(".edit-btn").click();
       });
 
+      cy.intercept({ method: "PUT", url: UserManagementEndpoints.Users(4) }).as("PutUpdatedUser");
+
       UserManagementPage.nameInput().clear().type("EditedUser");
       cy.get('#user-form button[type="submit"]').click();
+
+      cy.wait("@PutUpdatedUser").then((xhr) => {
+        expect(xhr.response.statusCode).to.eq(200);
+        expect(xhr.response.body.name).to.eq("EditedUser");
+        expect(xhr.response.body.id).to.eq(4);
+      });
 
       cy.contains("td", "EditedUser").should("exist");
       cy.contains("td", "EditableUser").should("not.exist");
@@ -133,12 +180,29 @@ describe("User Management – Cypress Sandbox", () => {
 
   describe("🗑 Delete & Edit Actions", () => {
     it("Delete modal flow works correctly", () => {
+      cy.intercept({ method: "POST", url: UserManagementEndpoints.Users() }).as("PostNewUser");
+
       addUserAndFindRow("TempUser");
+
+      cy.wait("@PostNewUser").then((xhr) => {
+        expect(xhr.response.body.name).to.eq("TempUser");
+        expect(xhr.response.statusCode).to.eq(200);
+        expect(xhr.response.body.email).deep.equals("TempUser@example.com");
+      });
+
       cy.contains("tr", "TempUser").within(() => {
         cy.get(".delete-btn").click();
       });
       cy.get("#confirm-delete-modal").should("be.visible");
+
+      cy.intercept({ method: "DELETE", url: UserManagementEndpoints.Users(4) }).as("DeleteUser");
       cy.get("#cancel-delete").click();
+
+      cy.wait("@DeleteUser").then((xhr) => {
+        expect(xhr.response.statusCode).to.eq(200);
+        expect(xhr.response.body).deep.eq({ success: true });
+      });
+
       cy.get("#confirm-delete-modal").should("not.be.visible");
     });
 
@@ -150,20 +214,39 @@ describe("User Management – Cypress Sandbox", () => {
     });
 
     it("Admin can delete Admin user", () => {
+      cy.intercept({ method: "POST", url: UserManagementEndpoints.adminLogin }).as("postAdminLogin");
       loginAsAdmin();
+      cy.wait("@postAdminLogin").then((xhr) => {
+        expect(xhr.response.statusCode).to.eq(200);
+        expect(xhr.response.body).deep.equal({ success: true });
+      });
+      cy.intercept({ method: "DELETE", url: UserManagementEndpoints.Users(1) }).as("DeleteUser");
       cy.contains("tr", "Alice").within(() => {
         cy.get(".delete-btn").click();
       });
       cy.get("#confirm-delete").click();
+
+      cy.wait("@DeleteUser").then((xhr) => {
+        expect(xhr.response.statusCode).to.eq(200);
+        expect(xhr.response.body).deep.equal({ success: true });
+      });
+
       cy.contains("tr", "Alice").should("not.exist");
     });
   });
 
   describe("🔁 Status Toggle", () => {
     it("Toggles status between Active and Inactive", () => {
+      cy.intercept({ method: "PATCH", url: UserManagementEndpoints.Status(2) }).as("PatchStatus");
+
       cy.contains("tr", "Eve").within(() => {
         cy.get("td").eq(6).should("contain", "Active");
         cy.get(".status-btn").click();
+        cy.wait("#PatchStatus").then((xhr) => {
+          expect(xhr.response.statusCode).to.equal(200);
+          expect(xhr.response.body.status).to.equal("Inactivate");
+        });
+
         cy.get("td").eq(6).should("contain", "Inactive");
       });
     });
