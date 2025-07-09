@@ -5,7 +5,7 @@ describe ("User Management API", () => {
     const baseUrl = "/";
 
   beforeEach(() => {
-    cy.intercept("GET", UserManagementEndpoints.Users()).as("getusers")
+    cy.intercept("GET", UserManagementEndpoints.Users()).as("getUsers")
     cy.visit(baseUrl);
   });
 

@@ -1,5 +1,7 @@
-﻿import { UserManagementBuilders } from "Builders/Lecture/UserManagementBuilders";
+import { UserManagementBuilders } from "Builders/Lecture/UserManagementBuilders";
+import { UserManagementGenerators } from "Generators/UserManagementGenerators";
 import { UserManagementModels } from "Models/Lecture/UserManagementModels";
+
 
 /**
  * API Test Suite for User Management endpoints.
@@ -9,6 +11,15 @@ describe("User Management API – Cypress Sandbox", () => {
   const adminEmail = "admin@example.com";
   const adminPass = "admin123";
   let createdUserId: number;
+
+  before(() => {
+    console.log( UserManagementGenerators.userDataPositive())
+    console.log( UserManagementGenerators.userDataPositive())
+    console.log( UserManagementGenerators.userDataPositive())
+    console.log( UserManagementGenerators.userDataPositive())
+    console.log( UserManagementGenerators.userDataPositive())
+    console.log( UserManagementGenerators.userDataPositive())
+  });
 
   before(() => {
     // 🌐 Reset the entire data set before running tests
@@ -62,18 +73,14 @@ describe("User Management API – Cypress Sandbox", () => {
    * @test Creates a new user via API
    */
   it("POST /api/users creates a new user", () => {
-    const newUser: UserManagementModels.UserUpdate = {
-      name: "ApiUser",
-      role: UserManagementModels.Role.Viewer,
-      age: 24,
-      email: "apiuser@example.com",
-      gender: UserManagementModels.Gender.Other,
-      subscriptions: [UserManagementModels.Subscription.Newsletter],
-    };
-
-    UserManagementBuilders.createUser(newUser).then((resp) => {
+  const user = UserManagementGenerators.userDataPositive()
+    UserManagementBuilders.createUser(user).then((resp) => {
       expect(resp.status).to.eq(200);
-      expect(resp.body).to.include({ name: newUser.name, email: newUser.email });
+      expect(resp.body.name).eq(user.name)
+      expect(resp.body.email).eq(user.email)
+      expect(resp.body.role).eq(user.role)
+      expect(resp.body.age).eq(user.age)
+      expect(resp.body.subscriptions).to.be.an("array")
       createdUserId = resp.body.id;
     });
   });

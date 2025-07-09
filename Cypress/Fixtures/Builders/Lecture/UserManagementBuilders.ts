@@ -50,12 +50,13 @@ export class UserManagementBuilders {
   }
 
   /** Delete a user by ID */
-  static deleteUser(id: number, isAdmin: boolean = false) {
+  static deleteUser(id: number, isAdmin: boolean = false ) {
     cy.log(`Deleting user #${id}`);
     return cy.request({
       method: "DELETE",
       url: UserManagementEndpoints.users(id),
       body: { isAdmin },
+      failOnStatusCode: false
     });
   }
 

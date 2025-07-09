@@ -1,13 +1,13 @@
-﻿import { UserManagementBuilders } from "Builders/UserManagementBuilders";
+﻿import  { UserManagementBuilders } from "Builders/Lecture/UserManagementBuilders"
 import { UserManagementEndpoints } from "EndPoints/user_managementEndpoints";
 import { UserManagementPage } from "Pages/UserManagementPage";
-import { intersection } from "lodash";
+//import { intersection } from "lodash";
 
 describe("User Management – Cypress Sandbox", () => {
   const baseUrl = "/";
 
   beforeEach(() => {
-    cy.intercept("GET", UserManagementEndpoints.Users()).as("getusers")
+    cy.intercept("GET", UserManagementEndpoints.Users()).as("getUsers")
     cy.visit(baseUrl);
   });
 
