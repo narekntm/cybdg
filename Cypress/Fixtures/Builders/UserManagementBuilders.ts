@@ -2,7 +2,7 @@ import { UserManagementModels } from "Cypress/Fixtures/Models/UserManagementMode
 import { UserManagementEndPoints } from "EndPoints/UserManagementEndPoints";
 
 export class UserManagementBuilders {
-  static AdminLogin = (login: UserManagementModels.Login) => {
+  static adminLogin = (login: UserManagementModels.Login) => {
     return cy.request({
       method: "POST",
       url: UserManagementEndPoints.adminLogin,
@@ -14,18 +14,18 @@ export class UserManagementBuilders {
     });
   };
 
-  static ResetData = () => {
+  static resetData = () => {
     return cy.request({
       method: "POST",
       url: UserManagementEndPoints.reset,
     });
   };
 
-  static PostUser = (user: UserManagementModels.User) => {
+  static postUser = (user: UserManagementModels.User) => {
     console.log("user: ", user);
     return cy.request({
       method: "POST",
-      url: UserManagementEndPoints.Users(),
+      url: UserManagementEndPoints.users(),
       body: {
         user,
       },
@@ -33,37 +33,37 @@ export class UserManagementBuilders {
     });
   };
 
-  static GetUsers = () => {
+  static getUsers = () => {
     return cy.request({
       method: "GET",
-      url: UserManagementEndPoints.Users(),
+      url: UserManagementEndPoints.users(),
     });
   };
 
-  static PutUser = (id: number, updatedUser: UserManagementModels.User) => {
+  static putUser = (id: number, updatedUser: UserManagementModels.User) => {
     return cy.request({
       method: "PUT",
-      url: UserManagementEndPoints.Users(id),
+      url: UserManagementEndPoints.users(id),
       body: {
         updatedUser,
       },
     });
   };
 
-  static DeleteUser = (id: number, isAdmin: boolean) => {
+  static deleteUser = (id: number, isAdmin: boolean) => {
     return cy.request({
       method: "DELETE",
-      url: UserManagementEndPoints.Users(id),
+      url: UserManagementEndPoints.users(id),
       body: {
         isAdmin: isAdmin,
       },
     });
   };
 
-  static PatchUser = (id: number, status: string) => {
+  static patchUser = (id: number, status: string) => {
     return cy.request({
       method: "PATCH",
-      url: UserManagementEndPoints.Status(id),
+      url: UserManagementEndPoints.status(id),
       body: {
         status: status,
       },

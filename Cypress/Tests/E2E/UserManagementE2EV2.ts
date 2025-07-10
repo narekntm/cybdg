@@ -20,12 +20,12 @@ describe("User Management Suite", () => {
     cy.visit(baseURL);
 
     cy.intercept({ method: "POST", url: UserManagementEndPointsV2.adminLogin }).as("postAdmin");
-    cy.intercept({ method: "POST", url: UserManagementEndPointsV2.Users() }).as("postUser");
-    cy.intercept({ method: "DELETE", url: UserManagementEndPointsV2.Users(1) }).as("deleteUser");
-    cy.intercept({ method: "PUT", url: UserManagementEndPointsV2.Users(1) }).as("putUser");
-    cy.intercept({ method: "PATCH", url: UserManagementEndPointsV2.Status(1) }).as("patchUser");
+    cy.intercept({ method: "POST", url: UserManagementEndPointsV2.users() }).as("postUser");
+    cy.intercept({ method: "DELETE", url: UserManagementEndPointsV2.users(1) }).as("deleteUser");
+    cy.intercept({ method: "PUT", url: UserManagementEndPointsV2.users(1) }).as("putUser");
+    cy.intercept({ method: "PATCH", url: UserManagementEndPointsV2.status(1) }).as("patchUser");
     cy.intercept({ method: "POST", url: UserManagementEndPointsV2.reset }).as("resetData");
-    cy.intercept({ method: "GET", url: UserManagementEndPointsV2.Users(1) }).as("getUser");
+    cy.intercept({ method: "GET", url: UserManagementEndPointsV2.users(1) }).as("getUser");
   });
 
   afterEach(() => {

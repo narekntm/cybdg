@@ -6,7 +6,6 @@ describe("User Management Suite", () => {
   let loginPositiveCase: UserManagementModels.Login;
   let loginNegativeCase: UserManagementModels.Login;
   let userFormPositiveCase: UserManagementModels.User;
-  let userFormNegativeCase: UserManagementModels.User;
 
   function adminLogin(login: UserManagementModels.Login) {
     if (login.email !== "") {
@@ -76,7 +75,6 @@ describe("User Management Suite", () => {
       loginPositiveCase = data.loginPositiveCase;
       loginNegativeCase = data.loginNegativeCase;
       userFormPositiveCase = data.userFormPositiveCase;
-      userFormNegativeCase = data.userFormNegativeCase;
     });
   });
 
@@ -84,10 +82,10 @@ describe("User Management Suite", () => {
     cy.visit(baseURL);
 
     cy.intercept({ method: "POST", url: UserManagementEndPoints.adminLogin }).as("postAdmin");
-    cy.intercept({ method: "POST", url: UserManagementEndPoints.Users() }).as("postUser");
-    cy.intercept({ method: "DELETE", url: UserManagementEndPoints.Users(1) }).as("deleteUser");
-    cy.intercept({ method: "PUT", url: UserManagementEndPoints.Users(1) }).as("putUser");
-    cy.intercept({ method: "PATCH", url: UserManagementEndPoints.Status(1) }).as("patchUser");
+    cy.intercept({ method: "POST", url: UserManagementEndPoints.users() }).as("postUser");
+    cy.intercept({ method: "DELETE", url: UserManagementEndPoints.users(1) }).as("deleteUser");
+    cy.intercept({ method: "PUT", url: UserManagementEndPoints.users(1) }).as("putUser");
+    cy.intercept({ method: "PATCH", url: UserManagementEndPoints.status(1) }).as("patchUser");
     cy.intercept({ method: "POST", url: UserManagementEndPoints.reset }).as("resetData");
   });
 
@@ -142,7 +140,6 @@ describe("User Management Suite", () => {
 
   context("User Management Adding Suite", () => {
     it("Add a user, Positive case", () => {
-      console.log("url", UserManagementEndPoints.Users());
       fillUserForm(userFormPositiveCase);
       UserManagementPage.userTableRows()
         .its("length")

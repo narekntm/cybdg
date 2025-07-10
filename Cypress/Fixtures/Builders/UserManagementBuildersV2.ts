@@ -24,7 +24,7 @@ export class UserManagementBuildersV2 {
   static postUser = (user: UserManagementModels.User) => {
     return cy.request({
       method: "POST",
-      url: UserManagementEndPointsV2.Users(),
+      url: UserManagementEndPointsV2.users(),
       body: user,
       failOnStatusCode: false,
     });
@@ -33,14 +33,14 @@ export class UserManagementBuildersV2 {
   static getUsers = () => {
     return cy.request({
       method: "GET",
-      url: UserManagementEndPointsV2.Users(),
+      url: UserManagementEndPointsV2.users(),
     });
   };
 
   static putUser = (id: number, updatedUser: UserManagementModels.User) => {
     return cy.request({
       method: "PUT",
-      url: UserManagementEndPointsV2.Users(id),
+      url: UserManagementEndPointsV2.users(id),
       body: updatedUser,
     });
   };
@@ -48,7 +48,7 @@ export class UserManagementBuildersV2 {
   static deleteUser = (id: number, isAdmin: boolean = false) => {
     return cy.request({
       method: "DELETE",
-      url: UserManagementEndPointsV2.Users(id),
+      url: UserManagementEndPointsV2.users(id),
       body: {
         isAdmin: isAdmin,
       },
@@ -58,7 +58,7 @@ export class UserManagementBuildersV2 {
   static patchUser = (id: number, status: string) => {
     return cy.request({
       method: "PATCH",
-      url: UserManagementEndPointsV2.Status(id),
+      url: UserManagementEndPointsV2.status(id),
       body: {
         status: status,
       },
