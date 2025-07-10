@@ -1,5 +1,5 @@
-import { UserManagementBuilders } from "Builders/Anahit Tadevosyan/UserManagementBuilders";
-import { UserData } from "Models/Anahit Tadevosyan/UserManagementModel";
+import { UserManagementBuilders } from "Builders/anahit-tadevosyan/UserManagementBuilders";
+import { UserData } from "Models/anahit-tadevosyan/UserManagementModel";
 import { UserManagementModels } from "Models/Lecture/UserManagementModels";
 
 describe("User Management API Testing", () => {

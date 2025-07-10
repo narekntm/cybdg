@@ -1,5 +1,5 @@
-import { Product, ProductCategory, ProductStatus } from "Models/Anahit Tadevosyan/InventoryManagerModel";
-import { InventoryManagerPage } from "Pages/Anahit Tadevosyan/InventoryManagerPage";
+import { Product, ProductCategory, ProductStatus } from "Models/anahit-tadevosyan/InventoryManagerModel";
+import { InventoryManagerPage } from "Pages/anahit-tadevosyan/InventoryManagerPage";
 
 describe("InventoryManager", () => {
   const baseUrl = "http://127.0.0.1:8080/Resources/htmls/inventory_manager/";

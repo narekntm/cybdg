@@ -1,5 +1,5 @@
-import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementEndPoints";
-import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementPage";
+import { UserManagementEndpoints } from "EndPoints/anahit-tadevosyan/UserManagementEndPoints";
+import { UserManagementPage } from "Pages/anahit-tadevosyan/UserManagementPage";
 
 describe("User Management Test Cases", () => {
   const baseUrl = "http://127.0.0.1:3000/";

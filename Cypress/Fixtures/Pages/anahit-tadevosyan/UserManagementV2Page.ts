@@ -1,4 +1,4 @@
-import { UserTableColumn } from "Models/Anahit Tadevosyan/UserManagementV2Model";
+import { UserTableColumn } from "Models/anahit-tadevosyan/UserManagementV2Model";
 
 export class UserManagementPage {
   // Login as Admin label

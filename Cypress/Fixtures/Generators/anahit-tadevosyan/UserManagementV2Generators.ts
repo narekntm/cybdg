@@ -1,5 +1,5 @@
 import Chance from "chance";
-import { Gender, Role, Status, Subscription, UserData, UserDataFromView } from "Models/Anahit Tadevosyan/UserManagementV2Model";
+import { Gender, Role, Status, Subscription, UserData, UserDataFromView } from "Models/anahit-tadevosyan/UserManagementV2Model";
 
 const chance = new Chance();
 export class UserManagementGenerator {

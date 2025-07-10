@@ -1,5 +1,5 @@
-import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementV2EndPoints";
-import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementV2Page";
+import { UserManagementEndpoints } from "EndPoints/anahit-tadevosyan/UserManagementV2EndPoints";
+import { UserManagementPage } from "Pages/anahit-tadevosyan/UserManagementV2Page";
 
 describe("Editing mocked user data", () => {
   const baseUrl = "http://localhost:3000/index.html";

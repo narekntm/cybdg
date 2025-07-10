@@ -1,4 +1,4 @@
-﻿import { InventoryManagerPage } from "Pages/Anahit Tadevosyan/InventoryManagerPage";
+﻿import { InventoryManagerPage } from "Pages/anahit-tadevosyan/InventoryManagerPage";
 
 enum ProductCategory {
   Electronics = "Electronics",

@@ -1,7 +1,5 @@
-import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementV2EndPoints";
-import { UserManagementGenerator } from "Generators/Anahit_Tadevosyan/UserManagementV2Generators";
-import { UserTableColumn } from "Models/Anahit Tadevosyan/UserManagementV2Model";
-import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementV2Page";
+import { UserManagementEndpoints } from "EndPoints/anahit-tadevosyan/UserManagementV2EndPoints";
+import { UserManagementPage } from "Pages/anahit-tadevosyan/UserManagementV2Page";
 
 describe("User Management Test Cases", () => {
   const baseUrl = "http://localhost:3000/index.html";
@@ -18,6 +16,41 @@ describe("User Management Test Cases", () => {
     UserManagementPage.resetButton().click();
     UserManagementPage.confirmResetButton().click();
     cy.wait("@postReset").then((interception) => {
+      expect(interception.response.body).to.deep.eq({
+        success: true,
+        users: [
+          {
+            id: 1,
+            name: "Alice",
+            role: "Admin",
+            age: 30,
+            email: "alice@site.com",
+            gender: "Female",
+            subscriptions: "Newsletter",
+            status: "Active",
+          },
+          {
+            id: 2,
+            name: "Bob",
+            role: "Viewer",
+            age: 25,
+            email: "bob@site.com",
+            gender: "Male",
+            subscriptions: "Product Updates",
+            status: "Inactive",
+          },
+          {
+            id: 3,
+            name: "Eve",
+            role: "Editor",
+            age: 28,
+            email: "eve@site.com",
+            gender: "Other",
+            subscriptions: "Newsletter, Product Updates",
+            status: "Active",
+          },
+        ],
+      });
       expect(interception.response.statusCode).to.eq(200);
     });
   });
@@ -27,25 +60,22 @@ describe("User Management Test Cases", () => {
     UserManagementPage.adminPasswordInput().type(password);
     UserManagementPage.loginButton().click();
   };
-  function addUser(user: {
-    name?: string;
-    role?: string;
-    age?: number;
-    email?: string;
-    gender?: "Male" | "Female" | "Other";
-    subscriptions?: string[];
-  }) {
-    const { name = "", role = "", age, email = "", gender, subscriptions = [] } = user;
-
-    if (name) UserManagementPage.fullNameInput().clear().type(name);
+  const addUser = function (
+    fullName: string = "",
+    role: string = "",
+    age: string = "",
+    email: string = "",
+    gender?: "Male" | "Female" | "Other",
+    subscriptions: string[] = []
+  ) {
+    if (fullName) UserManagementPage.fullNameInput().clear().type(fullName);
     if (role) UserManagementPage.roleInput().select(role);
-    if (age) UserManagementPage.ageInput().clear().type(age.toString());
+    if (age) UserManagementPage.ageInput().clear().type(age);
     if (email) UserManagementPage.emailInput().clear().type(email);
 
     if (gender) {
       UserManagementPage.genderRadio(gender).check();
     }
-
     UserManagementPage.subscribeComponent().uncheck();
 
     subscriptions.forEach((subs) => {
@@ -53,7 +83,7 @@ describe("User Management Test Cases", () => {
     });
 
     UserManagementPage.saveButton().click();
-  }
+  };
 
   describe("Admin Login", () => {
     it("Login with valid credentials", () => {
@@ -108,31 +138,36 @@ describe("User Management Test Cases", () => {
     });
 
     it("Add user with valid input", () => {
-      const user = UserManagementGenerator.userPositiveCase;
       cy.intercept({ method: "POST", url: "/api/users" }).as("addUser");
-      addUser(user);
+      addUser("Anahit", "Admin", "24", "anahit.ru@gmail.com", "Female", ["Newsletter"]);
       UserManagementPage.toastSuccess().should("exist").and("contain", "User added successfully");
       cy.wait("@addUser").then((interception) => {
         expect(interception.request.body).to.include({
-          ...user,
-          age: user.age.toString(),
-          subscriptions: user.subscriptions.join(","),
+          name: "Anahit",
+          role: "Admin",
+          age: "24",
+          email: "anahit.ru@gmail.com",
+          gender: "Female",
+          subscriptions: "Newsletter",
         });
         expect(interception.response.body).to.include({
-          ...user,
-          age: user.age.toString(),
-          subscriptions: user.subscriptions.join(","),
+          name: "Anahit",
+          role: "Admin",
+          age: "24",
+          email: "anahit.ru@gmail.com",
+          gender: "Female",
+          subscriptions: "Newsletter",
+          status: "Active",
         });
         expect(interception.response.statusCode).to.eq(200);
       });
       UserManagementPage.tableRow(3).within(() => {
-        UserManagementPage.tableTd(0).should("have.text", user.name);
+        UserManagementPage.tableTd(0).should("have.text", "Anahit");
       });
     });
 
     it("Submit form with all fields empty", () => {
-      const user = UserManagementGenerator.userEmptyDetails;
-      addUser(user);
+      addUser();
       UserManagementPage.formErrorsMessage().should("exist");
       UserManagementPage.toastError()
         .should("exist")
@@ -144,8 +179,7 @@ describe("User Management Test Cases", () => {
     });
 
     it("Invalid name (e.g. symbols, numbers)", () => {
-      const user = UserManagementGenerator.userNegativeName;
-      addUser(user);
+      addUser("@tes%", "Editor", "35", "anahit.com@gmail.com", "Other", ["Newsletter"]);
       UserManagementPage.formErrorsMessage().should("contain", "Name must be 1–20 letters only (no spaces or symbols).");
       UserManagementPage.toastError().should("exist").and("have.text", "Name must be 1–20 letters only (no spaces or symbols).");
 
@@ -153,8 +187,7 @@ describe("User Management Test Cases", () => {
     });
 
     it("Invalid email format", () => {
-      const user = UserManagementGenerator.userNegativeEmail;
-      addUser(user);
+      addUser("Mary", "Editor", "35", "maryodno$2as", "Other", ["Newsletter"]);
       UserManagementPage.formErrorsMessage().should("contain", "Valid email is required.");
       UserManagementPage.toastError().should("exist").and("have.text", "Valid email is required.");
 
@@ -162,69 +195,79 @@ describe("User Management Test Cases", () => {
     });
 
     it("No gender selected", () => {
-      const user = UserManagementGenerator.userNegativeGender;
-      addUser(user);
+      addUser("John", "Admin", "35", "john@gmail.com", null, ["Newsletter"]);
       UserManagementPage.formErrorsMessage().should("contain", "Gender selection is required.");
       UserManagementPage.toastError().should("exist").and("have.text", "Gender selection is required.");
       UserManagementPage.addUserPopupClose().click();
     });
 
     it("Submit without selecting subscriptions", () => {
-      const user = UserManagementGenerator.userFormEmptySubs;
       cy.intercept({ method: "POST", url: "/api/users" }).as("addUser");
-      addUser(user);
+      addUser("John", "Admin", "35", "john@gmail.com", "Male", []);
       UserManagementPage.toastSuccess().should("exist").and("have.text", "User added successfully");
       cy.wait("@addUser").then((interception) => {
         expect(interception.request.body).to.include({
-          ...user,
-          age: user.age.toString(),
+          name: "John",
+          role: "Admin",
+          age: "35",
+          email: "john@gmail.com",
+          gender: "Male",
           subscriptions: "None",
         });
         expect(interception.response.body).to.include({
-          ...user,
-          age: user.age.toString(),
+          name: "John",
+          role: "Admin",
+          age: "35",
+          email: "john@gmail.com",
+          gender: "Male",
           subscriptions: "None",
+          status: "Active",
         });
         expect(interception.response.statusCode).to.eq(200);
         UserManagementPage.tableRow(3).within(() => {
-          UserManagementPage.tableTd(0).should("have.text", user.name);
+          UserManagementPage.tableTd(0).should("have.text", "John");
         });
       });
     });
   });
   describe("Edit Existing User", () => {
     it('Clicking "Edit" loads user data and Submitting replaces table row', () => {
-      const staticUserOne = UserManagementGenerator.staticUserOne;
       UserManagementPage.tableRow(0).find(".btn-secondary.edit-btn").click();
-      UserManagementPage.fullNameInput().should("have.value", staticUserOne.name);
-      UserManagementPage.roleInput().should("have.value", staticUserOne.role);
-      UserManagementPage.ageInput().should("have.value", staticUserOne.age);
-      UserManagementPage.emailInput().should("have.value", staticUserOne.email);
-      UserManagementPage.genderRadio(staticUserOne.gender).should("be.checked");
-      UserManagementPage.subscribeCheckbox(staticUserOne.subscriptions.join(",")).should("be.checked");
+      UserManagementPage.fullNameInput().should("have.value", "Alice");
+      UserManagementPage.roleInput().should("have.value", "Admin");
+      UserManagementPage.ageInput().should("have.value", "30");
+      UserManagementPage.emailInput().should("have.value", "alice@site.com");
+      UserManagementPage.genderRadio("Female").should("be.checked");
+      UserManagementPage.subscribeCheckbox("Newsletter").should("be.checked");
       cy.intercept({ method: "PUT", url: "api/users/1" }).as("EditUser");
-      const user = UserManagementGenerator.userPositiveCase;
-      addUser(user);
+      addUser("Alicia", "Editor", "21", "alicia@gmail.com", "Other", []);
       UserManagementPage.toastSuccess().should("exist").and("have.text", "User updated successfully");
       cy.wait("@EditUser").then((interception) => {
         expect(interception.request.body).to.include({
-          ...user,
-          age: user.age.toString(),
-          subscriptions: user.subscriptions.join(","),
+          name: "Alicia",
+          role: "Editor",
+          age: "21",
+          email: "alicia@gmail.com",
+          gender: "Other",
+          subscriptions: "None",
         });
         expect(interception.response.body).to.include({
-          ...user,
-          age: user.age.toString(),
-          subscriptions: user.subscriptions.join(","),
+          name: "Alicia",
+          role: "Editor",
+          age: "21",
+          email: "alicia@gmail.com",
+          gender: "Other",
+          subscriptions: "None",
+          status: "Active",
         });
         expect(interception.response.statusCode).to.eq(200);
 
-        UserManagementPage.tableData(0, UserTableColumn.Name).should("have.text", user.name);
-        UserManagementPage.tableData(0, UserTableColumn.Role).should("have.text", user.role);
-        UserManagementPage.tableData(0, UserTableColumn.Age).should("have.text", user.age);
-        UserManagementPage.tableData(0, UserTableColumn.Email).should("have.text", user.email);
-        UserManagementPage.tableData(0, UserTableColumn.Gender).should("have.text", user.gender);
-        UserManagementPage.tableData(0, UserTableColumn.Subscription).should("have.text", user.subscriptions.join(","));
+        UserManagementPage.tableData(0, 0).should("have.text", "Alicia");
+        UserManagementPage.tableData(0, 1).should("have.text", "Editor");
+        UserManagementPage.tableData(0, 2).should("have.text", "21");
+        UserManagementPage.tableData(0, 3).should("have.text", "alicia@gmail.com");
+        UserManagementPage.tableData(0, 4).should("have.text", "Other");
+        UserManagementPage.tableData(0, 5).should("not.have.text");
       });
     });
   });
@@ -245,7 +288,7 @@ describe("User Management Test Cases", () => {
         expect(interception.response.statusCode).to.eq(200);
         expect(interception.response.body).to.deep.eq({ success: true });
       });
-      UserManagementPage.userTable().should("not.contain", UserManagementGenerator.staticUserThree.name);
+      UserManagementPage.userTable().should("not.contain", "Eve");
     });
 
     it('Clicking "Cancel" closes modal, no action taken', () => {
@@ -272,7 +315,7 @@ describe("User Management Test Cases", () => {
         expect(interception.response.statusCode).to.eq(200);
         expect(interception.response.body).to.deep.eq({ success: true });
       });
-      UserManagementPage.userTable().should("not.contain", UserManagementGenerator.staticUserOne.name);
+      UserManagementPage.userTable().should("not.contain", "Alice");
     });
   });
 
@@ -284,9 +327,12 @@ describe("User Management Test Cases", () => {
         expect(interception.response.statusCode).to.eq(200);
         expect(interception.request.body).to.include({ status: "Inactive" });
         expect(interception.response.body).to.include({
-          ...UserManagementGenerator.staticUserThree,
-          age: Number(UserManagementGenerator.staticUserThree.age),
-          subscriptions: UserManagementGenerator.staticUserThree.subscriptions.join(", "),
+          name: "Eve",
+          role: "Editor",
+          age: 28,
+          email: "eve@site.com",
+          gender: "Other",
+          subscriptions: "Newsletter, Product Updates",
           status: "Inactive",
         });
       });
@@ -297,9 +343,12 @@ describe("User Management Test Cases", () => {
         expect(interception.response.statusCode).to.eq(200);
         expect(interception.request.body).to.include({ status: "Active" });
         expect(interception.response.body).to.include({
-          ...UserManagementGenerator.staticUserThree,
-          age: Number(UserManagementGenerator.staticUserThree.age),
-          subscriptions: UserManagementGenerator.staticUserThree.subscriptions.join(", "),
+          name: "Eve",
+          role: "Editor",
+          age: 28,
+          email: "eve@site.com",
+          gender: "Other",
+          subscriptions: "Newsletter, Product Updates",
           status: "Active",
         });
       });

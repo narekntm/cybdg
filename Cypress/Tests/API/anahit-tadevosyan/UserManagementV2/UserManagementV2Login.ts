@@ -1,4 +1,4 @@
-import { UserManagementBuilders } from "Builders/Anahit Tadevosyan/UserManagementV2Builders";
+import { UserManagementBuilders } from "Builders/anahit-tadevosyan/UserManagementV2Builders";
 
 describe("User Management API Testing", () => {
   const baseUrl = "http://127.0.0.1:3000/";

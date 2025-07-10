@@ -1,5 +1,5 @@
-import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementEndPoints";
-import { UserData } from "Models/Anahit Tadevosyan/UserManagementModel";
+import { UserManagementEndpoints } from "EndPoints/anahit-tadevosyan/UserManagementEndPoints";
+import { UserData } from "Models/anahit-tadevosyan/UserManagementModel";
 
 export class UserManagementBuilders {
   static adminLogin = (email: string, password: string) => {

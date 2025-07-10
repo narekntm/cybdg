@@ -1,6 +1,6 @@
-import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementV2EndPoints";
-import { UserManagementGenerator } from "Generators/Anahit_Tadevosyan/UserManagementV2Generators";
-import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementV2Page";
+import { UserManagementEndpoints } from "EndPoints/anahit-tadevosyan/UserManagementV2EndPoints";
+import { UserManagementGenerator } from "Generators/anahit-tadevosyan/UserManagementV2Generators";
+import { UserManagementPage } from "Pages/anahit-tadevosyan/UserManagementV2Page";
 
 describe("User Management Test Cases", () => {
   const baseUrl = "http://localhost:3000/index.html";

@@ -1,6 +1,6 @@
-import { UserManagementBuilders } from "Builders/Anahit Tadevosyan/UserManagementBuilders";
-import { UserManagementGenerator } from "Generators/Anahit_Tadevosyan/UserManagementV2Generators";
-import { UserData } from "Models/Anahit Tadevosyan/UserManagementModel";
+import { UserManagementBuilders } from "Builders/anahit-tadevosyan/UserManagementBuilders";
+import { UserManagementGenerator } from "Generators/anahit-tadevosyan/UserManagementV2Generators";
+import { UserData } from "Models/anahit-tadevosyan/UserManagementModel";
 
 describe("User Management API Testing", () => {
   const baseUrl = "http://127.0.0.1:3000/";

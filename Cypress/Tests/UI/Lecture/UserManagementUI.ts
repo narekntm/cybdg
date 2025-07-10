@@ -1,4 +1,4 @@
-﻿import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementPage";
+﻿import { UserManagementPage } from "Pages/anahit-tadevosyan/UserManagementPage";
 
 describe("User Management – Cypress Sandbox", () => {
   const baseUrl = "/";

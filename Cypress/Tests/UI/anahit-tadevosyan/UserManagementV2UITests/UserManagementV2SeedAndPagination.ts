@@ -1,8 +1,8 @@
 import Chance from "chance";
-import { UserManagementBuilders } from "Builders/Anahit Tadevosyan/UserManagementV2Builders";
-import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementV2EndPoints";
-import { Gender, Role, Subscription, UserData } from "Models/Anahit Tadevosyan/UserManagementV2Model";
-import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementV2Page";
+import { UserManagementBuilders } from "Builders/anahit-tadevosyan/UserManagementV2Builders";
+import { UserManagementEndpoints } from "EndPoints/anahit-tadevosyan/UserManagementV2EndPoints";
+import { Gender, Role, Subscription, UserData } from "Models/anahit-tadevosyan/UserManagementV2Model";
+import { UserManagementPage } from "Pages/anahit-tadevosyan/UserManagementV2Page";
 
 const chance = new Chance();
 
