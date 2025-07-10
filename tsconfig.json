@@ -35,6 +35,9 @@
       "Helpers/*": [
         "Cypress/Support/Helpers/*"
       ],
+      "TestDataAni/*": [
+        "Cypress/Fixtures/Static/Ani/*"
+      ],
       "Plugins/*": [
         "Cypress/Support/Plugins/*"
       ],

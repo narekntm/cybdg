@@ -1,4 +1,4 @@
-﻿import { Gender } from "../Models/UserManagementModels";
+﻿import { Gender } from "Models/UserManagementModels";
 
 export class UserManagementPage {
   static adminEmailInput = () => cy.get('input[id="admin-email"]');

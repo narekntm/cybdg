@@ -1,8 +1,5 @@
 //import { should } from "chai"
-import { UserFormInput } from "Cypress/Fixtures/Models/UserManagementModels";
-import { Gender } from "Cypress/Fixtures/Models/UserManagementModels";
-import { SubscribeTo } from "Cypress/Fixtures/Models/UserManagementModels";
-import { Role } from "Cypress/Fixtures/Models/UserManagementModels";
+import { Gender, Role, SubscribeTo, UserFormInput } from "Cypress/Fixtures/Models/UserManagementModels";
 import { UserManagementPage } from "Cypress/Fixtures/Pages/UserManagementPage";
 
 function getUserFormInput(
@@ -21,7 +18,7 @@ describe("User Management", () => {
   beforeEach(() => {
     cy.visit("http://127.0.0.1:8080/Resources/htmls/CSS/user_management.html");
   });
-  function adminLogin(email: any, password: any) {
+  function adminLogin(email: string, password: string) {
     UserManagementPage.adminEmailInput().type(email);
     UserManagementPage.adminPasswordInput().type(password).should("have.value", password);
     return UserManagementPage.adminLoginBtn().click();
