@@ -22,7 +22,7 @@ describe("User Management", () => {
     cy.intercept({ method: "PATCH", url: "/api/users/2/status" }).as("userStatusUpdate");
     cy.intercept({ method: "PUT", url: "/api/users/1" }).as("userUpdate");
   });
-  function adminLogin(email: any, password: any) {
+  function adminLogin(email: string, password: string) {
     UserManagementPage.adminEmailInput().type(email);
     UserManagementPage.adminPasswordInput().type(password).should("have.value", password);
     return UserManagementPage.adminLoginBtn().click();

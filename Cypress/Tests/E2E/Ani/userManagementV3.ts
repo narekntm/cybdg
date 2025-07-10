@@ -3,7 +3,7 @@ import { UserManagementEndpoints } from "EndPoints/UserManagementEndpoints";
 import { UserManagementGenerators } from "Generators/Ani/UserManagementGenerators";
 import { AdminLoginStatus, UserFormInput } from "Models/UserManagementModels";
 import { UserManagementPageV3 } from "Pages/UserManagementPageV3";
-import { adminEmail, adminPassword, emptySpace, wrongEmail, wrongPassword } from "TestDataAni/testData";
+import { adminEmail, adminPassword, wrongEmail, wrongPassword } from "TestDataAni/testData";
 
 describe("User Management – Cypress Sandbox", () => {
   beforeEach(() => {
@@ -54,7 +54,7 @@ describe("User Management – Cypress Sandbox", () => {
     UserManagementPageV3.loginBtn().should("be.visible");
   });
   it("4. Admin login with empty credentials", () => {
-    adminLogin(emptySpace, emptySpace);
+    adminLogin(" ", " ");
     cy.wait("@adminLogin").then((xhr) => {
       expect(xhr.response.statusCode).to.eq(401);
       expect(xhr.response.body.errors).to.deep.equal([AdminLoginStatus.errorText]);
@@ -62,7 +62,7 @@ describe("User Management – Cypress Sandbox", () => {
     UserManagementPageV3.loginBtn().should("be.visible");
   });
   it("5. Admin login with empty email and valid password", () => {
-    adminLogin(emptySpace, adminPassword);
+    adminLogin(" ", adminPassword);
     cy.wait("@adminLogin").then((xhr) => {
       expect(xhr.response.statusCode).to.eq(401);
       expect(xhr.response.body.errors).to.deep.equal([AdminLoginStatus.errorText]);
@@ -70,7 +70,7 @@ describe("User Management – Cypress Sandbox", () => {
     UserManagementPageV3.loginBtn().should("be.visible");
   });
   it("6. Admin login with valid email and empty password", () => {
-    adminLogin(adminEmail, emptySpace);
+    adminLogin(adminEmail, " ");
     cy.wait("@adminLogin").then((xhr) => {
       expect(xhr.response.statusCode).to.eq(401);
       expect(xhr.response.body.errors).to.deep.equal([AdminLoginStatus.errorText]);

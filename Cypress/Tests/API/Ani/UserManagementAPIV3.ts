@@ -1,6 +1,6 @@
 import { UserManagementBuilders } from "Builders/UserManagementBuilders";
 import { UserManagementGenerators } from "Generators/Ani/UserManagementGenerators";
-import { adminEmail, adminPassword, emptyString, wrongEmail, wrongFormatEmail, wrongPassword } from "TestDataAni/testData";
+import { adminEmail, adminPassword, wrongEmail, wrongFormatEmail, wrongPassword } from "TestDataAni/testData";
 
 describe("User Management", () => {
   beforeEach(() => {
@@ -28,17 +28,17 @@ describe("User Management", () => {
       });
     });
     it("5. Admin login with empty credentials", () => {
-      UserManagementBuilders.AdminLogin(emptyString, emptyString).then((xhr) => {
+      UserManagementBuilders.AdminLogin("", "").then((xhr) => {
         expect(xhr.status).to.eq(401);
       });
     });
     it("6. Admin login with empty email and valid password", () => {
-      UserManagementBuilders.AdminLogin(emptyString, adminPassword).then((xhr) => {
+      UserManagementBuilders.AdminLogin("", adminPassword).then((xhr) => {
         expect(xhr.status).to.eq(401);
       });
     });
     it("7. Admin login with valid email and empty password", () => {
-      UserManagementBuilders.AdminLogin(adminEmail, emptyString).then((xhr) => {
+      UserManagementBuilders.AdminLogin(adminEmail, "").then((xhr) => {
         expect(xhr.status).to.eq(401);
       });
     });
