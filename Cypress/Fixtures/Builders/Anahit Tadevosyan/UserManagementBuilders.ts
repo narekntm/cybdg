@@ -2,7 +2,7 @@ import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagem
 import { UserData } from "Models/Anahit Tadevosyan/UserManagementModel";
 
 export class UserManagementBuilders {
-  static AdminLogin = (email: string, password: string) => {
+  static adminLogin = (email: string, password: string) => {
     return cy.request({
       method: "POST",
       url: UserManagementEndpoints.adminLogin(),
@@ -14,20 +14,20 @@ export class UserManagementBuilders {
     });
   };
 
-  static ResetData() {
+  static resetData() {
     return cy.request({
       method: "POST",
       url: UserManagementEndpoints.reset(),
     });
   }
-  static GetUsers() {
+  static getUsers() {
     return cy.request({
       method: "GET",
       url: UserManagementEndpoints.users(),
       failOnStatusCode: false,
     });
   }
-  static AddUser(user: UserData) {
+  static addUser(user?: UserData) {
     return cy.request({
       method: "POST",
       url: UserManagementEndpoints.users(),
@@ -35,7 +35,7 @@ export class UserManagementBuilders {
       failOnStatusCode: false,
     });
   }
-  static EditUser(id: number, editedUser: UserData) {
+  static editUser(id: number, editedUser: UserData) {
     return cy.request({
       method: "PUT",
       url: UserManagementEndpoints.users(id),
@@ -44,7 +44,7 @@ export class UserManagementBuilders {
     });
   }
 
-  static DeleteUser(id: number, isAdmin: true | false) {
+  static deleteUser(id: number, isAdmin: true | false) {
     return cy.request({
       method: "DELETE",
       url: UserManagementEndpoints.users(id),
@@ -54,7 +54,7 @@ export class UserManagementBuilders {
       failOnStatusCode: false,
     });
   }
-  static ChangeUserStatus(id: number, status: "Active" | "Inactive") {
+  static changeUserStatus(id: number, status: "Active" | "Inactive") {
     return cy.request({
       method: "PATCH",
       url: UserManagementEndpoints.status(id),

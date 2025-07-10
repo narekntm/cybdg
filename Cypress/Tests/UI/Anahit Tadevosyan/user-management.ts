@@ -1,4 +1,3 @@
-import {  Login, userTableActions, userTableColumn } from "Models/Anahit Tadevosyan/UserManagementModel";
 import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementPage";
 
 describe("User Management Test Cases", () => {

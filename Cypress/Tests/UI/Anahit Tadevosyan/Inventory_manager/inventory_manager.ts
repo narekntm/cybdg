@@ -1,21 +1,21 @@
-import { Product, productCategory, productsTableColumn, productStatus } from "Models/Anahit Tadevosyan/InventoryManagerModel";
+import { Product, ProductCategory, ProductStatus } from "Models/Anahit Tadevosyan/InventoryManagerModel";
 import { InventoryManagerPage } from "Pages/Anahit Tadevosyan/InventoryManagerPage";
 
 describe("InventoryManager", () => {
   const baseUrl = "http://127.0.0.1:8080/Resources/htmls/inventory_manager/";
   const categoryOptions = [
-    productCategory.Select,
-    productCategory.Electronics,
-    productCategory.Books,
-    productCategory.Clothing,
-    productCategory.Other,
+    ProductCategory.Select,
+    ProductCategory.Electronics,
+    ProductCategory.Books,
+    ProductCategory.Clothing,
+    ProductCategory.Other,
   ];
-  const statusOptions = [productStatus.Select, productStatus.Available, productStatus.OutOfStock, productStatus.Discontinued];
+  const statusOptions = [ProductStatus.Select, ProductStatus.Available, ProductStatus.OutOfStock, ProductStatus.Discontinued];
   const testProduct: Product = {
     name: "TV",
-    category: productCategory.Electronics,
+    category: ProductCategory.Electronics,
     quantity: 34,
-    status: productStatus.Available,
+    status: ProductStatus.Available,
   };
   beforeEach("Visit the site", () => {
     cy.visit(baseUrl);

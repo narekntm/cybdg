@@ -1,5 +1,4 @@
-import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementV2Page";
-export enum userTableColumn {
+export enum UserTableColumn {
   Name = 0,
   Role = 1,
   Age = 2,
@@ -10,7 +9,7 @@ export enum userTableColumn {
   Actions = 7,
 }
 
-export enum userTableActions {
+export enum UserTableActions {
   Edit = "Edit",
   Delete = "Delete",
   Deactivate = "Deactivate",
@@ -23,10 +22,10 @@ export interface UserData {
   age: number;
   email: string;
   gender: Gender;
-  subscriptions: Subscription[];
+  subscriptions?: Subscription[];
 }
 
-export interface UserDataFromView extends UserData{
+export interface UserDataFromView extends UserData {
   status: Status;
 }
 export enum Role {

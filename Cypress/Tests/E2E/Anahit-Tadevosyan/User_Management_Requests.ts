@@ -1,6 +1,4 @@
-import { UserManagementBuilders } from "Builders/Anahit Tadevosyan/UserManagementBuilders";
 import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementEndPoints";
-import { Login, userTableActions, userTableColumn } from "Models/Anahit Tadevosyan/UserManagementModel";
 import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementPage";
 
 describe("User Management Test Cases", () => {
@@ -237,8 +235,8 @@ describe("User Management Test Cases", () => {
           gender: "Other",
           subscriptions: "None",
           status: "Active",
-        }),
-          expect(interception.response.statusCode).to.eq(200);
+        });
+        expect(interception.response.statusCode).to.eq(200);
 
         UserManagementPage.tableData(0, 0).should("have.text", "Alicia");
         UserManagementPage.tableData(0, 1).should("have.text", "Editor");

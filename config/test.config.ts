@@ -2,7 +2,7 @@ import { defineConfig } from "cypress";
 import { e2eOptions, plugin } from "Plugins/index";
 
 export default defineConfig({
-  projectId: '6dd8eg',
+  projectId: "6dd8eg",
   chromeWebSecurity: false,
   fileServerFolder: "Cypress",
   fixturesFolder: "Cypress/Fixtures/Static",

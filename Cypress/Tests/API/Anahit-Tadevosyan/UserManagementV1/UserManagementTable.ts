@@ -1,6 +1,4 @@
 import { UserManagementBuilders } from "Builders/Anahit Tadevosyan/UserManagementBuilders";
-import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementEndPoints";
-import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementPage";
 
 describe("User Management API Testing", () => {
   const baseUrl = "http://127.0.0.1:3000/";
@@ -9,62 +7,62 @@ describe("User Management API Testing", () => {
     cy.visit(baseUrl);
   });
   afterEach(() => {
-    UserManagementBuilders.ResetData();
+    UserManagementBuilders.resetData();
   });
   describe("User Table Manipulations", () => {
     it("Delete user as admin", () => {
-      UserManagementBuilders.AdminLogin("admin@example.com", "admin123").then((response) => {
+      UserManagementBuilders.adminLogin("admin@example.com", "admin123").then((response) => {
         expect(response.status).to.eq(200);
       });
-      UserManagementBuilders.DeleteUser(2, true).then((response) => {
+      UserManagementBuilders.deleteUser(2, true).then((response) => {
         expect(response.status).to.eq(200);
       });
 
-      UserManagementBuilders.GetUsers().then((response) => {
+      UserManagementBuilders.getUsers().then((response) => {
         expect(response.status).to.eq(200);
         expect(response.body).to.not.include("Eve");
       });
     });
     it("Delete user as non-admin", () => {
       it("Delete user as admin", () => {
-        UserManagementBuilders.AdminLogin("admin@example.com", "admin").then((response) => {
+        UserManagementBuilders.adminLogin("admin@example.com", "admin").then((response) => {
           expect(response.status).to.eq(401);
         });
-        UserManagementBuilders.DeleteUser(2, true).then((response) => {
+        UserManagementBuilders.deleteUser(2, true).then((response) => {
           expect(response.status).to.eq(200);
         });
 
-        UserManagementBuilders.GetUsers().then((response) => {
+        UserManagementBuilders.getUsers().then((response) => {
           expect(response.status).to.eq(200);
           expect(response.body).to.not.include("Eve");
         });
       });
-      UserManagementBuilders.DeleteUser(2, true).then((response) => {
+      UserManagementBuilders.deleteUser(2, true).then((response) => {
         expect(response.status).to.eq(200);
       });
 
-      UserManagementBuilders.GetUsers().then((response) => {
+      UserManagementBuilders.getUsers().then((response) => {
         expect(response.status).to.eq(200);
         expect(response.body).to.not.include("Eve");
       });
     });
     it("Delete admin as non admin", () => {
-      UserManagementBuilders.DeleteUser(1, false).then((response) => {
+      UserManagementBuilders.deleteUser(1, false).then((response) => {
         expect(response.status).to.eq(403);
       });
     });
     it("Delete admin as admin", () => {
-      UserManagementBuilders.AdminLogin("admin@example.com", "admin123").then((response) => {
+      UserManagementBuilders.adminLogin("admin@example.com", "admin123").then((response) => {
         expect(response.status).to.eq(200);
       });
-      return UserManagementBuilders.DeleteUser(1, true).then((response) => {
+      return UserManagementBuilders.deleteUser(1, true).then((response) => {
         expect(response.status).to.eq(200);
         expect(response.body).to.not.include("Alice");
       });
     });
   });
   it("Change the toggle to Inactive", () => {
-    UserManagementBuilders.ChangeUserStatus(3, "Inactive").then((response) => {
+    UserManagementBuilders.changeUserStatus(3, "Inactive").then((response) => {
       expect(response.status).to.eq(200);
       expect(response.body).to.include({
         id: 3,
@@ -79,7 +77,7 @@ describe("User Management API Testing", () => {
     });
 
     it("Change the toggle to Active", () => {
-      UserManagementBuilders.ChangeUserStatus(2, "Active").then((response) => {
+      UserManagementBuilders.changeUserStatus(2, "Active").then((response) => {
         expect(response.status).to.eq(200);
         expect(response.body).to.include({
           id: 2,

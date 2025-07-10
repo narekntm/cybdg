@@ -1,7 +1,7 @@
-import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementV2Page";
 import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementV2EndPoints";
-import {UserManagementGenerator} from "Generators/Anahit_Tadevosyan/UserManagementV2Generators";
-import { userTableColumn} from "Models/Anahit Tadevosyan/UserManagementV2Model";
+import { UserManagementGenerator } from "Generators/Anahit_Tadevosyan/UserManagementV2Generators";
+import { UserTableColumn } from "Models/Anahit Tadevosyan/UserManagementV2Model";
+import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementV2Page";
 
 describe("User Management Test Cases", () => {
   const baseUrl = "http://localhost:3000/index.html";
@@ -35,14 +35,7 @@ describe("User Management Test Cases", () => {
     gender?: "Male" | "Female" | "Other";
     subscriptions?: string[];
   }) {
-    const {
-      name = "",
-      role = "",
-      age ,
-      email = "",
-      gender,
-      subscriptions = []
-    } = user;
+    const { name = "", role = "", age, email = "", gender, subscriptions = [] } = user;
 
     if (name) UserManagementPage.fullNameInput().clear().type(name);
     if (role) UserManagementPage.roleInput().select(role);
@@ -115,16 +108,20 @@ describe("User Management Test Cases", () => {
     });
 
     it("Add user with valid input", () => {
-      const user = UserManagementGenerator.userPositiveCase
+      const user = UserManagementGenerator.userPositiveCase;
       cy.intercept({ method: "POST", url: "/api/users" }).as("addUser");
       addUser(user);
       UserManagementPage.toastSuccess().should("exist").and("contain", "User added successfully");
       cy.wait("@addUser").then((interception) => {
         expect(interception.request.body).to.include({
-         ...user, age: user.age.toString(),  subscriptions: user.subscriptions.join(",")
+          ...user,
+          age: user.age.toString(),
+          subscriptions: user.subscriptions.join(","),
         });
         expect(interception.response.body).to.include({
-        ...user,   age: user.age.toString(), subscriptions: user.subscriptions.join(",")
+          ...user,
+          age: user.age.toString(),
+          subscriptions: user.subscriptions.join(","),
         });
         expect(interception.response.statusCode).to.eq(200);
       });
@@ -134,7 +131,7 @@ describe("User Management Test Cases", () => {
     });
 
     it("Submit form with all fields empty", () => {
-      const user = UserManagementGenerator.userEmptyDetails
+      const user = UserManagementGenerator.userEmptyDetails;
       addUser(user);
       UserManagementPage.formErrorsMessage().should("exist");
       UserManagementPage.toastError()
@@ -147,7 +144,7 @@ describe("User Management Test Cases", () => {
     });
 
     it("Invalid name (e.g. symbols, numbers)", () => {
-      const user = UserManagementGenerator.userNegativeName
+      const user = UserManagementGenerator.userNegativeName;
       addUser(user);
       UserManagementPage.formErrorsMessage().should("contain", "Name must be 1–20 letters only (no spaces or symbols).");
       UserManagementPage.toastError().should("exist").and("have.text", "Name must be 1–20 letters only (no spaces or symbols).");
@@ -156,7 +153,7 @@ describe("User Management Test Cases", () => {
     });
 
     it("Invalid email format", () => {
-      const user= UserManagementGenerator.userNegativeEmail
+      const user = UserManagementGenerator.userNegativeEmail;
       addUser(user);
       UserManagementPage.formErrorsMessage().should("contain", "Valid email is required.");
       UserManagementPage.toastError().should("exist").and("have.text", "Valid email is required.");
@@ -165,7 +162,7 @@ describe("User Management Test Cases", () => {
     });
 
     it("No gender selected", () => {
-      const user = UserManagementGenerator.userNegativeGender
+      const user = UserManagementGenerator.userNegativeGender;
       addUser(user);
       UserManagementPage.formErrorsMessage().should("contain", "Gender selection is required.");
       UserManagementPage.toastError().should("exist").and("have.text", "Gender selection is required.");
@@ -173,16 +170,20 @@ describe("User Management Test Cases", () => {
     });
 
     it("Submit without selecting subscriptions", () => {
-      const user = UserManagementGenerator.userFormEmptySubs
+      const user = UserManagementGenerator.userFormEmptySubs;
       cy.intercept({ method: "POST", url: "/api/users" }).as("addUser");
       addUser(user);
       UserManagementPage.toastSuccess().should("exist").and("have.text", "User added successfully");
       cy.wait("@addUser").then((interception) => {
         expect(interception.request.body).to.include({
-         ...user, age: user.age.toString(),  subscriptions: 'None'
+          ...user,
+          age: user.age.toString(),
+          subscriptions: "None",
         });
         expect(interception.response.body).to.include({
-          ...user, age: user.age.toString(),  subscriptions: 'None'
+          ...user,
+          age: user.age.toString(),
+          subscriptions: "None",
         });
         expect(interception.response.statusCode).to.eq(200);
         UserManagementPage.tableRow(3).within(() => {
@@ -192,34 +193,38 @@ describe("User Management Test Cases", () => {
     });
   });
   describe("Edit Existing User", () => {
-    it.only('Clicking "Edit" loads user data and Submitting replaces table row', () => {
-      const staticUserOne = UserManagementGenerator.staticUserOne
+    it('Clicking "Edit" loads user data and Submitting replaces table row', () => {
+      const staticUserOne = UserManagementGenerator.staticUserOne;
       UserManagementPage.tableRow(0).find(".btn-secondary.edit-btn").click();
-      UserManagementPage.fullNameInput().should("have.value", staticUserOne.name );
+      UserManagementPage.fullNameInput().should("have.value", staticUserOne.name);
       UserManagementPage.roleInput().should("have.value", staticUserOne.role);
       UserManagementPage.ageInput().should("have.value", staticUserOne.age);
       UserManagementPage.emailInput().should("have.value", staticUserOne.email);
       UserManagementPage.genderRadio(staticUserOne.gender).should("be.checked");
       UserManagementPage.subscribeCheckbox(staticUserOne.subscriptions.join(",")).should("be.checked");
       cy.intercept({ method: "PUT", url: "api/users/1" }).as("EditUser");
-      const user = UserManagementGenerator.userPositiveCase
+      const user = UserManagementGenerator.userPositiveCase;
       addUser(user);
       UserManagementPage.toastSuccess().should("exist").and("have.text", "User updated successfully");
       cy.wait("@EditUser").then((interception) => {
         expect(interception.request.body).to.include({
-         ...user,  age: user.age.toString(), subscriptions: user.subscriptions.join(",")
+          ...user,
+          age: user.age.toString(),
+          subscriptions: user.subscriptions.join(","),
         });
         expect(interception.response.body).to.include({
-          ...user,  age: user.age.toString(), subscriptions: user.subscriptions.join(",")
-        }),
-          expect(interception.response.statusCode).to.eq(200);
+          ...user,
+          age: user.age.toString(),
+          subscriptions: user.subscriptions.join(","),
+        });
+        expect(interception.response.statusCode).to.eq(200);
 
-        UserManagementPage.tableData(0, userTableColumn.Name).should("have.text", user.name);
-        UserManagementPage.tableData(0, userTableColumn.Role).should("have.text", user.role);
-        UserManagementPage.tableData(0, userTableColumn.Age).should("have.text", user.age);
-        UserManagementPage.tableData(0, userTableColumn.Email).should("have.text", user.email);
-        UserManagementPage.tableData(0, userTableColumn.Gender).should("have.text", user.gender);
-        UserManagementPage.tableData(0, userTableColumn.Subscription).should("have.text", user.subscriptions.join(","));
+        UserManagementPage.tableData(0, UserTableColumn.Name).should("have.text", user.name);
+        UserManagementPage.tableData(0, UserTableColumn.Role).should("have.text", user.role);
+        UserManagementPage.tableData(0, UserTableColumn.Age).should("have.text", user.age);
+        UserManagementPage.tableData(0, UserTableColumn.Email).should("have.text", user.email);
+        UserManagementPage.tableData(0, UserTableColumn.Gender).should("have.text", user.gender);
+        UserManagementPage.tableData(0, UserTableColumn.Subscription).should("have.text", user.subscriptions.join(","));
       });
     });
   });
@@ -277,13 +282,13 @@ describe("User Management Test Cases", () => {
       UserManagementPage.tableRow(2).find(".btn-primary.status-btn").click();
       cy.wait("@deactivateUser").then((interception) => {
         expect(interception.response.statusCode).to.eq(200);
-        expect(interception.request.body).to.include({ status: "Inactive"});
+        expect(interception.request.body).to.include({ status: "Inactive" });
         expect(interception.response.body).to.include({
           ...UserManagementGenerator.staticUserThree,
           age: Number(UserManagementGenerator.staticUserThree.age),
           subscriptions: UserManagementGenerator.staticUserThree.subscriptions.join(", "),
           status: "Inactive",
-        } );
+        });
       });
       UserManagementPage.tableRow(2).find("td").eq(6).should("have.text", "Inactive");
       cy.intercept({ method: "PATCH", url: "api/users/3/status" }).as("activateUser");

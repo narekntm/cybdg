@@ -1,6 +1,6 @@
 import { UserManagementBuilders } from "Builders/Anahit Tadevosyan/UserManagementBuilders";
 import { UserData } from "Models/Anahit Tadevosyan/UserManagementModel";
-import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementPage";
+import { UserManagementModels } from "Models/Lecture/UserManagementModels";
 
 describe("User Management API Testing", () => {
   const baseUrl = "http://127.0.0.1:3000/";
@@ -9,24 +9,24 @@ describe("User Management API Testing", () => {
     cy.visit(baseUrl);
   });
   afterEach(() => {
-    UserManagementBuilders.ResetData();
+    UserManagementBuilders.resetData();
   });
   describe("Add new user", () => {
     it("Add a user with valid data", () => {
       const validUser: UserData = {
         name: "Anahit",
         role: "Editor",
-        age: "26",
+        age: 26,
         email: "anahit.ru@gamil.com",
         gender: "Female",
         subscriptions: ["Newsletter"],
       };
-      UserManagementBuilders.AddUser(validUser).then((response) => {
+      UserManagementBuilders.addUser(validUser).then((response) => {
         expect(response.status).to.eq(200);
         expect(response.body).to.include({
           name: "Anahit",
           role: "Editor",
-          age: "26",
+          age: 26,
           email: "anahit.ru@gamil.com",
           gender: "Female",
         });
@@ -36,12 +36,12 @@ describe("User Management API Testing", () => {
       const invalidEmailUser: UserData = {
         name: "Anahit",
         role: "Editor",
-        age: "26",
+        age: 26,
         email: "anahit",
         gender: "Female",
         subscriptions: ["Newsletter"],
       };
-      UserManagementBuilders.AddUser(invalidEmailUser).then((response) => {
+      UserManagementBuilders.addUser(invalidEmailUser).then((response) => {
         expect(response.status).to.eq(400);
         expect(response.body).to.include({ error: "Missing fields" });
       });
@@ -50,12 +50,12 @@ describe("User Management API Testing", () => {
       const invalidEmailUser: UserData = {
         name: "",
         role: "",
-        age: "",
+        age: "" as unknown as number,
         email: "",
-        gender: '',
+        gender: "" as unknown as UserManagementModels.Gender,
         subscriptions: [],
       };
-      UserManagementBuilders.AddUser(invalidEmailUser).then((response) => {
+      UserManagementBuilders.addUser(invalidEmailUser).then((response) => {
         expect(response.status).to.eq(400);
         expect(response.body).to.include({
           name: "Anahit",
@@ -70,12 +70,12 @@ describe("User Management API Testing", () => {
       const invalidEmailUser: UserData = {
         name: "Anahit",
         role: "Editor",
-        age: "266",
+        age: 266,
         email: "anahit",
         gender: "Female",
         subscriptions: ["Newsletter"],
       };
-      UserManagementBuilders.AddUser(invalidEmailUser).then((response) => {
+      UserManagementBuilders.addUser(invalidEmailUser).then((response) => {
         expect(response.status).to.eq(400);
         expect(response.body).to.include({
           name: "Anahit",
@@ -91,12 +91,12 @@ describe("User Management API Testing", () => {
       const invalidEmailUser: UserData = {
         name: "Anahittttttttttttttttt",
         role: "Editor",
-        age: "266",
+        age: 266,
         email: "anahit",
         gender: "Female",
         subscriptions: ["Newsletter"],
       };
-      UserManagementBuilders.AddUser(invalidEmailUser).then((response) => {
+      UserManagementBuilders.addUser(invalidEmailUser).then((response) => {
         expect(response.status).to.eq(400);
         expect(response.body).to.include({
           name: "Anahittttttttttttttttt",
@@ -111,12 +111,12 @@ describe("User Management API Testing", () => {
       const invalidEmailUser: UserData = {
         name: "Anahit",
         role: "Editor",
-        age: "26",
+        age: 26,
         email: "anahit.ru@gmail.com",
-        gender: "",
+        gender: "" as unknown as UserManagementModels.Gender,
         subscriptions: ["Newsletter"],
       };
-      UserManagementBuilders.AddUser(invalidEmailUser).then((response) => {
+      UserManagementBuilders.addUser(invalidEmailUser).then((response) => {
         expect(response.status).to.eq(400);
         expect(response.body).to.include({
           name: "Anahit",
@@ -128,23 +128,15 @@ describe("User Management API Testing", () => {
       });
     });
     it("Edit a user", () => {
-      const validUser: UserData = {
-        name: "Anahit",
-        role: "Editor",
-        age: "26",
-        email: "anahit.ru@gamil.com",
-        gender: "Female",
-        subscriptions: ["Newsletter"],
-      };
       const editedUser: UserData = {
         name: "Agness",
         role: "Admin",
-        age: "23",
+        age: 23,
         email: "agness@gamil.com",
         gender: "Other",
         subscriptions: [],
       };
-      UserManagementBuilders.EditUser(3, editedUser).then((response) => {
+      UserManagementBuilders.editUser(3, editedUser).then((response) => {
         expect(response.status).to.eq(200);
         expect(response.body).to.include({
           name: "Agness",

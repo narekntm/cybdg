@@ -1,4 +1,4 @@
-import {userTableColumn} from "Models/Anahit Tadevosyan/UserManagementV2Model";
+import { UserTableColumn } from "Models/Anahit Tadevosyan/UserManagementV2Model";
 
 export class UserManagementPage {
   // Login as Admin label
@@ -68,7 +68,7 @@ export class UserManagementPage {
 
   //Gender dropdown
 
-  static genderDropdown = (gender: string) => cy.get("#gender");
+  static genderDropdown = (gender: string) => cy.get(`#gender option[value="${gender}"]`);
   // Gender radio button
   static genderRadio = (gender: string) => cy.get(`input[name="gender"][value="${gender}"]`);
 
@@ -89,8 +89,8 @@ export class UserManagementPage {
 
   //Subscriptions options
   static subscriptionOption = (subscription: string) => cy.get(`.checkbox-item input[value="${subscription}"]`);
-  //Statuc drop-down
-  static statusDropDown = (status: string) => cy.get("#status");
+  //Status drop-down
+  static statusDropDown = (status: string) => cy.get(`#status option[value="${status}"]`);
 
   // Save button
   static saveButton = () => cy.get("#user-form .btn-primary");
@@ -125,8 +125,7 @@ export class UserManagementPage {
   static tableData = (index: number, cell: number) => cy.get("#user-table tbody tr").eq(index).find("td").eq(cell);
 
   //Table data by id
-  static tableDataByUserId = (userId: number, column: userTableColumn) =>
-      cy.get(`#user-table tbody tr[data-id="${userId}"] td`).eq(column);
+  static tableDataByUserId = (userId: number, column: UserTableColumn) => cy.get(`#user-table tbody tr[data-id="${userId}"] td`).eq(column);
 
   //Table td
   static tableTd = (index: number) => cy.get("td").eq(index);

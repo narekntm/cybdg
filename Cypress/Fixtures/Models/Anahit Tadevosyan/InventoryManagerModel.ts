@@ -1,4 +1,4 @@
-export enum productCategory {
+export enum ProductCategory {
   Select = "",
   Electronics = "Electronics",
   Books = "Books",
@@ -6,7 +6,7 @@ export enum productCategory {
   Other = "Other",
 }
 
-export enum productStatus {
+export enum ProductStatus {
   Select = "",
   Available = "Available",
   OutOfStock = "OutOfStock",
@@ -15,12 +15,12 @@ export enum productStatus {
 
 export interface Product {
   name: string;
-  category: productCategory;
+  category: ProductCategory;
   quantity: number;
-  status: productStatus;
+  status: ProductStatus;
 }
 
-export enum productsTableColumn {
+export enum ProductsTableColumn {
   Name = 0,
   Category = 1,
   Quantity = 2,

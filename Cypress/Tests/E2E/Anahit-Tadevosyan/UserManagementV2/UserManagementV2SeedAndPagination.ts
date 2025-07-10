@@ -1,14 +1,15 @@
-import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementV2Page";
-import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementV2EndPoints";
-import { UserData, Role, Gender, Subscription } from "Models/Anahit Tadevosyan/UserManagementV2Model";
+import Chance from "chance";
 import { UserManagementBuilders } from "Builders/Anahit Tadevosyan/UserManagementV2Builders";
-import {UserManagementGenerator} from "Generators/Anahit_Tadevosyan/UserManagementV2Generators";
+import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementV2EndPoints";
+import { UserManagementGenerator } from "Generators/Anahit_Tadevosyan/UserManagementV2Generators";
+import { Gender, Role, Subscription, UserData } from "Models/Anahit Tadevosyan/UserManagementV2Model";
+import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementV2Page";
 
-const Chance = require("chance");
+const chance = new Chance();
 
 describe("User Management Test Cases", () => {
   const baseUrl = "http://localhost:3000/index.html";
-  const chance = new Chance();
+
   const users: UserData[] = [];
 
   for (let i = 0; i < 50; i++) {
@@ -26,14 +27,19 @@ describe("User Management Test Cases", () => {
     cy.intercept({ method: "GET", url: UserManagementEndpoints.users() }).as("getUsers");
     UserManagementBuilders.seedData(users);
     cy.visit(baseUrl);
-    cy.wait("@getUsers")
+    cy.wait("@getUsers");
   });
 
   it("Seed data and check pagination", () => {
     const totalUsers = users.length + 3;
     const pageCount = Math.ceil(totalUsers / 5);
     UserManagementPage.pageInfo().should("be.visible").and("contain.text", `1 of ${pageCount}: (${totalUsers} Users`);
-    const emails = [UserManagementGenerator.staticUserOne.email, UserManagementGenerator.staticUserTwo.email, UserManagementGenerator.staticUserThree.email, ...users.map((user) => user.email)];
+    const emails = [
+      UserManagementGenerator.staticUserOne.email,
+      UserManagementGenerator.staticUserTwo.email,
+      UserManagementGenerator.staticUserThree.email,
+      ...users.map((user) => user.email),
+    ];
     console.log(emails);
     UserManagementPage.nextPageButton().should("be.enabled");
     UserManagementPage.prevPageButton().should("be.disabled");
@@ -52,6 +58,5 @@ describe("User Management Test Cases", () => {
       });
     }
     validatePageAndNext(0, pageCount, emails);
-
   });
 });

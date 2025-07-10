@@ -1,13 +1,13 @@
-import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementV2Page";
-import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementV2EndPoints";
-import { UserData, Role, Gender, Subscription } from "Models/Anahit Tadevosyan/UserManagementV2Model";
+import Chance from "chance";
 import { UserManagementBuilders } from "Builders/Anahit Tadevosyan/UserManagementV2Builders";
+import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementV2EndPoints";
+import { Gender, Role, Subscription, UserData } from "Models/Anahit Tadevosyan/UserManagementV2Model";
+import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementV2Page";
 
-const Chance = require("chance");
+const chance = new Chance();
 
 describe("User Management Test Cases", () => {
   const baseUrl = "http://localhost:3000/index.html";
-  const chance = new Chance();
   const users: UserData[] = [];
 
   for (let i = 0; i < 50; i++) {

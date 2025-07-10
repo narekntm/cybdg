@@ -1,4 +1,4 @@
-export enum userTableColumn {
+export enum UserTableColumn {
   Name = 0,
   Role = 1,
   Age = 2,
@@ -9,7 +9,7 @@ export enum userTableColumn {
   Actions = 7,
 }
 
-export enum userTableActions {
+export enum UserTableActions {
   Edit = "Edit",
   Delete = "Delete",
   Deactivate = "Deactivate",
@@ -22,7 +22,7 @@ export interface UserData {
   age: number;
   email: string;
   gender: "Male" | "Female" | "Other";
-  subscriptions: string[];
+  subscriptions?: string[];
 }
 
 export interface Login {

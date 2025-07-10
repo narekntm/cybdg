@@ -1,6 +1,6 @@
-import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementV2Page";
 import { UserManagementEndpoints } from "EndPoints/Anahit Tadevosyan/UserManagementV2EndPoints";
-import {UserManagementGenerator} from "Generators/Anahit_Tadevosyan/UserManagementV2Generators";
+import { UserManagementGenerator } from "Generators/Anahit_Tadevosyan/UserManagementV2Generators";
+import { UserManagementPage } from "Pages/Anahit Tadevosyan/UserManagementV2Page";
 
 describe("User Management Test Cases", () => {
   const baseUrl = "http://localhost:3000/index.html";
@@ -53,7 +53,7 @@ describe("User Management Test Cases", () => {
       cy.intercept({ method: "GET", url: UserManagementEndpoints.users(2) }).as("getUserById");
       UserManagementPage.viewButton(2).click();
       cy.wait("@getUserById").then((interception) => {
-        const user = interception.response.body
+        const user = interception.response.body;
         UserManagementPage.fullNameInput().should("not.exist");
         UserManagementPage.roleInput().should("not.exist");
         UserManagementPage.ageInput().should("not.exist");
@@ -63,7 +63,7 @@ describe("User Management Test Cases", () => {
         UserManagementPage.statusDropDown("Active").should("not.exist");
 
         UserManagementPage.editUserButton().click();
-
+        console.log(user);
         UserManagementPage.fullNameInput().should("exist").and("have.value", user.name);
         UserManagementPage.roleInput().should("exist").and("have.value", user.role);
         UserManagementPage.ageInput().should("exist").and("have.value", user.age);
@@ -73,15 +73,23 @@ describe("User Management Test Cases", () => {
         UserManagementPage.statusDropDown("Active").should("exist").and("have.value", user.status);
 
         cy.intercept({ method: "PUT", url: UserManagementEndpoints.users(2) }).as("updateUserById");
-        const userForm = UserManagementGenerator.userFormPositiveCase
-        addUserFromPage(userForm.name, userForm.role, userForm.age, userForm.email, userForm.gender, userForm.subscriptions, userForm.status);
+        const userForm = UserManagementGenerator.userFormPositiveCase;
+        addUserFromPage(
+          userForm.name,
+          userForm.role,
+          userForm.age.toString(),
+          userForm.email,
+          userForm.gender,
+          userForm.subscriptions,
+          userForm.status
+        );
         UserManagementPage.toastSuccess().should("exist");
         cy.wait("@updateUserById").then((interception) => {
           expect(interception.response.statusCode).to.eq(200);
           expect(interception.response.body).to.include({
-           ...userForm,
+            ...userForm,
             age: Number(userForm.age),
-            subscriptions: userForm.subscriptions.join(',')
+            subscriptions: userForm.subscriptions.join(","),
           });
         });
 
@@ -91,7 +99,7 @@ describe("User Management Test Cases", () => {
         UserManagementPage.tableData(1, 2).should("have.text", userForm.age);
         UserManagementPage.tableData(1, 3).should("have.text", userForm.email);
         UserManagementPage.tableData(1, 4).should("have.text", userForm.gender);
-        UserManagementPage.tableData(1, 5).should("have.text", userForm.subscriptions.join(','));
+        UserManagementPage.tableData(1, 5).should("have.text", userForm.subscriptions.join(","));
         UserManagementPage.tableData(1, 6).should("have.text", userForm.status);
       });
     });
