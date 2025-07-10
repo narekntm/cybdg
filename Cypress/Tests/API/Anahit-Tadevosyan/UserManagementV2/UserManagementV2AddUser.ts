@@ -56,7 +56,6 @@ describe("User Management API Testing", () => {
         expect(response.status).to.eq(400);
         expect(response.body).to.deep.eq({ errors: ["Name must be 1–20 letters only (no spaces or symbols)."] });
       });
-
     });
     it("Add a user with empty gender", () => {
       const invalidUser: UserData = { ...UserManagementGenerator.userPositiveCase, gender: null };
