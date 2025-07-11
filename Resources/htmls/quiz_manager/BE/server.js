@@ -78,6 +78,16 @@ app.get("/api/auth/me", authenticate, (req, res) => {
   res.json(req.user);
 });
 
+app.get("/api/users", authenticate, isAdmin, (req, res) => {
+  const nonAdmins = users.filter(u => u.role !== "admin").map(u => ({
+    id: u.id,
+    email: u.email,
+    role: u.role
+  }));
+  res.json(nonAdmins);
+});
+
+
 app.post("/api/quizzes", authenticate, isAdmin, (req, res) => {
   const { title, description, questions, assignedUsers } = req.body;
   const quiz = {

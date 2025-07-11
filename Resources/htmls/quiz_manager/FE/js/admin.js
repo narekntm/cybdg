@@ -1,67 +1,105 @@
-﻿// admin.js
+﻿// admin.js (refactored + modularized)
 import { apiGet, apiPost, apiDelete } from "./api.js";
 import "./logout.js";
 
-// 1) Auth guard: only allow real admins
-(async function () {
-  try {
-    const user = await apiGet("/api/auth/me");
-    if (user.role !== "admin") {
-      window.location.href = "login.html";
-    }
-  } catch {
-    window.location.href = "login.html";
-  }
-})();
-
-// 2) DOM elements
-const logoutBtn = document.getElementById("logout-btn");
+// DOM References
 const quizForm = document.getElementById("quiz-form");
+const logoutBtn = document.getElementById("logout-btn");
 const questionList = document.getElementById("question-list");
 const addQuestionBtn = document.getElementById("add-question-btn");
 const quizListEl = document.getElementById("admin-quiz-list");
+const assignModeSelect = document.getElementById("assign-mode");
+const userCheckboxContainer = document.getElementById("user-checkboxes");
 
-// 3) Logout handling
-logoutBtn?.addEventListener("click", async () => {
-  try {
-    await apiPost("/api/logout", {});
-  } catch (_) {}
-  window.location.href = "login.html";
-});
-
-// 4) Add/remove dynamic questions
 let questionCounter = 0;
+let allUsers = [];
 
-addQuestionBtn?.addEventListener("click", () => {
-  const qId = `q${questionCounter++}`;
-  const div = document.createElement("div");
-  div.className = "question-item";
-  div.innerHTML = `
-    <input type="text" placeholder="Question text" data-qid="${qId}" class="q-label" required />
-    <select class="q-type">
-      <option value="input">Input</option>
-      <option value="radio">Radio</option>
-      <option value="checkbox">Checkbox</option>
-      <option value="dropdown">Dropdown</option>
-    </select>
-    <input type="text" placeholder="Comma-separated options (for MCQ only)" class="q-options" />
-    <button type="button" class="remove-question">Remove</button>
-    <br><br>
-  `;
-  questionList.appendChild(div);
-  div.querySelector(".remove-question")?.addEventListener("click", () => div.remove());
-});
+initAdminPage();
 
-// 5) Handle form submission
-quizForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  quizForm.classList.add("submitted");
+function initAdminPage() {
+  guardAdmin();
+  bindLogout();
+  bindQuestionBuilder();
+  bindAssignmentModeToggle();
+  bindFormSubmission();
+  loadQuizzes();
+  loadUsers();
+}
 
-  if (!quizForm.checkValidity()) return;
+async function guardAdmin() {
+  try {
+    const user = await apiGet("/api/auth/me");
+    if (user.role !== "admin") throw new Error();
+  } catch {
+    window.location.href = "login.html";
+  }
+}
 
+function bindLogout() {
+  logoutBtn?.addEventListener("click", async () => {
+    try {
+      await apiPost("/api/logout", {});
+    } catch (_) {}
+    window.location.href = "login.html";
+  });
+}
+
+function bindQuestionBuilder() {
+  addQuestionBtn.addEventListener("click", () => {
+    const qId = `q${questionCounter++}`;
+    const div = document.createElement("div");
+    div.className = "question-item";
+    div.innerHTML = `
+      <input type="text" placeholder="Question text" data-qid="${qId}" class="q-label" required />
+      <select class="q-type">
+        <option value="input">Input</option>
+        <option value="radio">Radio</option>
+        <option value="checkbox">Checkbox</option>
+        <option value="dropdown">Dropdown</option>
+      </select>
+      <input type="text" placeholder="Comma-separated options (for MCQ only)" class="q-options" />
+      <button type="button" class="remove-question">Remove</button>
+      <br><br>
+    `;
+    div.querySelector(".remove-question")?.addEventListener("click", () => div.remove());
+    questionList.appendChild(div);
+  });
+}
+
+function bindAssignmentModeToggle() {
+  assignModeSelect.addEventListener("change", () => {
+    const isCustom = assignModeSelect.value === "custom";
+    userCheckboxContainer.classList.toggle("hidden", !isCustom);
+    if (isCustom && userCheckboxContainer.innerHTML.trim() === "") {
+      loadUsers();
+    }
+  });
+}
+
+function bindFormSubmission() {
+  quizForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    quizForm.classList.add("submitted");
+    if (!quizForm.checkValidity()) return;
+
+    const payload = buildQuizPayload();
+    if (!payload) return; // failed validation inside builder
+
+    try {
+      await apiPost("/api/quizzes", payload);
+      alert("Quiz saved successfully!");
+      resetForm();
+      loadQuizzes();
+    } catch (err) {
+      alert("Failed to save quiz: " + err.message);
+    }
+  });
+}
+
+function buildQuizPayload() {
   const title = document.getElementById("quiz-title").value.trim();
   const description = document.getElementById("quiz-description").value.trim();
-  const assignMode = document.getElementById("assign-mode").value;
+  const assignMode = assignModeSelect.value;
 
   const questions = Array.from(document.querySelectorAll(".question-item")).map((qEl, i) => {
     const label = qEl.querySelector(".q-label").value.trim();
@@ -73,24 +111,32 @@ quizForm.addEventListener("submit", async (e) => {
     return { id: `q${i}`, label, type, options };
   });
 
-  try {
-    await apiPost("/api/quizzes", {
-      title,
-      description,
-      questions,
-      assignedUsers: assignMode === "all" ? "all" : []
-    });
-    alert("Quiz saved successfully!");
-    quizForm.reset();
-    quizForm.classList.remove("submitted");
-    questionList.innerHTML = "";
-    loadQuizzes();
-  } catch (err) {
-    alert("Failed to save quiz: " + err.message);
+  if (questions.length === 0) {
+    alert("At least one question is required.");
+    return null;
   }
-});
 
-// 6) Load quiz list for admin
+  let assignedUsers = "all";
+  if (assignMode === "custom") {
+    assignedUsers = Array.from(userCheckboxContainer.querySelectorAll("input[type=checkbox]:checked"))
+      .map(cb => cb.value);
+    if (assignedUsers.length === 0) {
+      alert("Please select at least one user.");
+      return null;
+    }
+  }
+
+  return { title, description, questions, assignedUsers };
+}
+
+function resetForm() {
+  quizForm.reset();
+  quizForm.classList.remove("submitted");
+  questionList.innerHTML = "";
+  userCheckboxContainer.innerHTML = "";
+  userCheckboxContainer.classList.add("hidden");
+}
+
 async function loadQuizzes() {
   try {
     const quizzes = await apiGet("/api/quizzes");
@@ -108,37 +154,37 @@ async function loadQuizzes() {
       quizListEl.appendChild(li);
     });
 
-    document.querySelectorAll(".publish-btn").forEach(btn =>
+    quizListEl.querySelectorAll(".publish-btn").forEach(btn =>
       btn.addEventListener("click", async () => {
         try {
           await apiPost(`/api/quizzes/${btn.dataset.id}/publish`, {});
+          loadQuizzes();
         } catch (err) {
           alert("Publish failed: " + err.message);
         }
-        loadQuizzes();
       })
     );
 
-    document.querySelectorAll(".archive-btn").forEach(btn =>
+    quizListEl.querySelectorAll(".archive-btn").forEach(btn =>
       btn.addEventListener("click", async () => {
         try {
           await apiPost(`/api/quizzes/${btn.dataset.id}/archive`, {});
+          loadQuizzes();
         } catch (err) {
           alert("Archive failed: " + err.message);
         }
-        loadQuizzes();
       })
     );
 
-    document.querySelectorAll(".delete-btn").forEach(btn =>
+    quizListEl.querySelectorAll(".delete-btn").forEach(btn =>
       btn.addEventListener("click", async () => {
         if (!confirm("Are you sure you want to delete this quiz?")) return;
         try {
           await apiDelete(`/api/quizzes/${btn.dataset.id}`);
+          loadQuizzes();
         } catch (err) {
           alert("Delete failed: " + err.message);
         }
-        loadQuizzes();
       })
     );
   } catch (err) {
@@ -147,5 +193,14 @@ async function loadQuizzes() {
   }
 }
 
-// 7) Initial load
-loadQuizzes();
+async function loadUsers() {
+  try {
+    const users = await apiGet("/api/users");
+    allUsers = users.filter(u => u.role !== "admin");
+    userCheckboxContainer.innerHTML = allUsers.map(u => `
+      <label><input type="checkbox" value="${u.email}" /> ${u.email}</label>
+    `).join("<br>");
+  } catch (err) {
+    console.warn("Could not load users:", err);
+  }
+}
