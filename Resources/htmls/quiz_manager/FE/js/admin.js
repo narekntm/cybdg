@@ -3,38 +3,36 @@ import { apiGet, apiPost, apiDelete } from "./api.js";
 import "./logout.js";
 
 // 1) Auth guard: only allow real admins
-;(async function() {
+(async function () {
   try {
-    const user = await apiGet("/api/auth/me"); // parsed JSON
+    const user = await apiGet("/api/auth/me");
     if (user.role !== "admin") {
       window.location.href = "login.html";
     }
   } catch {
-    // not logged in or session expired
     window.location.href = "login.html";
   }
 })();
 
-// 2) Logout button
+// 2) DOM elements
 const logoutBtn = document.getElementById("logout-btn");
+const quizForm = document.getElementById("quiz-form");
+const questionList = document.getElementById("question-list");
+const addQuestionBtn = document.getElementById("add-question-btn");
+const quizListEl = document.getElementById("admin-quiz-list");
+
+// 3) Logout handling
 logoutBtn?.addEventListener("click", async () => {
   try {
     await apiPost("/api/logout", {});
-  } catch (_) {
-    // ignore
-  }
+  } catch (_) {}
   window.location.href = "login.html";
 });
 
-// 3) Quiz form & list elements
-const quizForm       = document.getElementById("quiz-form");
-const questionList   = document.getElementById("question-list");
-const addQuestionBtn = document.getElementById("add-question-btn");
-const quizListEl     = document.getElementById("admin-quiz-list");
-
-// 4) Add/remove question UI
+// 4) Add/remove dynamic questions
 let questionCounter = 0;
-addQuestionBtn.addEventListener("click", () => {
+
+addQuestionBtn?.addEventListener("click", () => {
   const qId = `q${questionCounter++}`;
   const div = document.createElement("div");
   div.className = "question-item";
@@ -54,17 +52,20 @@ addQuestionBtn.addEventListener("click", () => {
   div.querySelector(".remove-question")?.addEventListener("click", () => div.remove());
 });
 
-// 5) Handle quiz creation
+// 5) Handle form submission
 quizForm.addEventListener("submit", async (e) => {
   e.preventDefault();
+  quizForm.classList.add("submitted");
 
-  const title       = document.getElementById("quiz-title").value.trim();
+  if (!quizForm.checkValidity()) return;
+
+  const title = document.getElementById("quiz-title").value.trim();
   const description = document.getElementById("quiz-description").value.trim();
-  const assignMode  = document.getElementById("assign-mode").value;
+  const assignMode = document.getElementById("assign-mode").value;
 
   const questions = Array.from(document.querySelectorAll(".question-item")).map((qEl, i) => {
-    const label   = qEl.querySelector(".q-label").value.trim();
-    const type    = qEl.querySelector(".q-type").value;
+    const label = qEl.querySelector(".q-label").value.trim();
+    const type = qEl.querySelector(".q-type").value;
     const optsRaw = qEl.querySelector(".q-options").value.trim();
     const options = ["radio", "checkbox", "dropdown"].includes(type)
       ? optsRaw.split(",").map(s => s.trim()).filter(Boolean)
@@ -81,6 +82,7 @@ quizForm.addEventListener("submit", async (e) => {
     });
     alert("Quiz saved successfully!");
     quizForm.reset();
+    quizForm.classList.remove("submitted");
     questionList.innerHTML = "";
     loadQuizzes();
   } catch (err) {
@@ -88,10 +90,10 @@ quizForm.addEventListener("submit", async (e) => {
   }
 });
 
-// 6) Load & render quizzes
+// 6) Load quiz list for admin
 async function loadQuizzes() {
   try {
-    const quizzes = await apiGet("/api/quizzes"); // returns parsed JSON array
+    const quizzes = await apiGet("/api/quizzes");
     quizListEl.innerHTML = "";
 
     quizzes.forEach(q => {
@@ -106,7 +108,6 @@ async function loadQuizzes() {
       quizListEl.appendChild(li);
     });
 
-    // Wire up action buttons
     document.querySelectorAll(".publish-btn").forEach(btn =>
       btn.addEventListener("click", async () => {
         try {
@@ -140,12 +141,11 @@ async function loadQuizzes() {
         loadQuizzes();
       })
     );
-
   } catch (err) {
     console.error("Could not load quizzes:", err);
     quizListEl.innerHTML = "<li>Error loading quizzes.</li>";
   }
 }
 
-// 7) Initial fetch
+// 7) Initial load
 loadQuizzes();

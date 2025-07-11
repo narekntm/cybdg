@@ -4,7 +4,7 @@ import { apiGet, apiPost } from "./api.js";
 // 1) Auto-redirect if already logged in
 (async function() {
   try {
-    const user = await apiGet("/api/auth/me");    // parsed JSON
+    const user = await apiGet("/api/auth/me");
     if (user.role === "admin") {
       return window.location.href = "admin.html";
     }
@@ -16,22 +16,26 @@ import { apiGet, apiPost } from "./api.js";
   }
 })();
 
-// 2) Login form handling
+// 2) Login form handling with validation feedback
 const form = document.getElementById("login-form");
 const errorDiv = document.getElementById("error-message");
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
+  form.classList.add("submitted"); // trigger validation styles
   errorDiv.textContent = "";
+
+  if (!form.checkValidity()) {
+    return; // let browser highlight invalid fields
+  }
 
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
 
   try {
-    await apiPost("/api/login", { email, password });        // throws if bad creds
-    const user = await apiGet("/api/auth/me");              // now fetch the user
-    window.location.href = user.role === "admin"
-      ? "admin.html"
-      : "user.html";
+    await apiPost("/api/login", { email, password });
+    const user = await apiGet("/api/auth/me");
+    window.location.href = user.role === "admin" ? "admin.html" : "user.html";
   } catch (err) {
     errorDiv.textContent = err.message || "Login failed.";
   }
