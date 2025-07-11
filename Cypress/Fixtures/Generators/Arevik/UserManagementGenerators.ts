@@ -1,16 +1,16 @@
 export class UserManagementGenerators {
-static validAdminCredentials(): {email: string; password: string}{
-  return {
-    email: "admin@example.com",
-    password: "admin123",
-  };
-}
-static invalidAdminCredentials(): {email: string; password: string}{
-  return {
-    email: "wrong@admin.com",
-    password: "wrongpass",
-  };
-}
+  static validAdminCredentials(): { email: string; password: string } {
+    return {
+      email: "admin@example.com",
+      password: "admin123",
+    };
+  }
+  static invalidAdminCredentials(): { email: string; password: string } {
+    return {
+      email: "wrong@admin.com",
+      password: "wrongpass",
+    };
+  }
   static userInput(): {
     name: string;
     role: string;
@@ -35,7 +35,7 @@ static invalidAdminCredentials(): {email: string; password: string}{
     email: string;
     gender: string;
     subscriptions: string[];
-  }{
+  } {
     return {
       name: "Arevik",
       role: "Editor",
@@ -52,7 +52,7 @@ static invalidAdminCredentials(): {email: string; password: string}{
     email: string;
     gender: string;
     subscriptions: string[];
-  }{
+  } {
     return {
       name: `User${index}`,
       role: "Viewer",

@@ -1,4 +1,4 @@
-import {UserManagementGenerators} from "Generators/Arevik/UserManagementGenerators";
+import { UserManagementGenerators } from "Generators/Arevik/UserManagementGenerators";
 import { UserManagementPage } from "Pages/UserManagementPage";
 
 describe("User Management", () => {
@@ -35,9 +35,7 @@ describe("User Management", () => {
       }
     });
 
-    UserManagementPage.adminStatusText()
-      .invoke("text")
-      .should("include", "🔓 Logged In");
+    UserManagementPage.adminStatusText().invoke("text").should("include", "🔓 Logged In");
   }
 
   function openUserForm() {
@@ -45,14 +43,7 @@ describe("User Management", () => {
     UserManagementPage.userFormModal().should("be.visible");
   }
 
-  function fillUserForm(user: {
-    name: string;
-    role: string;
-    age?: number;
-    email: string;
-    gender: string;
-    subscriptions?: string[];
-  }) {
+  function fillUserForm(user: { name: string; role: string; age?: number; email: string; gender: string; subscriptions?: string[] }) {
     if (user.name) UserManagementPage.nameInput().clear().type(user.name);
     if (user.role) UserManagementPage.roleSelect().select(user.role);
     if (user.age) UserManagementPage.ageInput().clear().type(user.age.toString());

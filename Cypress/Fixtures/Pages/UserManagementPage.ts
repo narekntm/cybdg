@@ -1,5 +1,4 @@
 ﻿export class UserManagementPage {
-
   static adminEmailInput = () => cy.get("#admin-email");
 
   static adminPasswordInput = () => cy.get("#admin-password");
@@ -40,11 +39,11 @@
 
   static submitUserFormButton = () => cy.get('#user-form button[type="submit"]');
 
-  static closeUserFormModalButton = () => cy.get('#close-user-modal');
+  static closeUserFormModalButton = () => cy.get("#close-user-modal");
 
-  static formErrors = () => cy.get('#form-errors');
+  static formErrors = () => cy.get("#form-errors");
 
-  static formTitle = () => cy.get('#form-title');
+  static formTitle = () => cy.get("#form-title");
 
   static labelName = () => cy.get('label[for="name"]');
 
