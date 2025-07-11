@@ -12,19 +12,13 @@ describe("User Management API – Cypress Sandbox", () => {
   const adminPass = "admin123";
   let createdUserId: number;
 
-  before(() => {
-    console.log( UserManagementGenerators.userDataPositive())
-    console.log( UserManagementGenerators.userDataPositive())
-    console.log( UserManagementGenerators.userDataPositive())
-    console.log( UserManagementGenerators.userDataPositive())
-    console.log( UserManagementGenerators.userDataPositive())
-    console.log( UserManagementGenerators.userDataPositive())
-  });
 
   before(() => {
     // 🌐 Reset the entire data set before running tests
     UserManagementBuilders.resetData().its("status").should("eq", 200);
   });
+
+
 
   /**
    * @test Verifies that calling reset API clears and resets server state
