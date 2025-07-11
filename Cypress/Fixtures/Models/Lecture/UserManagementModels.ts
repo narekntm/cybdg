@@ -17,7 +17,6 @@
   export enum Subscription {
     Newsletter = "Newsletter",
     ProductUpdates = "Product Updates",
-    Promotions = "Promotions",
   }
 
   /** Enumerates user status */

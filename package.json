@@ -9,6 +9,8 @@
     "serve:UI": "http-server -p 8080",
     "serve:UserManagement": "node ./Resources/htmls/user_management/server.js",
     "serve:UserManagementV2": "node ./Resources/htmls/user_management_v2/BE/server.js",
+    "serve:QuizzManager:BE": "node ./Resources/htmls/quiz_manager/BE/server.js",
+    "serve:QuizzManager:FE": "npx http-server Resources/htmls/quiz_manager/FE -p 8080",
     
     "prettier": "prettier --config .prettierrc --ignore-path .prettierignore",
     "eslint": "eslint --config .eslintrc.json --ignore-path .eslintignore",
@@ -50,6 +52,7 @@
     "@cypress/grep": "^4.0.2",
     "body-parser": "^2.2.0",
     "chance": "^1.1.11",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "cypress": "^14.0.2",
     "cypress-file-upload": "5.0.8",
@@ -59,6 +62,7 @@
     "express": "^5.1.0",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",
-    "moment-timezone": "^0.5.45"
+    "moment-timezone": "^0.5.45",
+    "uuid": "^11.1.0"
   }
 }

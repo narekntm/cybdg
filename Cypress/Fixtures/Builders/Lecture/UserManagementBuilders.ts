@@ -1,4 +1,4 @@
-﻿import { UserManagementEndpoints } from "Cypress/Fixtures/Endpoints/Lecture/UserManagementEndpoints";
+import { UserManagementEndpoints } from "EndPoints/Lecture/UserManagementEndpoints";
 import { UserManagementModels } from "Models/Lecture/UserManagementModels";
 
 export class UserManagementBuilders {
