@@ -1,0 +1,105 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>About – User Management Sandbox</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+    <!-- Modular CSS -->
+    <link href="./css_modules/variables.css" rel="stylesheet" />
+    <link href="./css_modules/reset-global.css" rel="stylesheet" />
+    <link href="./css_modules/typography.css" rel="stylesheet" />
+    <link href="./css_modules/layout.css" rel="stylesheet" />
+    <link href="./css_modules/forms.css" rel="stylesheet" />
+    <link href="./css_modules/buttons.css" rel="stylesheet" />
+    <link href="./css_modules/tables.css" rel="stylesheet" />
+    <link href="./css_modules/errors.css" rel="stylesheet" />
+    <link href="./css_modules/modals.css" rel="stylesheet" />
+    <link href="./css_modules/responsive.css" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="topbar">
+      <h1>About – User Management Sandbox</h1>
+      <div class="topbar-actions">
+        <a class="back-home-btn" href="./index.html">
+          <button class="btn-secondary">← Back to Dashboard</button>
+        </a>
+      </div>
+    </header>
+
+    <main class="app-wrapper">
+      <section class="card">
+        <h2>Project Overview</h2>
+        <p>
+          This sandbox is designed to demonstrate frontend automation with dynamic UI interactions, server-side validation, and end-to-end
+          CRUD operations. It serves as a training tool for Cypress and modern web testing techniques.
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>Features & Functionality</h2>
+        <ul>
+          <li>Add, edit, delete users dynamically.</li>
+          <li>Toggle user status (Active/Inactive).</li>
+          <li>Admin-only restrictions for deleting Admin users.</li>
+          <li>Persistent in-memory server with reset functionality.</li>
+          <li>Modularized CSS and JS structure for better maintainability.</li>
+          <li>Client and server-side validation with error reporting.</li>
+          <li>Toast notifications for form actions.</li>
+          <li>Pagination and search functionality.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Validation Rules</h2>
+        <ul>
+          <li><strong>Name:</strong> 1–20 alphabetic characters, no spaces or symbols.</li>
+          <li><strong>Role:</strong> Required (Admin, Viewer, Editor).</li>
+          <li><strong>Age:</strong> Required, number between 1 and 99.</li>
+          <li><strong>Email:</strong> Required, valid format, must be unique.</li>
+          <li><strong>Gender:</strong> Selection required.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>User Flow</h2>
+        <ol>
+          <li>User opens the dashboard and views all existing users.</li>
+          <li>They can search and paginate through the user list.</li>
+          <li>To add a user, they click <em>Add New User</em>, fill the form, and submit.</li>
+          <li>To edit, they click the edit icon, modify data, and save.</li>
+          <li>To delete, they confirm deletion in the modal prompt.</li>
+          <li>Admins can delete Admin users. Others are restricted.</li>
+          <li>Status can be toggled without any modal confirmation.</li>
+        </ol>
+      </section>
+
+      <section class="card">
+        <h2>Backend API Endpoints</h2>
+        <ul>
+          <li><code>POST /api/login</code> – Admin login.</li>
+          <li><code>GET /api/users</code> – Get all users.</li>
+          <li><code>POST /api/users</code> – Add user (validates + checks uniqueness).</li>
+          <li><code>PUT /api/users/:id</code> – Update user.</li>
+          <li><code>DELETE /api/users/:id</code> – Delete user (admin check).</li>
+          <li><code>PATCH /api/users/:id/status</code> – Toggle user status.</li>
+          <li><code>POST /api/reset</code> – Reset server to default data.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Test Automation Use Cases</h2>
+        <ul>
+          <li>UI testing: Form submission, validation, modals, button states.</li>
+          <li>API testing: Verify each endpoint response and state change.</li>
+          <li>DOM interaction: Dynamic table content, pagination, search filtering.</li>
+          <li>Negative testing: Invalid credentials, duplicate emails, missing fields.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 Cypress Sandbox | Demo Project</p>
+    </footer>
+  </body>
+</html>

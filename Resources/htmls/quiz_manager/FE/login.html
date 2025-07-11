@@ -1,0 +1,26 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login – Quiz Manager</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+  </head>
+  <body>
+    <section class="login-container">
+      <h1>Login to Quiz Manager</h1>
+      <form id="login-form" novalidate>
+        <label>Email</label>
+        <input type="email" id="email" required />
+
+        <label>Password</label>
+        <input type="password" id="password" required />
+
+        <button type="submit">Login</button>
+      </form>
+      <div id="error-message" class="error"></div>
+    </section>
+
+    <script type="module" src="./js/login.js"></script>
+  </body>
+</html>
