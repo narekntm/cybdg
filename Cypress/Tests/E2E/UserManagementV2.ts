@@ -21,14 +21,7 @@ describe("User Management – Cypress Sandbox", () => {
     UserManagementPage.adminLoginButton().click();
   }
 
-  function fillUserForm(user: {
-    name: string;
-    role: string;
-    age: number;
-    email: string;
-    gender: string;
-    subscriptions?: string[]
-  }) {
+  function fillUserForm(user: { name: string; role: string; age: number; email: string; gender: string; subscriptions?: string[] }) {
     if (user.name) UserManagementPage.nameInput().type(user.name);
     if (user.role) cy.get("#role").select(user.role);
     if (user.age) cy.get("#age").clear().type(user.age.toString());

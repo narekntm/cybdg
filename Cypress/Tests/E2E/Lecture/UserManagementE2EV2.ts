@@ -1,4 +1,4 @@
-﻿import { UserManagementBuilders } from "Builders/Lecture/UserManagementBuilders";
+import { UserManagementBuilders } from "Builders/Lecture/UserManagementBuilders";
 import { UserManagementEndpoints } from "EndPoints/Lecture/UserManagementEndpoints";
 import { UserManagementModels } from "Models/Lecture/UserManagementModels";
 import { UserManagementPageV2 } from "Pages/Lecture/UserManagementPageV2";
