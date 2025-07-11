@@ -14,6 +14,7 @@ describe('Tests for page "User Management Cypress Sandbox"', () => {
     adminLogin("admin@example.com", "admin123");
     return cy.get("#logout-btn").click();
   }
+
   function userCreation() {
     cy.get('input[id="name"]').type("Anna");
     cy.get('select[id="role"]').select("Admin");

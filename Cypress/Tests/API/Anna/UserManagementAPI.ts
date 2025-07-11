@@ -1,5 +1,5 @@
 import { UserManagementBuilders } from "Builders/Lecture/UserManagementBuilders";
-import { UserManagementGenerators } from "Generators/Lecture/UserManagementGenerators";
+import { UserManagementGenerators } from "Generators/Anna/UserManagementGenerators";
 import { UserManagementModels } from "Models/Lecture/UserManagementModels";
 
 /**
@@ -10,6 +10,15 @@ describe("User Management API – Cypress Sandbox", () => {
   const adminEmail = "admin@example.com";
   const adminPass = "admin123";
   let createdUserId: number;
+
+  before(() => {
+    console.log(UserManagementGenerators.userDataPositive());
+    console.log(UserManagementGenerators.userDataPositive());
+    console.log(UserManagementGenerators.userDataPositive());
+    console.log(UserManagementGenerators.userDataPositive());
+    console.log(UserManagementGenerators.userDataPositive());
+    console.log(UserManagementGenerators.userDataPositive());
+  });
 
   before(() => {
     // 🌐 Reset the entire data set before running tests
@@ -63,15 +72,14 @@ describe("User Management API – Cypress Sandbox", () => {
    * @test Creates a new user via API
    */
   it("POST /api/users creates a new user", () => {
-    const user = UserManagementGenerators.defaultUser;
+    const user = UserManagementGenerators.userDataPositive();
     UserManagementBuilders.createUser(user).then((resp) => {
       expect(resp.status).to.eq(200);
       expect(resp.body.name).eq(user.name);
       expect(resp.body.email).eq(user.email);
+      expect(resp.body.role).eq(user.role);
+      expect(resp.body.age).eq(user.age);
       expect(resp.body.subscriptions).to.be.an("array");
-      expect(resp.body.subscriptions.length).to.eq(2);
-      expect(resp.body.status).eq("Active");
-
       createdUserId = resp.body.id;
     });
   });

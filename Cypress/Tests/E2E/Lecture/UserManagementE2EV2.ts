@@ -1,5 +1,5 @@
-﻿import Chance from "chance";
-import { UserManagementBuilders } from "Builders/Lecture/UserManagementBuilders";
+﻿import { UserManagementBuilders } from "Builders/Lecture/UserManagementBuilders";
+import Chance from "chance";
 import { UserManagementEndpoints } from "EndPoints/Lecture/UserManagementEndpoints";
 import { UserManagementModels } from "Models/Lecture/UserManagementModels";
 import { UserManagementPageV2 } from "Pages/Lecture/UserManagementPageV2";
@@ -7,31 +7,18 @@ import { UserManagementPageV2 } from "Pages/Lecture/UserManagementPageV2";
 const chance = new Chance();
 describe("User Management – Cypress Sandbox", () => {
   const baseUrl = "/";
-  const users: UserManagementModels.UserInput[] = [];
+  let users: UserManagementModels.UserInput[] = [];
 
-  for (let i = 0; i < 50; i++) {
-    users.push({
-      name: chance.name().split(" ")[0],
-      role: chance.pickone(Object.values(UserManagementModels.Role)),
-      age: chance.integer({ min: 1, max: 100 }),
-      email: chance.email(),
-      gender: chance.pickone(Object.values(UserManagementModels.Gender)),
-      subscriptions: chance.pickset(
-        Object.values(UserManagementModels.Subscription),
-        chance.integer({
-          min: 0,
-          max: 2,
-        })
-      ),
-    });
-  }
 
   before(() => {
     UserManagementBuilders.resetData();
-    UserManagementBuilders.seedData(users);
+    UserManagementBuilders.seedData();
   });
 
   beforeEach(() => {
+    UserManagementBuilders.getUsers().then((res) => {
+      users = res.body;
+    });
     cy.intercept("GET", UserManagementEndpoints.users()).as("getUsers");
     cy.visit(baseUrl);
     cy.wait("@getUsers");
