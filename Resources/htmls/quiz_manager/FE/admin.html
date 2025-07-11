@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin – Quiz Manager</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+<header>
+    <h1>Admin Dashboard</h1>
+    <button id="logout-btn">Logout</button>
+</header>
+
+<main>
+    <section id="quiz-creator">
+        <h2>Create New Quiz</h2>
+        <form id="quiz-form" novalidate>
+            <input type="text" id="quiz-title" placeholder="Quiz Title" required />
+            <textarea id="quiz-description" placeholder="Quiz Description" required></textarea>
+
+            <div id="question-list"></div>
+            <button type="button" id="add-question-btn">+ Add Question</button>
+            <br><br>
+
+            <label>Assign To:</label>
+            <select id="assign-mode">
+                <option value="all">All Users</option>
+                <option value="custom">Selected Users</option>
+            </select>
+
+            <!-- 🔽 This div is shown only when 'custom' is selected -->
+            <div id="user-checkboxes" class="hidden"></div>
+
+            <button type="submit">Save Quiz</button>
+        </form>
+    </section>
+
+    <section id="quiz-list">
+        <h2>My Quizzes</h2>
+        <ul id="admin-quiz-list"></ul>
+    </section>
+</main>
+
+<script type="module" src="./js/admin.js"></script>
+</body>
+</html>
