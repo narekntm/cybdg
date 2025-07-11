@@ -1,4 +1,4 @@
-import { UserManagementPage } from "../UserManagementPage";
+import { UserManagementPage } from "Pages/UserManagementPage";
 import { SignIn , AdminLoginData, NewUser} from "Models/David Models/UserManagementModels";
 export class UserManagementMethods {
   // Auth part
