@@ -12,6 +12,28 @@ body {
     align-items: center;
 }
 
+/* 🔹 Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 0.2em 0.6em;
+    font-size: 0.75rem;
+    border-radius: 0.25rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.status-badge.active {
+    background-color: #d4edda;
+    color: #155724;
+}
+.status-badge.draft {
+    background-color: #fff3cd;
+    color: #856404;
+}
+.status-badge.archived {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
 .login-container {
     background-color: white;
     padding: 2rem 2.5rem;
@@ -148,6 +170,9 @@ h2 {
     margin-bottom: 0.5rem;
 }
 
+.question-item textarea {
+    min-height: 80px;
+}
 .question-item button.remove-question {
     background-color: #dc3545;
     color: white;
@@ -194,4 +219,64 @@ h2 {
 .loading {
     opacity: 0.5;
     pointer-events: none;
+}
+
+/* 🔹 Submission Entry Styling */
+.submission {
+    background-color: #ffffff;
+    padding: 1.25rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.submission h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    color: #212529;
+}
+
+.submission dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.25rem 1rem;
+    font-size: 0.95rem;
+}
+
+.submission dt {
+    font-weight: 600;
+    color: #495057;
+}
+
+.submission dd {
+    margin: 0 0 0.5rem 0;
+    color: #333;
+}
+
+.quiz-header {
+    background: #f9fbfe;
+    padding: 1.5rem;
+    border: 1px solid #d0d7e2;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.submission-card {
+    background-color: #f8fafd;
+    border: 1px solid #ccd6e0;
+}
+
+.submission-toggle {
+    cursor: pointer;
+}
+
+.submission-timestamp {
+    float: right;
+    font-weight: normal;
+}
+
+.toggle-submissions {
+    margin-bottom: 1rem;
 }

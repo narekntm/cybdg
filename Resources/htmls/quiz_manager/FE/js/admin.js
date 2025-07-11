@@ -1,5 +1,5 @@
 ﻿// admin.js (refactored + modularized)
-import { apiGet, apiPost, apiDelete } from "./api.js";
+import { apiGet, apiPost, apiDelete, apiPatch } from './api.js'
 import "./logout.js";
 
 // DOM References
@@ -145,11 +145,15 @@ async function loadQuizzes() {
     quizzes.forEach(q => {
       const li = document.createElement("li");
       li.innerHTML = `
-        <strong>${q.title}</strong> (${q.status})
-        <button data-id="${q.id}" class="publish-btn">Publish</button>
-        <button data-id="${q.id}" class="archive-btn">Archive</button>
-        <button data-id="${q.id}" class="delete-btn">Delete</button>
-        <a href="view-submissions.html?quiz=${q.id}">View Submissions</a>
+        <div class="quiz-title">
+            ${q.title} <span class="status-badge ${q.status}">${q.status}</span>
+          </div>
+          <div class="quiz-actions">
+            <button data-id="${q.id}" class="publish-btn">Publish</button>
+            <button data-id="${q.id}" class="archive-btn">Archive</button>
+            <button data-id="${q.id}" class="delete-btn">Delete</button>
+          </div>
+          <a class="view-submissions" href="view-submissions.html?quiz=${q.id}">View Submissions</a>
       `;
       quizListEl.appendChild(li);
     });
@@ -157,7 +161,7 @@ async function loadQuizzes() {
     quizListEl.querySelectorAll(".publish-btn").forEach(btn =>
       btn.addEventListener("click", async () => {
         try {
-          await apiPost(`/api/quizzes/${btn.dataset.id}/publish`, {});
+          await apiPatch(`/api/quizzes/${btn.dataset.id}/publish`, {});
           loadQuizzes();
         } catch (err) {
           alert("Publish failed: " + err.message);
@@ -168,7 +172,7 @@ async function loadQuizzes() {
     quizListEl.querySelectorAll(".archive-btn").forEach(btn =>
       btn.addEventListener("click", async () => {
         try {
-          await apiPost(`/api/quizzes/${btn.dataset.id}/archive`, {});
+          await apiPatch(`/api/quizzes/${btn.dataset.id}/archive`, {});
           loadQuizzes();
         } catch (err) {
           alert("Archive failed: " + err.message);
