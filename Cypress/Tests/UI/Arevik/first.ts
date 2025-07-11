@@ -1,8 +1,7 @@
 import Chance from "chance";
-import { log } from "console";
 
 let text = [];
-let chance = new Chance();
+const chance = new Chance();
 describe("Actions page block", () => {
     before(() => {
         for (let i = 0; i < 10; i++) {

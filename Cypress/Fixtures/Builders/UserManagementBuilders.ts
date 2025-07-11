@@ -1,4 +1,4 @@
-import { UserManagementEndpoints } from 'EndPoints/UserManagementEndpoints';
+import {UserManagementEndpoints} from "EndPoints/Lecture/UserManagementEndpoints";
 
 export class UserManagementBuilders {
 
