@@ -1,6 +1,10 @@
 ﻿// seed.js — generates dummy data for quiz manager
 const { v4: uuidv4 } = require('uuid');
 
+// Utility: generate N options with prefix
+const generateOptions = (prefix, count) =>
+  Array.from({ length: count }, (_, i) => `${prefix} ${i + 1}`);
+
 // USERS
 const users = [
   { id: 'admin1', email: 'admin@example.com', password: 'admin123', role: 'admin' },
@@ -20,9 +24,24 @@ const quizzes = [
     description: 'A sample quiz available to all users',
     questions: [
       { id: 'q1', label: "What's your name?", type: 'input', options: [] },
-      { id: 'q2', label: 'Your gender?', type: 'radio', options: ['Male', 'Female', 'Other'] },
-      { id: 'q3', label: 'Technologies you like', type: 'checkbox', options: ['JavaScript', 'Python', 'Go'] },
-      { id: 'q4', label: 'Country', type: 'dropdown', options: ['Armenia', 'USA', 'Germany'] }
+      {
+        id: 'q2',
+        label: 'Your gender?',
+        type: 'radio',
+        options: generateOptions('Gender Option', Math.floor(Math.random() * 13) + 3)
+      },
+      {
+        id: 'q3',
+        label: 'Technologies you like',
+        type: 'checkbox',
+        options: generateOptions('Tech', Math.floor(Math.random() * 13) + 3)
+      },
+      {
+        id: 'q4',
+        label: 'Country',
+        type: 'dropdown',
+        options: generateOptions('Country', Math.floor(Math.random() * 13) + 3)
+      }
     ],
     createdBy: 'admin1',
     assignedUsers: 'all',
@@ -34,9 +53,24 @@ const quizzes = [
     description: `Description for quiz ${i + 1}`,
     questions: [
       { id: 'q0', label: 'Question input', type: 'input', options: [] },
-      { id: 'q1', label: 'Pick one', type: 'radio', options: ['A', 'B', 'C'] },
-      { id: 'q2', label: 'Choose all that apply', type: 'checkbox', options: ['X', 'Y', 'Z'] },
-      { id: 'q3', label: 'Select from dropdown', type: 'dropdown', options: ['Opt1', 'Opt2', 'Opt3'] }
+      {
+        id: 'q1',
+        label: 'Pick one',
+        type: 'radio',
+        options: generateOptions('Choice', Math.floor(Math.random() * 13) + 3)
+      },
+      {
+        id: 'q2',
+        label: 'Choose all that apply',
+        type: 'checkbox',
+        options: generateOptions('Item', Math.floor(Math.random() * 13) + 3)
+      },
+      {
+        id: 'q3',
+        label: 'Select from dropdown',
+        type: 'dropdown',
+        options: generateOptions('Option', Math.floor(Math.random() * 13) + 3)
+      }
     ],
     createdBy: 'admin1',
     assignedUsers: i % 2 === 0 ? 'all' : [users[i + 1].email],

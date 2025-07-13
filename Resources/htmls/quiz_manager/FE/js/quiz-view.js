@@ -16,21 +16,18 @@ const descEl    = document.getElementById("quiz-description");
 let quiz = null;
 
 (async function init() {
-  // 1) Auth guard: redirect if not logged in
   try {
     await apiGet("/api/auth/me");
   } catch {
     return window.location.href = "login.html";
   }
 
-  // 2) Validate quizId
   if (!quizId) {
     titleEl.textContent = "Quiz not specified.";
     submitBtn.style.display = "none";
     return;
   }
 
-  // 3) Fetch quiz details
   try {
     quiz = await apiGet(`/api/quizzes/${quizId}`);
   } catch {
@@ -41,7 +38,6 @@ let quiz = null;
   titleEl.textContent = quiz.title;
   descEl.textContent  = quiz.description;
 
-  // 4) Fetch existing answers (if editing)
   let existingAnswers = {};
   if (submissionId) {
     try {
@@ -52,10 +48,8 @@ let quiz = null;
     }
   }
 
-  // 5) Render dynamic form
   renderForm(quiz.questions, existingAnswers);
 
-  // 6) Hide submit if read-only
   const isReadOnly = quiz.status === "archived"
     || (submissionId && quiz.status !== "active");
   submitBtn.style.display = isReadOnly ? "none" : "";
@@ -68,14 +62,13 @@ function renderForm(questions, answers) {
     const wrapper = document.createElement("div");
     wrapper.className = "question";
 
-    // Label
-    const label = document.createElement("label");
-    label.textContent = q.label;
-    wrapper.appendChild(label);
+    const title = document.createElement("div");
+    title.className = "question-header";
+    title.textContent = q.label;
+    wrapper.appendChild(title);
 
     const value = answers[q.id] || "";
 
-    // Input types
     switch (q.type) {
       case "input": {
         const input = document.createElement("input");
@@ -85,25 +78,38 @@ function renderForm(questions, answers) {
         wrapper.appendChild(input);
         break;
       }
+
       case "radio":
       case "checkbox": {
+        const group = document.createElement("div");
+        group.className = "option-list horizontal";
+
         q.options.forEach(opt => {
           const optLabel = document.createElement("label");
-          const input    = document.createElement("input");
-          input.type     = q.type;
-          input.name     = q.id;
-          input.value    = opt;
+          optLabel.textContent = opt;
+
+          const input = document.createElement("input");
+          input.type = q.type;
+          input.name = q.id;
+          input.value = opt;
+
           if (q.type === "radio" && value === opt) input.checked = true;
           if (q.type === "checkbox" && Array.isArray(value) && value.includes(opt)) input.checked = true;
-          optLabel.appendChild(input);
-          optLabel.appendChild(document.createTextNode(opt));
-          wrapper.appendChild(optLabel);
+
+          optLabel.prepend(input); // ensure input is inside label
+          console.log("Rendering label:", optLabel.outerHTML);
+
+          group.appendChild(optLabel);
         });
+
+        wrapper.appendChild(group);
         break;
       }
+
       case "dropdown": {
         const select = document.createElement("select");
         select.name = q.id;
+
         q.options.forEach(opt => {
           const option = document.createElement("option");
           option.value = opt;
@@ -111,6 +117,7 @@ function renderForm(questions, answers) {
           if (opt === value) option.selected = true;
           select.appendChild(option);
         });
+
         wrapper.appendChild(select);
         break;
       }
@@ -120,7 +127,6 @@ function renderForm(questions, answers) {
   });
 }
 
-// Handle submission
 submitBtn.addEventListener("click", async () => {
   if (!quiz) return;
 
