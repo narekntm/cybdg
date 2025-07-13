@@ -1,5 +1,5 @@
 ﻿// quiz-view.js
-import { apiGet, apiPost } from "./api.js";
+import { apiGet, apiPost, apiPut } from './api.js'
 import "./logout.js";
 
 // Extract query params
@@ -142,7 +142,7 @@ submitBtn.addEventListener("click", async () => {
   });
 
   try {
-    await apiPost(`/api/quizzes/${quizId}/submissions`, { quizId, answers });
+    submissionId ? await apiPut(`/api/submissions/${submissionId}`, { answers }) : await apiPost(`/api/quizzes/${quizId}/submissions`, { quizId, answers });
     alert("Submission successful");
     window.location.href = "user.html";
   } catch (err) {

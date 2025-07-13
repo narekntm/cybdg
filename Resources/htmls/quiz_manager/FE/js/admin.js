@@ -24,6 +24,7 @@ function initAdminPage() {
   bindFormSubmission();
   loadQuizzes();
   loadUsers();
+  bindQuizFormToggle();
 }
 
 async function guardAdmin() {
@@ -74,6 +75,16 @@ function bindAssignmentModeToggle() {
     }
   });
 }
+
+function bindQuizFormToggle() {
+  const quizSection = document.getElementById("quiz-creator");
+  const toggleHeader = quizSection.querySelector(".toggle-header");
+
+  toggleHeader.addEventListener("click", () => {
+    quizSection.classList.toggle("open");
+  });
+}
+
 
 function bindFormSubmission() {
   quizForm.addEventListener("submit", async (e) => {
@@ -141,6 +152,8 @@ async function loadQuizzes() {
     const quizzes = await apiGet("/api/quizzes");
     quizListEl.innerHTML = "";
 
+    const quizzCount = document.getElementById("quiz-count");
+    quizzCount.innerText = `(${quizzes.length})`;
     quizzes.forEach(q => {
       const li = document.createElement("li");
       li.innerHTML = `

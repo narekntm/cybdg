@@ -33,7 +33,6 @@
 
 .submission.open h3::after {
     transform: rotate(180deg);
-    content: "▲";
 }
 .submission dl {
     display: grid;
@@ -99,5 +98,4 @@
 #submission-list {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
 }
