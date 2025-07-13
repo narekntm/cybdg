@@ -1,8 +1,11 @@
 import {QuizManagerLoginPage} from "Pages/anahit-tadevosyan/QuizManager/QuizManagerLoginPage";
+import {QuizManagerEndpoints} from "EndPoints/anahit-tadevosyan/QuizManager/QuizManagerEndPoints";
 
 describe('Login Test Cases', () => {
+    const baseUrl = '/login.html';
     beforeEach(() => {
-        cy.visit('http://127.0.0.1:8080/login.html')
+        cy.intercept({method: 'Get', url: QuizManagerEndpoints.me()})
+        cy.visit(baseUrl)
     })
     it('Login Test Cases', () => {
         QuizManagerLoginPage.emailInput().type('admin@example.com');

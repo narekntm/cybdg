@@ -1,4 +1,5 @@
 import {QuizManagerEndpoints} from "EndPoints/anahit-tadevosyan/QuizManager/QuizManagerEndPoints";
+import {Quiz, QuizData} from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 
 export class QuizManagerBuilders{
     static login(email: string, password: string) {
@@ -30,7 +31,7 @@ export class QuizManagerBuilders{
         });
     }
 
-    static createQuiz(quizData:any) {
+    static createQuiz(quizData:QuizData) {
         return cy.request({
             method: "POST",
             url: QuizManagerEndpoints.quizzes(),
@@ -38,21 +39,21 @@ export class QuizManagerBuilders{
         });
     }
 
-    static publishQuiz(quizId) {
+    static publishQuiz(quizId: string) {
         return cy.request({
             method: "PATCH",
             url: QuizManagerEndpoints.publishQuiz(quizId),
         });
     }
 
-    static archiveQuiz(quizId) {
+    static archiveQuiz(quizId: string) {
         return cy.request({
             method: "PATCH",
             url: QuizManagerEndpoints.archiveQuiz(quizId),
         });
     }
 
-    static deleteQuiz(quizId) {
+    static deleteQuiz(quizId: string) {
         return cy.request({
             method: "DELETE",
             url: QuizManagerEndpoints.quizzes(quizId),
@@ -67,7 +68,7 @@ export class QuizManagerBuilders{
         });
     }
 
-    static getQuizById(quizId) {
+    static getQuizById(quizId: string) {
         return cy.request({
             method: "GET",
             url: QuizManagerEndpoints.quizzes(quizId),
@@ -75,7 +76,7 @@ export class QuizManagerBuilders{
     }
 
 
-    static submitQuizAnswers(quizId, answers) {
+    static submitQuizAnswers(quizId: string, answers: { [questionId: string]: string | string[] }) {
         return cy.request({
             method: "POST",
             url: QuizManagerEndpoints.quizSubmissions(quizId),
@@ -83,7 +84,7 @@ export class QuizManagerBuilders{
         });
     }
 
-    static updateSubmission(submissionId, answers) {
+    static updateSubmission(submissionId: string, answers: { [questionId: string]: string | string[] }) {
         return cy.request({
             method: "PUT",
             url: QuizManagerEndpoints.submissionById(submissionId),
@@ -100,14 +101,14 @@ export class QuizManagerBuilders{
     }
 
 
-    static getQuizSubmissions(quizId) {
+    static getQuizSubmissions(quizId: string) {
         return cy.request({
             method: "GET",
             url: QuizManagerEndpoints.quizSubmissions(quizId),
         });
     }
 
-    static getSubmission(submissionId) {
+    static getSubmission(submissionId: string) {
         return cy.request({
             method: "GET",
             url: QuizManagerEndpoints.submissionById(submissionId),
