@@ -1,4 +1,38 @@
 ﻿/* ========== Base Layout ========== */
+/* ========== Minimal Reset ========== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body,
+h1, h2, h3, h4, h5, h6,
+p, ul, ol, dl, dt, dd,
+blockquote, figure {
+    margin: 0;
+    padding: 0;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+label {
+    color: #254260;
+}
+
 body {
     font-family: "Segoe UI", sans-serif;
     background-color: #f5f7fa;
@@ -45,7 +79,7 @@ main {
 
 /* ========== Headers ========== */
 header {
-    background-color: #007bff;
+    background-color: #3a5881;
     color: white;
     padding: 1rem 2rem;
     display: flex;
@@ -69,6 +103,7 @@ h1 {
 
 h2 {
     margin-top: 0;
+    margin-bottom: 4px;
     font-size: 1.2rem;
-    color: #007bff;
+    color: #254260;
 }

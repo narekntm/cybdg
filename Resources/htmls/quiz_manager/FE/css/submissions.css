@@ -85,14 +85,14 @@
     padding: 0.5rem 1rem;
     font-size: 0.95rem;
     background-color: white;
-    color: #007bff;
+    color: #254260;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
 
 .toggle-submissions:hover {
-    background-color: #007bff;
+    background-color: #254260;
     color: white;
 }
 

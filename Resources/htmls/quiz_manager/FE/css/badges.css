@@ -9,16 +9,17 @@
 }
 
 .status-badge.active {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-.status-badge.draft {
-    background-color: #fff3cd;
-    color: #856404;
+    background-color: #2f7660;
+    color: #ffffff;
 }
 
 .status-badge.archived {
-    background-color: #f8d7da;
-    color: #721c24;
+    background-color: #b38b49;
+    color: #ffffff;
 }
+
+.status-badge.draft {
+    border: 2px solid #b38b49;
+    color: #254260;
+}
+

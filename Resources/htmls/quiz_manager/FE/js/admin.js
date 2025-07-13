@@ -57,9 +57,8 @@ function bindQuestionBuilder() {
         <option value="checkbox">Checkbox</option>
         <option value="dropdown">Dropdown</option>
       </select>
-      <input type="text" placeholder="Comma-separated options (for MCQ only)" class="q-options" />
+      <input type="text" placeholder="Comma-separated options" class="q-options" />
       <button type="button" class="remove-question">Remove</button>
-      <br><br>
     `;
     div.querySelector(".remove-question")?.addEventListener("click", () => div.remove());
     questionList.appendChild(div);
@@ -201,9 +200,13 @@ async function loadUsers() {
   try {
     const users = await apiGet("/api/users");
     allUsers = users.filter(u => u.role !== "admin");
+
     userCheckboxContainer.innerHTML = allUsers.map(u => `
-      <label><input type="checkbox" value="${u.email}" /> ${u.email}</label>
-    `).join("<br>");
+      <label class="user-checkbox">
+        <input type="checkbox" value="${u.email}" />
+        <span>${u.email}</span>
+      </label>
+    `).join("");
   } catch (err) {
     console.warn("Could not load users:", err);
   }

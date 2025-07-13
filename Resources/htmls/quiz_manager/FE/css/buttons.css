@@ -2,9 +2,8 @@
 button,
 button[type="submit"],
 #add-question-btn,
-header button,
-#admin-quiz-list button {
-    background-color: #007bff;
+header button {
+    background-color: #254260;
     color: white;
     padding: 0.6rem 1.2rem;
     font-size: 1rem;
@@ -17,26 +16,43 @@ header button,
 button:hover,
 button[type="submit"]:hover,
 #add-question-btn:hover,
-header button:hover,
-#admin-quiz-list button:hover {
-    background-color: #0056b3;
+header button:hover {
+    background-color: #17334a;
 }
 
 button.remove-question {
-    background-color: #dc3545;
+    background-color: #a84848;
     font-size: 0.9rem;
     padding: 0.4rem 0.8rem;
 }
 
+button.remove-question:hover {
+    background-color: #913b3b;
+}
+
 .publish-btn {
-    background-color: #28a745;
+    background-color: #2f7660;
+    color: white;
+}
+
+.publish-btn:hover {
+    background-color: #276554;
 }
 
 .archive-btn {
-    background-color: #ffc107;
-    color: #212529;
+    background-color: #b38b49;
+    color: white;
+}
+
+.archive-btn:hover {
+    background-color: #99743a;
 }
 
 .delete-btn {
-    background-color: #dc3545;
+    background-color: #a84848;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #913b3b;
 }
