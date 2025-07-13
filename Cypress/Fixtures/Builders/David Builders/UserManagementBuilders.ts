@@ -1,4 +1,4 @@
-import { UserManagementEndPoints } from "Cypress/Fixtures/Endpoints/David Endpoints/UserManagementEndPoints"
+import { UserManagementEndPoints } from "Cypress/Fixtures/EndPoints/David EndPoints/UserManagementEndPoints"
 import { NewUser } from "Models/David Models/UserManagementModels"
 import { UserManagementModels } from "Models/Lecture/UserManagementModels";
 import User = UserManagementModels.User;

@@ -9,7 +9,7 @@ describe("User Management – Cypress Sandbox", () => {
 
   before(() => {
     UserManagementBuilders.resetData();
-    UserManagementBuilders.seedData();
+    //UserManagementBuilders.seedData();
   });
 
   beforeEach(() => {
