@@ -1,0 +1,57 @@
+﻿/* ========== Submission Entries ========== */
+.submission {
+    background-color: #ffffff;
+    padding: 1.25rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.submission h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    color: #212529;
+}
+
+.submission dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.25rem 1rem;
+    font-size: 0.95rem;
+}
+
+.submission dt {
+    font-weight: 600;
+    color: #495057;
+}
+
+.submission dd {
+    margin: 0 0 0.5rem 0;
+    color: #333;
+}
+
+.submission-card {
+    background-color: #f8fafd;
+    border: 1px solid #ccd6e0;
+}
+
+.quiz-header {
+    background: #f9fbfe;
+    padding: 1.5rem;
+    border: 1px solid #d0d7e2;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.submission-timestamp {
+    float: right;
+    font-weight: normal;
+}
+
+.submission-toggle,
+.toggle-submissions {
+    cursor: pointer;
+    margin-bottom: 1rem;
+}

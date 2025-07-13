@@ -1,0 +1,42 @@
+﻿/* ========== Buttons ========== */
+button,
+button[type="submit"],
+#add-question-btn,
+header button,
+#admin-quiz-list button {
+    background-color: #007bff;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover,
+button[type="submit"]:hover,
+#add-question-btn:hover,
+header button:hover,
+#admin-quiz-list button:hover {
+    background-color: #0056b3;
+}
+
+button.remove-question {
+    background-color: #dc3545;
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+}
+
+.publish-btn {
+    background-color: #28a745;
+}
+
+.archive-btn {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+}
