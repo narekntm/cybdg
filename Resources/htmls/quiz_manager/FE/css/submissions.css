@@ -1,24 +1,50 @@
 ﻿/* ========== Submission Entries ========== */
 .submission {
     background-color: #ffffff;
-    padding: 1.25rem 1.5rem;
+    padding: 1.5rem 2rem;
     border-radius: 8px;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    margin: 0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.2s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.submission:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
 .submission h3 {
-    margin-top: 0;
-    margin-bottom: 1rem;
     font-size: 1rem;
+    margin-bottom: 0.5rem;
     color: #212529;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
+.submission h3::after {
+    content: "▼";
+    float: right;
+    font-weight: normal;
+    font-size: 0.9rem;
+    transition: transform 0.2s ease;
+}
+
+.submission.open h3::after {
+    transform: rotate(180deg);
+    content: "▲";
+}
 .submission dl {
     display: grid;
-    grid-template-columns: max-content 1fr;
-    gap: 0.25rem 1rem;
+    grid-template-columns: 1fr 2fr;
+    gap: 0.5rem 1rem;
     font-size: 0.95rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #eaecef;
+    margin-top: 0.5rem;
+    transition: max-height 0.3s ease;
+    overflow: hidden;
 }
 
 .submission dt {
@@ -32,8 +58,9 @@
 }
 
 .submission-card {
-    background-color: #f8fafd;
-    border: 1px solid #ccd6e0;
+    background-color: #fdfefe;
+    border: 1px solid #d0d7e2;
+    border-radius: 8px;
 }
 
 .quiz-header {
@@ -46,12 +73,31 @@
 }
 
 .submission-timestamp {
-    float: right;
     font-weight: normal;
+    font-size: 0.9rem;
+    color: #6c757d;
 }
 
 .submission-toggle,
 .toggle-submissions {
+    display: inline-block;
+    margin: 1rem 0;
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+    background-color: white;
+    color: #007bff;
+    border-radius: 4px;
     cursor: pointer;
-    margin-bottom: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.toggle-submissions:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+#submission-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }
