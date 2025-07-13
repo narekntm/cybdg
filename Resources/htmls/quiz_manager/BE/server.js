@@ -1,12 +1,11 @@
-﻿// Updated: server.js
-import bodyParser from 'body-parser'
-import cookieParser from 'cookie-parser'
-import cors from 'cors'
-import express from 'express'
-import { v4 as uuidv4 } from 'uuid'
+﻿const express = require('express')
+const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
+const cors = require('cors')
+const { v4: uuidv4 } = require('uuid')
 
 const app = express()
-const PORT = 3000
+const PORT = 5252
 
 // Middleware
 app.use(cors({ origin: true, credentials: true }))
@@ -233,4 +232,3 @@ app.get('/api/submissions/:id', authenticate, (req, res) => {
 
 app.listen(PORT, () => console.log(`Quiz backend running at http://localhost:${PORT}`))
 
-export default app
