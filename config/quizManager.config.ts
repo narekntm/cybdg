@@ -25,7 +25,7 @@ export default defineConfig({
         API_URL: "http://127.0.0.1:3000/",
         ADMIN_EMAIL: "admin@example.com",
         ADMIN_PASSWORD: "admin123",
-        USER_EMAIL: "user@example.com",
+        USER_EMAIL: "user1@example.com",
         USER_PASSWORD: "user123",
     },
     e2e: {
