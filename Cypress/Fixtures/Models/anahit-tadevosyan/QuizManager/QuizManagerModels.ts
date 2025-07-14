@@ -1,51 +1,60 @@
 export enum Role {
-    Admin = "admin",
-    User = "user",
+  Admin = "admin",
+  User = "user",
 }
 
 export interface Question {
-    id: string;
-    label: string;
-    type: QuestionType;
-    options: string[];
+  id: string;
+  label: string;
+  type: QuestionType;
+  options: string[];
 }
 
 export interface Users {
-    id: string;
-    email: string;
-    role: Role;
+  id: string;
+  email: string;
+  role: Role;
 }
 export enum QuestionType {
-    Input = "input",
-    Radio = "radio",
-    Checkbox = "checkbox",
-    Dropdown = "dropdown",
+  Input = "input",
+  Radio = "radio",
+  Checkbox = "checkbox",
+  Dropdown = "dropdown",
 }
 
 export enum QuizStatus {
-    Active = "active",
-    Draft = "draft",
-    Archived = "archived",
+  Active = "active",
+  Draft = "draft",
+  Archived = "archived",
 }
 
 export interface QuizData {
-    id: string;
-    title: string;
-    description: string;
-    questions: Question[];
-    createdBy: string,
-    assignedUsers: AssignedUsers;
-    status: QuizStatus
+  id: string;
+  title: string;
+  description: string;
+  questions: Question[];
+  createdBy: string;
+  assignedUsers: AssignedUsers;
+  status: QuizStatus;
 }
 
 export type AssignedUsers = "all" | string[];
 
 export interface Submission {
-    id: string;
-    quizId: string;
-    userId: string;
-    answers: {
-        [questionId: string]: string | string[];
-    };
-    createdAt: string;
+  id: string;
+  quizId: string;
+  userId: string;
+  answers: {
+    [questionId: string]: string | string[];
+  };
+  createdAt: string;
+}
+export interface UserBase {
+  email: string;
+  id: string;
+  role: Role;
+}
+
+export interface User extends UserBase {
+  password: string;
 }
