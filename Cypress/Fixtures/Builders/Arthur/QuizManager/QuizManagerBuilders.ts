@@ -1,15 +1,8 @@
 import { Chance } from "chance";
-const chance = new Chance();
-
-import {
-  UserCredentials,
-  UserRole,
-  QuestionType,
-  Question,
-  QuizRequest,
-} from "Models/Arthur/QuizManager/QuizManagerModels";
-
 import { QuizManagerEndpoints } from "EndPoints/Arthur/QuizManager/QuizManagerEndpoints";
+import { Question, QuestionType, QuizRequest, UserCredentials, UserRole } from "Models/Arthur/QuizManager/QuizManagerModels";
+
+const chance = new Chance();
 
 export class UserBuilder {
   static validAdmin(): UserCredentials {
@@ -94,9 +87,7 @@ export class QuizBuilder {
   }
 
   static generateValidQuiz(): QuizRequest {
-    const title = [chance.word(), chance.word(), chance.word()]
-      .map((w) => chance.capitalize(w))
-      .join(" ");
+    const title = [chance.word(), chance.word(), chance.word()].map((w) => chance.capitalize(w)).join(" ");
     const description = chance.sentence({ words: 5 });
 
     return {

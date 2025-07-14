@@ -1,15 +1,7 @@
 import { UserBuilder } from "Builders/Arthur/QuizManager/QuizManagerBuilders";
-import { loginViaApi } from "Helpers/Arthur/QuizManager/QuizManagerHelpers";
 import { QuizManagerEndpoints } from "EndPoints/Arthur/QuizManager/QuizManagerEndpoints";
-import {
-  QuizRequest,
-  QuestionType,
-  Answer,
-} from "Models/Arthur/QuizManager/QuizManagerModels";
-import {
-  QuizErrorMessages,
-  SubmissionErrorMessages,
-} from "Models/Arthur/QuizManager/QuizManagerErrorMessages";
+import { loginViaApi } from "Helpers/Arthur/QuizManager/QuizManagerHelpers";
+import { QuestionType, QuizRequest } from "Models/Arthur/QuizManager/QuizManagerModels";
 
 describe("Quiz Validation - Required rules", () => {
   const admin = UserBuilder.validAdmin();
@@ -61,20 +53,20 @@ describe("Quiz Validation - Required rules", () => {
     });
 
     it("Should reject invalid question structure (missing label or invalid type)", () => {
-      const invalidQuiz: any = {
+      const invalidQuiz = {
         title: "Invalid Structure",
         description: "With broken questions",
         assignedUsers: "all",
         questions: [
-          { id: "q1", type: "banana", options: [] }, 
-          { id: "q2", label: "", type: "input", options: [] }, 
+          { id: "q1", type: "banana", options: [] as string[] },
+          { id: "q2", label: "", type: "input", options: [] as string[] },
         ],
       };
 
       cy.request({
         method: "POST",
         url: QuizManagerEndpoints.quizzes,
-        body: invalidQuiz,
+        body: invalidQuiz as Record<string, unknown>,
         failOnStatusCode: false,
       }).then((res) => {
         expect(res.status, "BUG: server allows invalid question structure").to.eq(400);
@@ -120,12 +112,12 @@ describe("Quiz Validation - Required rules", () => {
     });
 
     it("Should reject answer without questionId or answer", () => {
-      const malformedAnswers: any = [{ answer: "Some answer" }];
+      const malformedAnswers = [{ answer: "Some answer" }];
 
       cy.request({
         method: "POST",
         url: QuizManagerEndpoints.submitToQuiz(quizId),
-        body: { answers: malformedAnswers },
+        body: { answers: malformedAnswers as unknown },
         failOnStatusCode: false,
       }).then((res) => {
         expect(res.status, "BUG: server allows missing questionId").to.eq(400);
@@ -133,14 +125,12 @@ describe("Quiz Validation - Required rules", () => {
     });
 
     it("Should reject answer with invalid type (number instead of string/string[])", () => {
-      const badAnswers: Answer[] = [
-        { questionId: "q1", answer: 123 as any },
-      ];
+      const badAnswers = [{ questionId: "q1", answer: 123 }];
 
       cy.request({
         method: "POST",
         url: QuizManagerEndpoints.submitToQuiz(quizId),
-        body: { answers: badAnswers },
+        body: { answers: badAnswers as unknown },
         failOnStatusCode: false,
       }).then((res) => {
         expect(res.status, "BUG: server allows wrong answer data type").to.eq(400);

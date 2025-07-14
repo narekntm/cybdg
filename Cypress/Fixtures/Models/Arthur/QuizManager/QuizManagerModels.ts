@@ -104,3 +104,32 @@ export interface Submission {
   answers: Answer[];
   createdAt: string;
 }
+
+export interface UserSummary {
+  id: string;
+  email: string;
+  role: UserRole;
+}
+
+export enum TestUserIds {
+  Admin = "admin1",
+  User1 = "user1",
+  User2 = "user2",
+}
+
+export enum TestUserEmails {
+  Admin = "admin@example.com",
+  User1 = "user1@example.com",
+  User2 = "user2@example.com",
+}
+
+export enum AssignedUsers {
+  All = "all",
+}
+
+export enum SubmissionAnswerText {
+  Initial = "Initial",
+  Updated = "Updated",
+  Answer1 = "Answer 1",
+  Answer2 = "Answer 2",
+}
