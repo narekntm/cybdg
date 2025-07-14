@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Admin – Quiz Manager</title>
+    <title>Quizz Manager Dashboard</title>
     <link href="./css/base.css" rel="stylesheet"/>
     <link href="./css/forms.css" rel="stylesheet"/>
     <link href="./css/buttons.css" rel="stylesheet"/>
@@ -15,19 +15,19 @@
 </head>
 <body>
 <header>
-    <h1>Admin Dashboard</h1>
+    <h1>Manager Dashboard: <span id="admin-username"></span></h1>
     <button id="logout-btn">Logout</button>
 </header>
 
 <main>
     <section id="quiz-creator" class="quiz-toggle">
-        <h2 class="toggle-header">Create New Quiz</h2>
+        <h2 class="toggle-header">Create New Quizz</h2>
         <div class="quiz-body">
             <form id="quiz-form" novalidate>
-                <label for="quiz-title">Quiz Title</label>
+                <label for="quiz-title">Quizz Title</label>
                 <input id="quiz-title" placeholder="Quiz Title" required type="text"/>
 
-                <label for="quiz-description">Quiz Description</label>
+                <label for="quiz-description">Quizz Description</label>
                 <textarea id="quiz-description" placeholder="Quiz Description" required></textarea>
 
                 <div id="question-list"></div>
@@ -44,7 +44,7 @@
                 <!-- 🔽 This div is shown only when 'custom' is selected -->
                 <div class="hidden" id="user-checkboxes"></div>
 
-                <button type="submit">Save Quiz</button>
+                <button type="submit">Save Quizz</button>
             </form>
         </div>
     </section>

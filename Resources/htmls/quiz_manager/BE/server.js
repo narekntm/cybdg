@@ -4,7 +4,75 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const { v4: uuidv4 } = require('uuid')
-const { users, quizzes, submissions } = require('./seed')
+let { users, quizzes, submissions } = require('./seed')
+
+if (!process.env.SEED) {
+  quizzes = [{
+    id: uuidv4(),
+    title: 'Welcome Quiz',
+    description: 'A sample quiz available to all users',
+    questions: [
+      { id: 'q1', label: 'What\'s your name?', type: 'input', options: [] },
+      { id: 'q2', label: 'Your gender?', type: 'radio', options: ['Male', 'Female', 'Other'] },
+      { id: 'q3', label: 'Technologies you like', type: 'checkbox', options: ['JavaScript', 'Python', 'Go'] },
+      { id: 'q4', label: 'Country', type: 'dropdown', options: ['Armenia', 'USA', 'Germany'] },
+    ],
+    createdBy: 'admin1',
+    assignedUsers: 'all',
+    status: 'active',
+  },
+    {
+      id: uuidv4(),
+      title: 'test 1 title',
+      description: 'test 1 desc',
+      questions: [
+        {
+          id: 'q0',
+          label: 'quaestion 1',
+          type: 'input',
+          options: []
+        },
+        {
+          id: 'q1',
+          label: 'question radio 2',
+          type: 'radio',
+          options: [
+            'a',
+            'b',
+            'c'
+          ]
+        },
+        {
+          id: 'q2',
+          label: 'question checkbox 3',
+          type: 'checkbox',
+          options: [
+            'c',
+            'd',
+            'e'
+          ]
+        },
+        {
+          id: 'q3',
+          label: 'question dropdown 4',
+          type: 'dropdown',
+          options: [
+            'f',
+            'g',
+            'h'
+          ]
+        }
+      ],
+      assignedUsers: 'all',
+      status: 'draft',
+      createdBy: 'admin1'
+    }]
+  users = [
+    { id: 'admin1', email: 'admin@example.com', password: 'admin123', role: 'admin' },
+    { id: 'user1', email: 'user1@example.com', password: 'user123', role: 'user' },
+    { id: 'user2', email: 'user2@example.com', password: 'user123', role: 'user' },
+  ]
+}
 
 const app = express()
 const PORT = 5252
@@ -23,7 +91,11 @@ const sessions =
       role: 'user'
     }
   }
-
+const testSessions = {}
+const TEST_CREDENTIALS = {
+  email: 'testadmin@example.com',
+  password: 'test123'
+}
 
 // Middleware
 app.use(cors({ origin: true, credentials: true }))
@@ -58,7 +130,6 @@ app.post('/api/login', (req, res) => {
     path: '/',
     crossSite: true,
   })
-  console.log('sessions', sessions)
   res.json({ success: true })
 })
 
@@ -182,5 +253,55 @@ app.get('/api/submissions/:id', authenticate, (req, res) => {
     return res.status(403).json({ error: 'Forbidden' })
   res.json(sub)
 })
+
+// Test routs 
+
+app.post('/api/test/auth', (req, res) => {
+  const { email, password } = req.body
+
+  if (email !== TEST_CREDENTIALS.email || password !== TEST_CREDENTIALS.password) {
+    return res.status(401).json({ error: 'Invalid test credentials' })
+  }
+
+  const token = uuidv4()
+  testSessions[token] = { email }
+
+  res.json({ token })
+})
+
+app.post('/api/test/users', testAuthenticate, (req, res) => {
+  const { id, email, password, role } = req.body
+
+  if (!id || !email || !password || !role) {
+    return res.status(400).json({ error: 'Missing required user fields' })
+  }
+
+  if (!['admin', 'user'].includes(role)) {
+    return res.status(400).json({ error: 'Role must be either "admin" or "user"' })
+  }
+
+  const exists = users.find(u => u.id === id || u.email === email)
+  if (exists) {
+    return res.status(409).json({ error: 'User with this ID or email already exists' })
+  }
+
+  users.push({ id, email, password, role })
+  return res.status(201).json({ message: 'User created successfully' })
+})
+
+function testAuthenticate (req, res, next) {
+  const authHeader = req.headers.authorization
+  if (!authHeader?.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Missing or invalid Authorization header' })
+  }
+
+  const token = authHeader.split(' ')[1]
+  if (!testSessions[token]) {
+    return res.status(403).json({ error: 'Invalid or expired test token' })
+  }
+
+  req.testUser = testSessions[token]
+  next()
+}
 
 app.listen(PORT, () => console.log(`Quiz backend running at http://localhost:${PORT}`))

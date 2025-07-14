@@ -31,6 +31,8 @@ async function guardAdmin() {
   try {
     const user = await apiGet("/api/auth/me");
     if (user.role !== "admin") throw new Error();
+    const adminUserNameEl = document.getElementById("admin-username");
+    adminUserNameEl.innerText = user.id;
   } catch {
     window.location.href = "login.html";
   }
@@ -196,8 +198,8 @@ async function loadQuizzes() {
     const quizzes = await apiGet("/api/quizzes");
     quizListEl.innerHTML = "";
 
-    const quizzCount = document.getElementById("quiz-count");
-    quizzCount.innerText = `(${quizzes.length})`;
+    const quizCount = document.getElementById("quiz-count");
+    quizCount.innerText = `(${quizzes.length})`;
     quizzes.forEach(q => {
       const li = document.createElement("li");
       li.innerHTML = `
@@ -205,8 +207,8 @@ async function loadQuizzes() {
             ${q.title} <span class="status-badge ${q.status}">${q.status}</span>
           </div>
           <div class="quiz-actions">
-            <button data-id="${q.id}" class="publish-btn">Publish</button>
-            <button data-id="${q.id}" class="archive-btn">Archive</button>
+            ${q.status !== "active" ? `<button data-id="${q.id}" class="publish-btn">Publish</button>` : ""}
+            ${q.status !== "archived" ? `<button data-id="${q.id}" class="archive-btn">Archive</button>` : ""}
             <button data-id="${q.id}" class="delete-btn">Delete</button>
           </div>
           <a class="view-submissions" href="view-submissions.html?quiz=${q.id}">View Submissions</a>
