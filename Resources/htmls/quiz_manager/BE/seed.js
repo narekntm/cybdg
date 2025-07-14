@@ -44,7 +44,7 @@ const quizzes = [
       }
     ],
     createdBy: 'manager1',
-    assignedUsers: 'all',
+    assignedUsers: ['all'],
     status: 'active'
   },
   ...Array.from({ length: 5 }, (_, i) => ({
@@ -73,14 +73,14 @@ const quizzes = [
       }
     ],
     createdBy: 'manager1',
-    assignedUsers: i % 2 === 0 ? 'all' : [users[i + 1].email],
+    assignedUsers: i % 2 === 0 ? ['all'] : [users[i + 1].email],
     status: i % 3 === 0 ? 'archived' : i % 2 === 0 ? 'active' : 'draft'
   }))
 ];
 
 // SUBMISSIONS
 const submissions = quizzes.filter(q => q.status === 'active').flatMap((quiz, idx) => (
-  users.filter(u => u.role === 'user' && (quiz.assignedUsers === 'all' || quiz.assignedUsers.includes(u.email))).map(u => ({
+  users.filter(u => u.role === 'user' && (quiz.assignedUsers[0] === 'all' || quiz.assignedUsers.includes(u.email))).map(u => ({
     id: uuidv4(),
     quizId: quiz.id,
     userId: u.id,

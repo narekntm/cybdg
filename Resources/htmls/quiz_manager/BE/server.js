@@ -18,7 +18,7 @@ if (!process.env.SEED) {
       { id: 'q4', label: 'Country', type: 'dropdown', options: ['Armenia', 'USA', 'Germany'] },
     ],
     createdBy: 'manager1',
-    assignedUsers: 'all',
+    assignedUsers: ['all'],
     status: 'active',
   },
     {
@@ -63,7 +63,7 @@ if (!process.env.SEED) {
           ]
         }
       ],
-      assignedUsers: 'all',
+      assignedUsers: ['all'],
       status: 'draft',
       createdBy: 'manager1'
     }]
@@ -105,9 +105,7 @@ function isManager (req, res, next) {
 app.post('/api/login', (req, res) => {
   const { email, password } = req.body
   
-  console.log(email, password)
   const user = users.find(u => u.email === email && u.password === password)
-  console.log(users)
   if (!user) return res.status(401).json({ error: 'Invalid credentials' })
 
   const sessionId = uuidv4()
@@ -148,7 +146,7 @@ app.post('/api/quizzes', authenticate, isManager, (req, res) => {
     title,
     description,
     questions,
-    assignedUsers: assignedUsers || 'all',
+    assignedUsers: assignedUsers || ['all'],
     status: 'draft',
     createdBy: req.user.id,
   }
@@ -186,7 +184,7 @@ app.get('/api/quizzes', authenticate, (req, res) => {
   }
   const visible = quizzes.filter(q =>
     q.status === 'active' &&
-    (q.assignedUsers === 'all' ||
+    (q.assignedUsers[0] === 'all' ||
       (Array.isArray(q.assignedUsers) && q.assignedUsers.includes(user.email)))
   )
   res.json(visible)
@@ -293,4 +291,4 @@ function testAuthenticate (req, res, next) {
   next()
 }
 
-app.listen(PORT, () => console.log(`Quiz backend running at http://localhost:${PORT}`))
+app.listen(PORT, () => console.log(`Quiz backend running at http://127.0.0.1:${PORT}`))

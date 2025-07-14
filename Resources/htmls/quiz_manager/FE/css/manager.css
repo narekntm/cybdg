@@ -248,3 +248,25 @@ section {
     flex-grow: 1;
     margin-bottom: 0 !important;
 }
+
+#manager-quiz-list .quiz-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.95rem;
+    color: #333;
+    margin-top: 0.25rem;
+    line-height: 1.4;
+}
+
+#manager-quiz-list .quiz-description {
+    font-weight: 400;
+    color: #444;
+}
+
+#manager-quiz-list .quiz-assignees {
+    font-style: italic;
+    color: #666;
+    word-break: break-word;
+    white-space: pre-wrap;
+}

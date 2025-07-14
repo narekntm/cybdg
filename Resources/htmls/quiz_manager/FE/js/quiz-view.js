@@ -98,8 +98,6 @@ function renderForm(questions, answers) {
           if (q.type === "checkbox" && Array.isArray(value) && value.includes(opt)) input.checked = true;
 
           optLabel.prepend(input); // ensure input is inside label
-          console.log("Rendering label:", optLabel.outerHTML);
-
           group.appendChild(optLabel);
         });
 

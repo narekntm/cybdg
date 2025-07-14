@@ -1,7 +1,7 @@
 ﻿// user.js
 import { apiGet } from './api.js'
 import './logout.js'
-import { showToast } from './toast'
+import { showToast } from './toast.js'
 
 // DOM elements for quizzes and submissions
 const quizListEl = document.getElementById('quiz-list')

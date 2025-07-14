@@ -195,7 +195,7 @@ function buildQuizPayload() {
     questions.push({ id: `q${i}`, label, type, options });
   }
 
-  let assignedUsers = "all";
+  let assignedUsers = ["all"];
   if (assignMode === "custom") {
     assignedUsers = Array.from(userCheckboxContainer.querySelectorAll("input[type=checkbox]:checked"))
       .map(cb => cb.value);
@@ -231,6 +231,12 @@ async function loadQuizzes() {
     quizCount.innerText = `(${quizzes.length})`;
     quizzes.forEach(q => {
       const li = document.createElement("li");
+
+      const maxToShow = 5;
+      const users = q.assignedUsers.slice(0, maxToShow).join(", ");
+      const restCount = q.assignedUsers.length - maxToShow;
+      const label = restCount > 0 ? `${users}, +${restCount} more` : users;
+
       li.innerHTML = `
         <div class="quiz-title">
             ${q.title} <span class="status-badge ${q.status}">${q.status}</span>
@@ -239,6 +245,10 @@ async function loadQuizzes() {
             ${q.status !== "active" ? `<button data-id="${q.id}" class="publish-btn">Publish</button>` : ""}
             ${q.status !== "archived" ? `<button data-id="${q.id}" class="archive-btn">Archive</button>` : ""}
             <button data-id="${q.id}" class="delete-btn">Delete</button>
+          </div>
+          <div class="quiz-info">
+            <span class="quiz-description">Description: ${q.description}</span>
+            <span class="quiz-assignees">Users: ${label}</span>
           </div>
           <a class="view-submissions" href="view-submissions.html?quiz=${q.id}">View Submissions</a>
       `;

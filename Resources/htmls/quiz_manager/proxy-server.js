@@ -20,7 +20,7 @@ app.use('/be', createProxyMiddleware({
 }));
 
 app.listen(5353, () => {
-  console.log(`Proxy running on http://localhost:5353`);
-  console.log(`→ Frontend available at http://localhost:5353/fe`);
-  console.log(`→ Backend  available at http://localhost:5353/be`);
+  console.log(`→ Frontend available at http://127.0.0.1:5353/fe`);
+  console.log(`→ Backend  available at http://127.0.0.1:5353/be`);
+  console.log(`→ Open at your browser http://127.0.0.1:5353/fe/login.html`);
 });
