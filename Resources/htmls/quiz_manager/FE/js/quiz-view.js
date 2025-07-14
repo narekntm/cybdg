@@ -1,6 +1,7 @@
 ﻿// quiz-view.js
 import { apiGet, apiPost, apiPut } from './api.js'
 import "./logout.js";
+import {showToast} from "./toast.js"
 
 // Extract query params
 const params = new URLSearchParams(window.location.search);
@@ -31,7 +32,7 @@ let quiz = null;
   try {
     quiz = await apiGet(`/api/quizzes/${quizId}`);
   } catch {
-    alert("Quiz not found.");
+    showToast("Quiz not found.", "error");
     return;
   }
 
@@ -143,9 +144,9 @@ submitBtn.addEventListener("click", async () => {
 
   try {
     submissionId ? await apiPut(`/api/submissions/${submissionId}`, { answers }) : await apiPost(`/api/quizzes/${quizId}/submissions`, { quizId, answers });
-    alert("Submission successful");
+    showToast("Submission successful", "success");
     window.location.href = "user.html";
   } catch (err) {
-    alert("Failed to submit: " + err.message);
+    showToast("Failed to submit: " + err.message, "error");
   }
 });

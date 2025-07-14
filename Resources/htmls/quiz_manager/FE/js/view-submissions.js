@@ -1,6 +1,7 @@
 ﻿// view-submissions.js (Enhanced UI)
 import { apiGet } from './api.js'
 import './logout.js'
+import { showToast } from './toast'
 
 const quizId = new URLSearchParams(window.location.search).get('quiz')
 const quizInfo = document.getElementById('quiz-info')
@@ -81,6 +82,7 @@ async function init () {
       list.appendChild(container)
     })
   } catch (err) {
+    showToast("Error loading submissions: " + err.message,"error");
     console.error('Error loading submissions:', err)
     quizInfo.innerHTML = ''
     list.innerHTML = `<p class=\"error\">Error: ${err.message}</p>`

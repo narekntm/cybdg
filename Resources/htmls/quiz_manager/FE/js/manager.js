@@ -1,6 +1,7 @@
 ﻿// manager.js (refactored + modularized)
 import { apiGet, apiPost, apiDelete, apiPatch } from './api.js'
 import "./logout.js";
+import {showToast} from "./toast.js"
 
 // DOM References
 const quizForm = document.getElementById("quiz-form");
@@ -53,6 +54,7 @@ function bindQuestionBuilder() {
     const div = document.createElement("div");
     div.className = "question-item";
     div.innerHTML = `
+      <span class="question-index">Question #${questionCounter}</span>
       <input type="text" placeholder="Question text" data-qid="${qId}" class="q-label" required />
       <select class="q-type">
         <option value="input">Input</option>
@@ -135,55 +137,82 @@ function bindFormSubmission() {
   quizForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     quizForm.classList.add("submitted");
-    if (!quizForm.checkValidity()) return;
-
     const payload = buildQuizPayload();
     if (!payload) return; // failed validation inside builder
 
     try {
       await apiPost("/api/quizzes", payload);
-      alert("Quiz saved successfully!");
+      showToast("Quiz saved successfully!", "success");
       resetForm();
       loadQuizzes();
     } catch (err) {
-      alert("Failed to save quiz: " + err.message);
+      showToast("Failed to save quiz: " + err.message, "error");
     }
   });
 }
 
 function buildQuizPayload() {
+  const errors = [];
   const title = document.getElementById("quiz-title").value.trim();
   const description = document.getElementById("quiz-description").value.trim();
   const assignMode = assignModeSelect.value;
 
-  const questions = Array.from(document.querySelectorAll(".question-item")).map((qEl, i) => {
+  if (!title) errors.push("• Quiz title cannot be empty.");
+  if (!description) errors.push("• Quiz description cannot be empty.");
+
+  const questionEls = Array.from(document.querySelectorAll(".question-item"));
+  if (questionEls.length === 0) {
+    errors.push("• At least one question is required.");
+  }
+
+  const questions = [];
+  for (let i = 0; i < questionEls.length; i++) {
+    const qEl = questionEls[i];
     const label = qEl.querySelector(".q-label").value.trim();
     const type = qEl.querySelector(".q-type").value;
+
+    if (!label) {
+      errors.push(`• Question ${i + 1} must have a label.`);
+    }
+
+    if (!type || !["input", "textarea", "radio", "checkbox", "dropdown"].includes(type)) {
+      errors.push(`• Question ${i + 1} has an invalid type.`);
+    }
+
     const options = [];
     if (["radio", "checkbox", "dropdown"].includes(type)) {
       const optItems = qEl.querySelectorAll(".q-option-item span");
-      optItems.forEach(opt => options.push(opt.textContent));
-    }
-    return { id: `q${i}`, label, type, options };
-  });
+      optItems.forEach(opt => {
+        const text = opt.textContent.trim();
+        if (text) options.push(text);
+      });
 
-  if (questions.length === 0) {
-    alert("At least one question is required.");
-    return null;
+      if (options.length === 0) {
+        errors.push(`• Question ${i + 1} must have at least one option.`);
+      }
+    }
+
+    questions.push({ id: `q${i}`, label, type, options });
   }
 
   let assignedUsers = "all";
   if (assignMode === "custom") {
     assignedUsers = Array.from(userCheckboxContainer.querySelectorAll("input[type=checkbox]:checked"))
       .map(cb => cb.value);
+
     if (assignedUsers.length === 0) {
-      alert("Please select at least one user.");
-      return null;
+      errors.push("• Please select at least one user.");
     }
+  }
+
+  if (errors.length > 0) {
+    showToast(errors, "error");
+    return null;
   }
 
   return { title, description, questions, assignedUsers };
 }
+
 
 function resetForm() {
   quizForm.reset();
@@ -222,7 +251,7 @@ async function loadQuizzes() {
           await apiPatch(`/api/quizzes/${btn.dataset.id}/publish`, {});
           loadQuizzes();
         } catch (err) {
-          alert("Publish failed: " + err.message);
+          showToast("Publish failed: " + err.message,"error");
         }
       })
     );
@@ -233,23 +262,23 @@ async function loadQuizzes() {
           await apiPatch(`/api/quizzes/${btn.dataset.id}/archive`, {});
           loadQuizzes();
         } catch (err) {
-          alert("Archive failed: " + err.message);
+          showToast("Archive failed: " + err.message,"error");
         }
       })
     );
 
     quizListEl.querySelectorAll(".delete-btn").forEach(btn =>
       btn.addEventListener("click", async () => {
-        if (!confirm("Are you sure you want to delete this quiz?")) return;
         try {
           await apiDelete(`/api/quizzes/${btn.dataset.id}`);
           loadQuizzes();
         } catch (err) {
-          alert("Delete failed: " + err.message);
+          showToast("Delete failed: " + err.message,"error");
         }
       })
     );
   } catch (err) {
+    showToast("Could not load quizzes: " + err.message,"error");
     console.error("Could not load quizzes:", err);
     quizListEl.innerHTML = "<li>Error loading quizzes.</li>";
   }

@@ -1,6 +1,7 @@
 ﻿// user.js
 import { apiGet } from './api.js'
 import './logout.js'
+import { showToast } from './toast'
 
 // DOM elements for quizzes and submissions
 const quizListEl = document.getElementById('quiz-list')
@@ -51,6 +52,7 @@ async function loadAvailableQuizzes () {
       quizListEl.appendChild(li)
     })
   } catch (err) {
+    showToast("Failed to load quizzes: " + err.message,"error");
     console.error('Failed to load quizzes:', err)
     quizListEl.innerHTML = '<li>Error loading quizzes.</li>'
   }
@@ -84,6 +86,7 @@ async function loadSubmissions () {
         `
         submissionListEl.appendChild(li)
       } catch (err) {
+        showToast(`Failed to fetch quiz ${sub.quizId}:` + err.message,"error");
         console.error(`Failed to fetch quiz ${sub.quizId}:`, err)
       }
     }

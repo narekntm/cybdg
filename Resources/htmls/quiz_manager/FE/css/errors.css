@@ -1,6 +1,6 @@
 ﻿/* ========== Errors ========== */
 .error::before {
-    content: "\26A0 "; /* Warning sign */
+    content: "\26A0  "; /* Warning sign */
 }
 
 .error {
