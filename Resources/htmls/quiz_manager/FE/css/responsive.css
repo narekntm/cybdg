@@ -1,15 +1,15 @@
 ﻿/* ========== Responsive ========== */
 @media (max-width: 600px) {
-    body {
-        padding: 1rem;
-    }
+  body {
+    padding: 1rem;
+  }
 
-    #quiz-container {
-        padding: 1rem;
-        margin: 1rem auto;
-    }
+  #quiz-container {
+    padding: 1rem;
+    margin: 1rem auto;
+  }
 
-    button {
-        width: 100%;
-    }
+  button {
+    width: 100%;
+  }
 }

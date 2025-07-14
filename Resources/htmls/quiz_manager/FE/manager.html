@@ -1,62 +1,62 @@
 ﻿<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Quizz Manager Dashboard</title>
-    <link href="./css/base.css" rel="stylesheet"/>
-    <link href="./css/forms.css" rel="stylesheet"/>
-    <link href="./css/buttons.css" rel="stylesheet"/>
-    <link href="./css/manager.css" rel="stylesheet"/>
-    <link href="./css/quiz.css" rel="stylesheet"/>
-    <link href="./css/badges.css" rel="stylesheet"/>
-    <link href="./css/errors.css" rel="stylesheet"/>
-    <link href="./css/responsive.css" rel="stylesheet"/>
+    <link href="./css/base.css" rel="stylesheet" />
+    <link href="./css/forms.css" rel="stylesheet" />
+    <link href="./css/buttons.css" rel="stylesheet" />
+    <link href="./css/manager.css" rel="stylesheet" />
+    <link href="./css/quiz.css" rel="stylesheet" />
+    <link href="./css/badges.css" rel="stylesheet" />
+    <link href="./css/errors.css" rel="stylesheet" />
+    <link href="./css/responsive.css" rel="stylesheet" />
     <link href="./css/toast.css" rel="stylesheet" />
-</head>
-<body>
-<header>
-    <h1>Manager Dashboard: <span id="manager-username"></span></h1>
-    <button id="logout-btn">Logout</button>
-</header>
+  </head>
+  <body>
+    <header>
+      <h1>Manager Dashboard: <span id="manager-username"></span></h1>
+      <button id="logout-btn">Logout</button>
+    </header>
 
-<main>
-    <section id="quiz-creator" class="quiz-toggle">
+    <main>
+      <section id="quiz-creator" class="quiz-toggle">
         <h2 class="toggle-header">Create New Quizz</h2>
         <div class="quiz-body">
-            <form id="quiz-form" novalidate>
-                <label for="quiz-title">Quizz Title</label>
-                <input id="quiz-title" placeholder="Quiz Title" required type="text"/>
+          <form id="quiz-form" novalidate>
+            <label for="quiz-title">Quizz Title</label>
+            <input id="quiz-title" placeholder="Quiz Title" required type="text" />
 
-                <label for="quiz-description">Quizz Description</label>
-                <textarea id="quiz-description" placeholder="Quiz Description" required></textarea>
+            <label for="quiz-description">Quizz Description</label>
+            <textarea id="quiz-description" placeholder="Quiz Description" required></textarea>
 
-                <div id="question-list"></div>
-                <button id="add-question-btn" type="button">+ Add Question</button>
-                <br/>
+            <div id="question-list"></div>
+            <button id="add-question-btn" type="button">+ Add Question</button>
+            <br />
 
-                <div class="assign-mode-group">
-                    <label for="assign-mode">Assign To:</label>
-                    <select id="assign-mode">
-                        <option value="all">All Users</option>
-                        <option value="custom">Selected Users</option>
-                    </select>
-                </div>
-                <!-- 🔽 This div is shown only when 'custom' is selected -->
-                <div class="hidden" id="user-checkboxes"></div>
+            <div class="assign-mode-group">
+              <label for="assign-mode">Assign To:</label>
+              <select id="assign-mode">
+                <option value="all">All Users</option>
+                <option value="custom">Selected Users</option>
+              </select>
+            </div>
+            <!-- 🔽 This div is shown only when 'custom' is selected -->
+            <div class="hidden" id="user-checkboxes"></div>
 
-                <button type="submit">Save Quizz</button>
-            </form>
+            <button type="submit">Save Quizz</button>
+          </form>
         </div>
-    </section>
+      </section>
 
-    <section id="quiz-list">
+      <section id="quiz-list">
         <h2 id="quiz-list-header">My Quizzes <span id="quiz-count"></span></h2>
         <ul id="manager-quiz-list"></ul>
-    </section>
-</main>
-<div class="toast-container" id="toast-container"></div>
+      </section>
+    </main>
+    <div class="toast-container" id="toast-container"></div>
 
-<script src="./js/manager.js" type="module"></script>
-</body>
+    <script src="./js/manager.js" type="module"></script>
+  </body>
 </html>
