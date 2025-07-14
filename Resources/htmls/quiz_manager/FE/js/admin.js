@@ -58,10 +58,53 @@ function bindQuestionBuilder() {
         <option value="checkbox">Checkbox</option>
         <option value="dropdown">Dropdown</option>
       </select>
-      <input type="text" placeholder="Comma-separated options" class="q-options" />
+      <div class="q-options-container hidden">
+        <div class="q-options-list"></div>
+        <div class="q-options-controls">
+          <input type="text" class="option-input" placeholder="Option text" />
+          <button type="button" class="add-option">+</button>
+        </div>
+      </div>
       <button type="button" class="remove-question">Remove</button>
     `;
-    div.querySelector(".remove-question")?.addEventListener("click", () => div.remove());
+
+    const typeSelect = div.querySelector(".q-type");
+    const optionsContainer = div.querySelector(".q-options-container");
+    const optionsList = div.querySelector(".q-options-list");
+    const addBtn = div.querySelector(".add-option");
+    const inputEl = div.querySelector(".option-input");
+
+    // Show/hide options input based on question type
+    typeSelect.addEventListener("change", () => {
+      const isInput = typeSelect.value === "input";
+      optionsContainer.classList.toggle("hidden", isInput);
+    });
+
+    // Create and append new option item
+    function addOption() {
+      const val = inputEl.value.trim();
+      if (!val) return;
+      const opt = document.createElement("div");
+      opt.className = "q-option-item";
+      opt.innerHTML = `
+        <span>${val}</span>
+        <button type="button" class="remove-option">x</button>
+      `;
+      opt.querySelector(".remove-option").addEventListener("click", () => opt.remove());
+      optionsList.appendChild(opt);
+      inputEl.value = "";
+    }
+
+    addBtn.addEventListener("click", addOption);
+    inputEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        addOption();
+      }
+    });
+
+    div.querySelector(".remove-question").addEventListener("click", () => div.remove());
+
     questionList.appendChild(div);
   });
 }
@@ -114,10 +157,11 @@ function buildQuizPayload() {
   const questions = Array.from(document.querySelectorAll(".question-item")).map((qEl, i) => {
     const label = qEl.querySelector(".q-label").value.trim();
     const type = qEl.querySelector(".q-type").value;
-    const optsRaw = qEl.querySelector(".q-options").value.trim();
-    const options = ["radio", "checkbox", "dropdown"].includes(type)
-      ? optsRaw.split(",").map(s => s.trim()).filter(Boolean)
-      : [];
+    const options = [];
+    if (["radio", "checkbox", "dropdown"].includes(type)) {
+      const optItems = qEl.querySelectorAll(".q-option-item span");
+      optItems.forEach(opt => options.push(opt.textContent));
+    }
     return { id: `q${i}`, label, type, options };
   });
 

@@ -13,11 +13,16 @@ const submissionListEl = document.getElementById('submission-list')
     if (user.role !== 'user') {
       return window.location.href = 'login.html'
     }
+    // Add user id to header
+    const usernameEl = document.getElementById('username')
+    usernameEl.innerText = user.id
   } catch (err) {
     console.error('Auth failed:', err)
     return window.location.href = 'login.html'
   }
+  
 
+ 
   // 2) Load quizzes and submissions after auth
   await loadAvailableQuizzes()
   await loadSubmissions()
@@ -34,12 +39,13 @@ async function loadAvailableQuizzes () {
       return
     }
 
+    const quizzCount = document.getElementById('quiz-count')
+    quizzCount.innerText = `(${quizzes.length})`
     quizListEl.innerHTML = ''
     quizzes.forEach(q => {
       const li = document.createElement('li')
       li.innerHTML = `
-        <strong>${q.title}</strong>
-        <span>${q.description}</span>
+        <strong>${q.title}</strong> ${q.description}<br>
         <button onclick="window.location.href='quiz-view.html?quiz=${q.id}'">Submit</button>
       `
       quizListEl.appendChild(li)
@@ -60,6 +66,9 @@ async function loadSubmissions () {
       submissionListEl.innerHTML = '<li>No submissions found.</li>'
       return
     }
+    
+    const subCount = document.getElementById('submission-count')
+    subCount.innerText = `(${subs.length})`
 
     submissionListEl.innerHTML = ''
     for (const sub of subs) {
