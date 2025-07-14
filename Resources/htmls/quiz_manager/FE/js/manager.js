@@ -1,4 +1,4 @@
-﻿// admin.js (refactored + modularized)
+﻿// manager.js (refactored + modularized)
 import { apiGet, apiPost, apiDelete, apiPatch } from './api.js'
 import "./logout.js";
 
@@ -7,17 +7,17 @@ const quizForm = document.getElementById("quiz-form");
 const logoutBtn = document.getElementById("logout-btn");
 const questionList = document.getElementById("question-list");
 const addQuestionBtn = document.getElementById("add-question-btn");
-const quizListEl = document.getElementById("admin-quiz-list");
+const quizListEl = document.getElementById("manager-quiz-list");
 const assignModeSelect = document.getElementById("assign-mode");
 const userCheckboxContainer = document.getElementById("user-checkboxes");
 
 let questionCounter = 0;
 let allUsers = [];
 
-initAdminPage();
+initManagerPage();
 
-function initAdminPage() {
-  guardAdmin();
+function initManagerPage() {
+  guardManager();
   bindLogout();
   bindQuestionBuilder();
   bindAssignmentModeToggle();
@@ -27,12 +27,12 @@ function initAdminPage() {
   bindQuizFormToggle();
 }
 
-async function guardAdmin() {
+async function guardManager() {
   try {
     const user = await apiGet("/api/auth/me");
-    if (user.role !== "admin") throw new Error();
-    const adminUserNameEl = document.getElementById("admin-username");
-    adminUserNameEl.innerText = user.id;
+    if (user.role !== "manager") throw new Error();
+    const managerUserNameEl = document.getElementById("manager-username");
+    managerUserNameEl.innerText = user.id;
   } catch {
     window.location.href = "login.html";
   }
@@ -258,7 +258,7 @@ async function loadQuizzes() {
 async function loadUsers() {
   try {
     const users = await apiGet("/api/users");
-    allUsers = users.filter(u => u.role !== "admin");
+    allUsers = users.filter(u => u.role !== "manager");
 
     userCheckboxContainer.innerHTML = allUsers.map(u => `
       <label class="user-checkbox">

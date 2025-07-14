@@ -1,4 +1,4 @@
-﻿/* ========== Admin Dashboard ========== */
+﻿/* ========== Manager Dashboard ========== */
 section {
     background-color: white;
     padding: 1.5rem;
@@ -157,8 +157,8 @@ section {
     padding: 0.5rem;
 }
 
-/* ========== Admin Quiz List ========== */
-#admin-quiz-list {
+/* ========== Manager Quiz List ========== */
+#manager-quiz-list {
     list-style: none;
     display: flex;
     flex-direction: column;
@@ -169,7 +169,7 @@ section {
 #quiz-list-header{
     margin-bottom: 1rem;
 }
-#admin-quiz-list li {
+#manager-quiz-list li {
     list-style: none;
     background-color: #fdfefe;
     padding: 1.5rem;
@@ -181,7 +181,7 @@ section {
     gap: 0.75rem;
 }
 
-#admin-quiz-list .quiz-title {
+#manager-quiz-list .quiz-title {
     font-size: 1.1rem;
     font-weight: 600;
     display: flex;
@@ -190,13 +190,13 @@ section {
     color: #254260;
 }
 
-#admin-quiz-list .quiz-actions {
+#manager-quiz-list .quiz-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
 }
 
-#admin-quiz-list .view-submissions {
+#manager-quiz-list .view-submissions {
     margin-top: 0.5rem;
     font-size: 0.95rem;
     text-decoration: none;
@@ -204,7 +204,7 @@ section {
     font-weight: 500;
 }
 
-#admin-quiz-list .view-submissions:hover {
+#manager-quiz-list .view-submissions:hover {
     text-decoration: underline;
 }
 

@@ -17,7 +17,7 @@ if (!process.env.SEED) {
       { id: 'q3', label: 'Technologies you like', type: 'checkbox', options: ['JavaScript', 'Python', 'Go'] },
       { id: 'q4', label: 'Country', type: 'dropdown', options: ['Armenia', 'USA', 'Germany'] },
     ],
-    createdBy: 'admin1',
+    createdBy: 'manager1',
     assignedUsers: 'all',
     status: 'active',
   },
@@ -65,35 +65,21 @@ if (!process.env.SEED) {
       ],
       assignedUsers: 'all',
       status: 'draft',
-      createdBy: 'admin1'
+      createdBy: 'manager1'
     }]
   users = [
-    { id: 'admin1', email: 'admin@example.com', password: 'admin123', role: 'admin' },
-    { id: 'user1', email: 'user1@example.com', password: 'user123', role: 'user' },
-    { id: 'user2', email: 'user2@example.com', password: 'user123', role: 'user' },
+    { id: 'manager1', email: 'manager@quizz.com', password: 'manager123', role: 'manager' },
+    { id: 'user1', email: 'user1@quizz.com', password: 'user123', role: 'user' },
+    { id: 'user2', email: 'user2@quizz.com', password: 'user123', role: 'user' },
   ]
 }
 
 const app = express()
 const PORT = 5252
-const sessions =
-  {
-    '75af482e-f8fd-4c93-986c-98b080c56388': {
-      id: 'admin1',
-      email: 'admin@example.com',
-      password: 'admin123',
-      role: 'admin'
-    },
-    'd3b74c07-a435-4cd6-b840-aeefc0dd38d6': {
-      id: 'user1',
-      email: 'user1@test.com',
-      password: 'user123',
-      role: 'user'
-    }
-  }
+const sessions = {}
 const testSessions = {}
 const TEST_CREDENTIALS = {
-  email: 'testadmin@example.com',
+  email: 'testmanager@example.com',
   password: 'test123'
 }
 
@@ -111,14 +97,17 @@ function authenticate (req, res, next) {
   res.status(401).json({ error: 'Unauthorized' })
 }
 
-function isAdmin (req, res, next) {
-  if (req.user.role === 'admin') return next()
+function isManager (req, res, next) {
+  if (req.user.role === 'manager') return next()
   res.status(403).json({ error: 'Forbidden' })
 }
 
 app.post('/api/login', (req, res) => {
   const { email, password } = req.body
+  
+  console.log(email, password)
   const user = users.find(u => u.email === email && u.password === password)
+  console.log(users)
   if (!user) return res.status(401).json({ error: 'Invalid credentials' })
 
   const sessionId = uuidv4()
@@ -143,16 +132,16 @@ app.get('/api/auth/me', authenticate, (req, res) => {
   res.json(req.user)
 })
 
-app.get('/api/users', authenticate, isAdmin, (req, res) => {
-  const nonAdmins = users.filter(u => u.role !== 'admin').map(u => ({
+app.get('/api/users', authenticate, isManager, (req, res) => {
+  const nonManagers = users.filter(u => u.role !== 'manager').map(u => ({
     id: u.id,
     email: u.email,
     role: u.role
   }))
-  res.json(nonAdmins)
+  res.json(nonManagers)
 })
 
-app.post('/api/quizzes', authenticate, isAdmin, (req, res) => {
+app.post('/api/quizzes', authenticate, isManager, (req, res) => {
   const { title, description, questions, assignedUsers } = req.body
   const quiz = {
     id: uuidv4(),
@@ -167,21 +156,21 @@ app.post('/api/quizzes', authenticate, isAdmin, (req, res) => {
   res.json(quiz)
 })
 
-app.patch('/api/quizzes/:id/publish', authenticate, isAdmin, (req, res) => {
+app.patch('/api/quizzes/:id/publish', authenticate, isManager, (req, res) => {
   const quiz = quizzes.find(q => q.id === req.params.id)
   if (!quiz) return res.status(404).json({ error: 'Quiz not found' })
   quiz.status = 'active'
   res.json({ success: true })
 })
 
-app.patch('/api/quizzes/:id/archive', authenticate, isAdmin, (req, res) => {
+app.patch('/api/quizzes/:id/archive', authenticate, isManager, (req, res) => {
   const quiz = quizzes.find(q => q.id === req.params.id)
   if (!quiz) return res.status(404).json({ error: 'Quiz not found' })
   quiz.status = 'archived'
   res.json({ success: true })
 })
 
-app.delete('/api/quizzes/:id', authenticate, isAdmin, (req, res) => {
+app.delete('/api/quizzes/:id', authenticate, isManager, (req, res) => {
   const quiz = quizzes.find(q => q.id === req.params.id)
   if (!quiz) return res.status(404).json({ error: 'Quiz not found' })
   const hasSubs = submissions.some(s => s.quizId === quiz.id)
@@ -192,7 +181,7 @@ app.delete('/api/quizzes/:id', authenticate, isAdmin, (req, res) => {
 
 app.get('/api/quizzes', authenticate, (req, res) => {
   const user = req.user
-  if (user.role === 'admin') {
+  if (user.role === 'manager') {
     return res.json(quizzes.filter(q => q.createdBy === user.id))
   }
   const visible = quizzes.filter(q =>
@@ -240,7 +229,7 @@ app.get('/api/submissions/me', authenticate, (req, res) => {
   res.json(submissions.filter(s => s.userId === req.user.id))
 })
 
-app.get('/api/quizzes/:id/submissions', authenticate, isAdmin, (req, res) => {
+app.get('/api/quizzes/:id/submissions', authenticate, isManager, (req, res) => {
   const quiz = quizzes.find(q => q.id === req.params.id)
   if (!quiz) return res.status(404).json({ error: 'Quiz not found' })
   res.json(submissions.filter(s => s.quizId === quiz.id))
@@ -249,7 +238,7 @@ app.get('/api/quizzes/:id/submissions', authenticate, isAdmin, (req, res) => {
 app.get('/api/submissions/:id', authenticate, (req, res) => {
   const sub = submissions.find(s => s.id === req.params.id)
   if (!sub) return res.status(404).json({ error: 'Submission not found' })
-  if (req.user.role !== 'admin' && sub.userId !== req.user.id)
+  if (req.user.role !== 'manager' && sub.userId !== req.user.id)
     return res.status(403).json({ error: 'Forbidden' })
   res.json(sub)
 })
@@ -276,8 +265,8 @@ app.post('/api/test/users', testAuthenticate, (req, res) => {
     return res.status(400).json({ error: 'Missing required user fields' })
   }
 
-  if (!['admin', 'user'].includes(role)) {
-    return res.status(400).json({ error: 'Role must be either "admin" or "user"' })
+  if (!['manager', 'user'].includes(role)) {
+    return res.status(400).json({ error: 'Role must be either "manager" or "user"' })
   }
 
   const exists = users.find(u => u.id === id || u.email === email)

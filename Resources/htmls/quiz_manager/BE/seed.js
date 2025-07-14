@@ -7,10 +7,10 @@ const generateOptions = (prefix, count) =>
 
 // USERS
 const users = [
-  { id: 'admin1', email: 'admin@example.com', password: 'admin123', role: 'admin' },
+  { id: 'manager1', email: 'manager@quizz.com', password: 'manager123', role: 'manager' },
   ...Array.from({ length: 8 }, (_, i) => ({
     id: `user${i + 1}`,
-    email: `user${i + 1}@test.com`,
+    email: `user${i + 1}@quizz.com`,
     password: 'user123',
     role: 'user'
   }))
@@ -43,7 +43,7 @@ const quizzes = [
         options: generateOptions('Country', Math.floor(Math.random() * 13) + 3)
       }
     ],
-    createdBy: 'admin1',
+    createdBy: 'manager1',
     assignedUsers: 'all',
     status: 'active'
   },
@@ -72,7 +72,7 @@ const quizzes = [
         options: generateOptions('Option', Math.floor(Math.random() * 13) + 3)
       }
     ],
-    createdBy: 'admin1',
+    createdBy: 'manager1',
     assignedUsers: i % 2 === 0 ? 'all' : [users[i + 1].email],
     status: i % 3 === 0 ? 'archived' : i % 2 === 0 ? 'active' : 'draft'
   }))

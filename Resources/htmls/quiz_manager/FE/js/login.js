@@ -5,8 +5,8 @@ import { apiGet, apiPost } from "./api.js";
 (async function() {
   try {
     const user = await apiGet("/api/auth/me");
-    if (user.role === "admin") {
-      return window.location.href = "admin.html";
+    if (user.role === "manager") {
+      return window.location.href = "manager.html";
     }
     if (user.role === "user") {
       return window.location.href = "user.html";
@@ -35,7 +35,7 @@ form.addEventListener("submit", async (e) => {
   try {
     await apiPost("/api/login", { email, password });
     const user = await apiGet("/api/auth/me");
-    window.location.href = user.role === "admin" ? "admin.html" : "user.html";
+    window.location.href = user.role === "manager" ? "manager.html" : "user.html";
   } catch (err) {
     errorDiv.textContent = err.message || "Login failed.";
   }
