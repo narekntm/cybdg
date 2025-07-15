@@ -1,4 +1,3 @@
-import Chance from "chance";
 import { UserManagementBuilders } from "Builders/Lecture/UserManagementBuilders";
 import { UserManagementEndpoints } from "EndPoints/Lecture/UserManagementEndpoints";
 import { UserManagementModels } from "Models/Lecture/UserManagementModels";

@@ -2,7 +2,7 @@
 
 // Configuration — adjust as needed or move into env/config module
 const API_CONFIG = {
-  baseUrl: "http://127.0.0.1:3000",
+  baseUrl: "http://127.0.0.1:5353/be",
   timeout: 10000,           // ms before abort
   defaultHeaders: {
     "Content-Type": "application/json"
