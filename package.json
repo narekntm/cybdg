@@ -10,7 +10,7 @@
     "serve:UI": "http-server -p 8080",
     "serve:UserManagement": "node ./Resources/htmls/user_management/server.js",
     "serve:UserManagementV2": "node ./Resources/htmls/user_management_v2/BE/server.js",
-    "serve:QuizzManager:BE": "node ./Resources/htmls/quiz_manager/BE/server.js",
+    "serve:QuizzManager:BE": "node --trace-warnings ./Resources/htmls/quiz_manager/BE/server.js ",
     "serve:QuizzManager:FE": "npx http-server Resources/htmls/quiz_manager/FE -p 8080",
     
     "prettier": "prettier --config .prettierrc --ignore-path .prettierignore",
