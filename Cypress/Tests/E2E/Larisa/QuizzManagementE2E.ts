@@ -36,9 +36,7 @@ describe("QuizzManagement Suite", () => {
     cy.intercept({ method: "GET", url: QuizzManagementEndPoints.users }).as("getUsers");
   });
 
-  afterEach(() => {
-    //cy.request({ method: "POST", url: QuizzManagementEndPoints.reset });
-  });
+  afterEach(() => {});
 
   context("Login to Quizz Management", () => {
     it("Login Modal Content Test", () => {

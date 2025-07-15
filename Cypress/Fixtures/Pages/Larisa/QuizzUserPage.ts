@@ -1,2 +1,1 @@
-export class QuizzUserPage {
-}
+export class QuizzUserPage {}

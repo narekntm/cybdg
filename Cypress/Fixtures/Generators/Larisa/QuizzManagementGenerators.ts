@@ -3,18 +3,18 @@ import { QuizzManagementModels } from "Models/Larisa/QuizzManagementModels";
 export class QuizzManagementGenerators {
   static loginAdminPositiveCase: QuizzManagementModels.Login = {
     email: Cypress.env("ADMIN_EMAIL"),
-    password: Cypress.env("ADMIN_PASSWORD")
+    password: Cypress.env("ADMIN_PASSWORD"),
   };
 
   static loginUser1PositiveCase: QuizzManagementModels.Login = {
     email: Cypress.env("USER1_EMAIL"),
-    password: Cypress.env("USER1_PASSWORD")
+    password: Cypress.env("USER1_PASSWORD"),
   };
 
   static loginUser2PositiveCase: QuizzManagementModels.Login = {
     email: Cypress.env("USER2_EMAIL"),
-    password: Cypress.env("USER2_PASSWORD")
-  }
+    password: Cypress.env("USER2_PASSWORD"),
+  };
 
   static loginNegativeCase: QuizzManagementModels.Login = {
     email: "",
