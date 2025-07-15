@@ -4,7 +4,7 @@
   "description": "Cypress Automation Project",
   "main": "index.js",
   "scripts": {
-    "test": "npx cypress open --config-file config/test.config.ts --e2e -b electron",
+    "quizManagerTest": "npx cypress open --config-file config/quizManger.config.ts --e2e -b electron",
     "test:run": "npx cypress run --config-file config/test.config.ts --e2e -b electron --spec Cypress/Tests/API/DemoApi.ts",
     
     "serve:UI": "http-server -p 8080",
