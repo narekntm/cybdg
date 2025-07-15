@@ -1,9 +1,9 @@
-import { QuizzManagementLoginPage } from "../../../Fixtures/Pages/Larisa/QuizzManagementPage";
-import { QuizzAdminDashboardPage } from "../../../Fixtures/Pages/Larisa/QuizzAdminDashboardPage";
-import { QuizzUserPage } from "../../../Fixtures/Pages/Larisa/QuizzUserPage";
-import { QuizzManagementModels } from "../../../Fixtures/Models/Larisa/QuizzManagementModels";
-import { QuizzManagementGenerators } from "../../../Fixtures/Generators/Larisa/QuizzManagementGenerators";
 import { QuizzManagementEndPoints } from "../../../Fixtures/EndPoints/Larisa/QuizzManagementEndPoints";
+import { QuizzManagementGenerators } from "../../../Fixtures/Generators/Larisa/QuizzManagementGenerators";
+import { QuizzManagementModels } from "../../../Fixtures/Models/Larisa/QuizzManagementModels";
+import { QuizzAdminDashboardPage } from "../../../Fixtures/Pages/Larisa/QuizzAdminDashboardPage";
+import { QuizzManagementLoginPage } from "../../../Fixtures/Pages/Larisa/QuizzManagementPage";
+import { QuizzUserPage } from "../../../Fixtures/Pages/Larisa/QuizzUserPage";
 
 describe('QuizzManagement Suite', () => {
   const baseURL = "/login";
