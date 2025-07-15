@@ -1,5 +1,6 @@
 ﻿// logout.js
 import { apiPost } from "./api.js";
+import {showToast} from "./toast.js"
 
 const logoutBtn = document.getElementById("logout-btn");
 
@@ -9,7 +10,7 @@ if (logoutBtn) {
       await apiPost("/api/logout", {});
       window.location.href = "login.html";
     } catch (err) {
-      alert("Failed to log out.");
+      showToast("Failed to log out.", "error");
     }
   });
 }

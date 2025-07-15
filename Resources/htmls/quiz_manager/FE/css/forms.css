@@ -1,0 +1,45 @@
+﻿/* ========== Forms & Inputs ========== */
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+form.submitted input:invalid,
+form.submitted textarea:invalid,
+form.submitted select:invalid {
+  border-color: #d9534f;
+  background-color: #fdf2f2;
+}
+
+label {
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"],
+textarea,
+select {
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+input[disabled],
+button[disabled],
+select[disabled],
+textarea[disabled] {
+  background-color: #e9ecef;
+  color: #6c757d;
+  cursor: not-allowed;
+}
