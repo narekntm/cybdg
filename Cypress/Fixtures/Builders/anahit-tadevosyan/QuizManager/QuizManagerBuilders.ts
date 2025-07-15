@@ -1,5 +1,5 @@
 import { QuizManagerEndpoints } from "EndPoints/anahit-tadevosyan/QuizManager/QuizManagerEndPoints";
-import { QuizData } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import { QuizCreationData, QuizData } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 
 export class QuizManagerBuilders {
   static login(email: string, password: string) {
@@ -34,7 +34,7 @@ export class QuizManagerBuilders {
     });
   }
 
-  static createQuiz(quizData: QuizData) {
+  static createQuiz(quizData: QuizCreationData) {
     return cy.request({
       method: "POST",
       url: QuizManagerEndpoints.quizzes(),
@@ -104,6 +104,7 @@ export class QuizManagerBuilders {
     return cy.request({
       method: "GET",
       url: QuizManagerEndpoints.quizSubmissions(quizId),
+      failOnStatusCode: false,
     });
   }
 
@@ -113,6 +114,4 @@ export class QuizManagerBuilders {
       url: QuizManagerEndpoints.submissionById(submissionId),
     });
   }
-
-  static getCu;
 }

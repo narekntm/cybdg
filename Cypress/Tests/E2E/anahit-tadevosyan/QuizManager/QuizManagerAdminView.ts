@@ -21,10 +21,6 @@ describe("QuizManager Admin View", () => {
     });
   });
 
-  describe("Add Questions", () => {
-
-  });
-  describe("View Quizzes", () => {
-
-  });
+  describe("Add Questions", () => {});
+  describe("View Quizzes", () => {});
 });

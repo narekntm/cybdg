@@ -38,6 +38,8 @@ export interface QuizData {
   status: QuizStatus;
 }
 
+export type QuizCreationData = Omit<QuizData, "id" | "createdBy" | "status">;
+
 export type AssignedUsers = "all" | string[];
 
 export interface Submission {
