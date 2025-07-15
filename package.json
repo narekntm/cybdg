@@ -10,9 +10,12 @@
     "serve:UI": "http-server -p 8080",
     "serve:UserManagement": "node ./Resources/htmls/user_management/server.js",
     "serve:UserManagementV2": "node ./Resources/htmls/user_management_v2/BE/server.js",
-    "serve:QuizzManager:BE": "node ./Resources/htmls/quiz_manager/BE/server.js",
-    "serve:QuizzManager:FE": "npx http-server Resources/htmls/quiz_manager/FE -p 8080",
-    
+
+    "serve:QuizzManager:FE": "http-server Resources/htmls/quiz_manager/FE -p 5151 --cors",
+    "serve:QuizzManager:BE": "node Resources/htmls/quiz_manager/BE/server.js",
+    "serve:proxy": "node ./Resources/htmls/quiz_manager/proxy-server.js",
+    "serve:QuizzManager:ALL": "concurrently -n FE,BE,PROXY -c green,blue,magenta \"npm run serve:QuizzManager:FE\" \"npm run serve:QuizzManager:BE\" \"npm run serve:proxy\"",
+
     "prettier": "prettier --config .prettierrc --ignore-path .prettierignore",
     "eslint": "eslint --config .eslintrc.json --ignore-path .eslintignore",
     "tsc": "tsc --project ./tsconfig.json --noEmit",
