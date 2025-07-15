@@ -25,11 +25,12 @@ export function loginViaApi(user: UserCredentials): Cypress.Chainable {
     });
 }
 
-export function logoutViaApi(): Cypress.Chainable {
+export function logoutViaApi(failOnStatusCode: boolean = true): Cypress.Chainable {
   return cy
     .request({
       method: "POST",
       url: QuizManagerEndpoints.logout,
+      failOnStatusCode,
     })
     .then(() => {
       cy.clearCookie("authToken");

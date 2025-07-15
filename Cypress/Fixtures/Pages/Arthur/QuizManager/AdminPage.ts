@@ -11,7 +11,7 @@ export class AdminPage {
 
   static questionTypeSelects = () => cy.get("#question-list select.q-type");
 
-  static commaSeparatedInputs = () => cy.get("#question-list input.q-opt");
+  static commaSeparatedInputs = () => cy.get("#question-list input.q-options");
 
   static removeQuestionButtons = () => cy.get("#question-list button.remove-question");
 
@@ -34,4 +34,18 @@ export class AdminPage {
   static firstViewSubmissionsLink = () => cy.get("#admin-quiz-list a.view-submissions").first();
 
   static viewSubmissionsByQuizId = (quizId: string) => cy.get(`#admin-quiz-list a.view-submissions[href*="${quizId}"]`);
+
+  static url = "/admin.html";
+
+  static visit(): void {
+    cy.visit(this.url);
+  }
+
+  static quizTitles = () => cy.get("#admin-quiz-list .quiz-title");
+
+  static quizItemByTitle = (title: string) => cy.get(`#admin-quiz-list .quiz-title:contains("${title}")`).parents("li");
+
+  static statusBadge = () => cy.get(".status-badge");
+
+  static statusBadgeWithinItem = () => cy.get(".status-badge");
 }

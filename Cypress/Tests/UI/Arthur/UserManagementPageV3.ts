@@ -27,32 +27,6 @@ describe("User Management Test Scenarios", () => {
     UserManagementPage.loginButton().click();
   };
 
-  // function fillUserForm(user: UserFormData) {
-  //   UserManagementPage.addNewUserButton().click();
-  //   UserManagementPage.userNameInput().clear().type(user.name);
-  //   UserManagementPage.userRoleSelect().select(user.role);
-  //   UserManagementPage.userAgeInput().clear().type(user.age);
-  //   UserManagementPage.userEmailInput().clear().type(user.email);
-  //   if (user.gender) {
-  //     UserManagementPage.userGenderRadio(user.gender).check();
-  //   }
-
-  //   if (user.subscriptions && user.subscriptions.length > 0) {
-  //     user.subscriptions.forEach((sub) => {
-  //       UserManagementPage.userSubscriptionCheckbox(sub).uncheck().check();
-  //     });
-  //   }
-  // }
-
-  // function editUserForm(user: UserFormData) {
-  //   UserManagementPage.userNameInput().clear().type(user.name);
-  //   UserManagementPage.userRoleSelect().select(user.role);
-  //   UserManagementPage.userAgeInput().clear().type(user.age);
-  //   UserManagementPage.userEmailInput().clear().type(user.email);
-  //   UserManagementPage.genderSelect().select(user.gender);
-  //   UserManagementPage.productCheckbox().check();
-  // }
-
   const saveUser = () => UserManagementPage.saveButton().contains("Save").click();
 
   context("Admin auth test cases", () => {
