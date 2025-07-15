@@ -1,5 +1,4 @@
 export class QuizzAdminDashboardPage {
-  static autIframe = () => cy.get(".aut-iframe");
   static title = () => cy.get("#quiz-creator h2");
   static quizzTitleInput = () => cy.get("#quiz-title");
   static quizzDescTextArea = () => cy.get("#quiz-description");

@@ -2,7 +2,7 @@ import { QuizzManagementEndPoints } from "EndPoints/Larisa/QuizzManagementEndPoi
 import { QuizzManagementGenerators } from "Generators/Larisa/QuizzManagementGenerators";
 import { QuizzManagementModels } from "Models/Larisa/QuizzManagementModels";
 import { QuizzAdminDashboardPage } from "Pages/Larisa/QuizzAdminDashboardPage";
-import { QuizzManagementLoginPage } from "Pages/Larisa/QuizzManagementPage";
+import { QuizzManagementLoginPage } from "Pages/Larisa/QuizzManagementLoginPage";
 
 describe("QuizzManagement Suite", () => {
   const baseURL = "/login";
@@ -51,45 +51,27 @@ describe("QuizzManagement Suite", () => {
     });
 
     it("Login as Admin, Positive case", () => {
-      login(QuizzManagementGenerators.loginAdminPositiveCase());
+      login(QuizzManagementGenerators.loginAdminPositiveCase);
       QuizzManagementLoginPage.submitBtn().click();
 
-      cy.wait("@posLogin").then((xhr) => {
+      cy.wait("@postLogin").then((xhr) => {
         expect(xhr.request.body).to.include({
-          email: QuizzManagementGenerators.loginAdminPositiveCase().email,
-          password: QuizzManagementGenerators.loginAdminPositiveCase().password,
+          email: QuizzManagementGenerators.loginAdminPositiveCase.email,
+          password: QuizzManagementGenerators.loginAdminPositiveCase.password,
         });
         expect(xhr.response.statusCode).to.eq(200);
         expect(xhr.response.body).deep.equal({ success: true });
       });
-
-      //QuizzAdminDashboardPage.autIframe().should('be.visible');
     });
 
     it("Login as User1, Positive case", () => {
-      login(QuizzManagementGenerators.loginUser1PositiveCase());
+      login(QuizzManagementGenerators.loginUser1PositiveCase);
       QuizzManagementLoginPage.submitBtn().click();
 
       cy.wait("@postLogin").then((xhr) => {
         expect(xhr.request.body).to.include({
-          email: QuizzManagementGenerators.loginUser1PositiveCase().email,
-          password: QuizzManagementGenerators.loginUser1PositiveCase().password,
-        });
-        expect(xhr.response.statusCode).to.eq(200);
-        expect(xhr.response.body).deep.equal({ success: true });
-      });
-
-      //QuizzAdminDashboardPage.autIframe().should('be.visible');
-    });
-
-    it("Login as User2, Positive case", () => {
-      login(QuizzManagementGenerators.loginUser2PositiveCase());
-      QuizzManagementLoginPage.submitBtn().click();
-
-      cy.wait("@postLogin").then((xhr) => {
-        expect(xhr.request.body).to.include({
-          email: QuizzManagementGenerators.loginUser2PositiveCase().email,
-          password: QuizzManagementGenerators.loginUser2PositiveCase().password,
+          email: QuizzManagementGenerators.loginUser1PositiveCase.email,
+          password: QuizzManagementGenerators.loginUser1PositiveCase.password,
         });
         expect(xhr.response.statusCode).to.eq(200);
         expect(xhr.response.body).deep.equal({ success: true });
@@ -97,7 +79,7 @@ describe("QuizzManagement Suite", () => {
     });
 
     it("Login, Negative case", () => {
-      login(QuizzManagementGenerators.loginNegativeCase());
+      login(QuizzManagementGenerators.loginNegativeCase);
       QuizzManagementLoginPage.submitBtn().click();
       //QuizzManagementLoginPage.errorMessage().should("be.visible").and("have.text", "Invalid credentials.");
     });
@@ -105,7 +87,7 @@ describe("QuizzManagement Suite", () => {
 
   context("Admin Dashboard suite", () => {
     it("Admin Dashboard Modal Content Test", () => {
-      login(QuizzManagementGenerators.loginAdminPositiveCase());
+      login(QuizzManagementGenerators.loginAdminPositiveCase);
       QuizzManagementLoginPage.submitBtn().click();
 
       QuizzAdminDashboardPage.title().should("be.visible").and("have.text", "Create New Quiz");
@@ -125,7 +107,7 @@ describe("QuizzManagement Suite", () => {
     });
 
     it("Add Quizz Test Section Test", () => {
-      login(QuizzManagementGenerators.loginAdminPositiveCase());
+      login(QuizzManagementGenerators.loginAdminPositiveCase);
       QuizzManagementLoginPage.submitBtn().click();
 
       QuizzAdminDashboardPage.addQuestionBtn().click();
@@ -137,13 +119,13 @@ describe("QuizzManagement Suite", () => {
     });
 
     it("Add Quizz Test", () => {
-      login(QuizzManagementGenerators.loginAdminPositiveCase());
+      login(QuizzManagementGenerators.loginAdminPositiveCase);
       QuizzManagementLoginPage.submitBtn().click();
 
-      addQuizz(QuizzManagementGenerators.quizz());
+      addQuizz(QuizzManagementGenerators.quizz);
 
-      if (QuizzManagementGenerators.quizz().question.length > 0) {
-        QuizzManagementGenerators.quizz().question.forEach((item, index) => {
+      if (QuizzManagementGenerators.quizz.question.length > 0) {
+        QuizzManagementGenerators.quizz.question.forEach((item, index) => {
           QuizzAdminDashboardPage.addQuestionBtn().click();
           addQustion(item, index);
         });
@@ -162,16 +144,15 @@ describe("QuizzManagement Suite", () => {
     });
 
     it("Publish Quizz Test", () => {
-      login(QuizzManagementGenerators.loginAdminPositiveCase());
+      login(QuizzManagementGenerators.loginAdminPositiveCase);
       QuizzManagementLoginPage.submitBtn().click();
 
-      addQuizz(QuizzManagementGenerators.quizz());
-      if (QuizzManagementGenerators.quizz().question.length > 0) {
-        QuizzManagementGenerators.quizz().question.forEach((item, index) => {
-          QuizzAdminDashboardPage.addQuestionBtn().click();
-          addQustion(item, index);
-        });
-      }
+      addQuizz(QuizzManagementGenerators.quizz);
+      QuizzManagementGenerators.quizz.question.forEach((item, index) => {
+        QuizzAdminDashboardPage.addQuestionBtn().click();
+        addQustion(item, index);
+      });
+
       QuizzAdminDashboardPage.saveQuizzBtn().click();
 
       QuizzAdminDashboardPage.quizzPublishBtn(0).click();
@@ -183,16 +164,14 @@ describe("QuizzManagement Suite", () => {
     });
 
     it("Archive Quizz Test", () => {
-      login(QuizzManagementGenerators.loginAdminPositiveCase());
+      login(QuizzManagementGenerators.loginAdminPositiveCase);
       QuizzManagementLoginPage.submitBtn().click();
 
-      addQuizz(QuizzManagementGenerators.quizz());
-      if (QuizzManagementGenerators.quizz().question.length > 0) {
-        QuizzManagementGenerators.quizz().question.forEach((item, index) => {
-          QuizzAdminDashboardPage.addQuestionBtn().click();
-          addQustion(item, index);
-        });
-      }
+      addQuizz(QuizzManagementGenerators.quizz);
+      QuizzManagementGenerators.quizz.question.forEach((item, index) => {
+        QuizzAdminDashboardPage.addQuestionBtn().click();
+        addQustion(item, index);
+      });
       QuizzAdminDashboardPage.saveQuizzBtn().click();
 
       QuizzAdminDashboardPage.quizzArchiveBtn(0).click();
@@ -204,16 +183,14 @@ describe("QuizzManagement Suite", () => {
     });
 
     it("Delete Quizz Test", () => {
-      login(QuizzManagementGenerators.loginAdminPositiveCase());
+      login(QuizzManagementGenerators.loginAdminPositiveCase);
       QuizzManagementLoginPage.submitBtn().click();
 
-      addQuizz(QuizzManagementGenerators.quizz());
-      if (QuizzManagementGenerators.quizz().question.length > 0) {
-        QuizzManagementGenerators.quizz().question.forEach((item, index) => {
-          QuizzAdminDashboardPage.addQuestionBtn().click();
-          addQustion(item, index);
-        });
-      }
+      addQuizz(QuizzManagementGenerators.quizz);
+      QuizzManagementGenerators.quizz.question.forEach((item, index) => {
+        QuizzAdminDashboardPage.addQuestionBtn().click();
+        addQustion(item, index);
+      });
       QuizzAdminDashboardPage.saveQuizzBtn().click();
 
       QuizzAdminDashboardPage.quizzList()
@@ -229,16 +206,14 @@ describe("QuizzManagement Suite", () => {
     });
 
     it("Remove question Test", () => {
-      login(QuizzManagementGenerators.loginAdminPositiveCase());
+      login(QuizzManagementGenerators.loginAdminPositiveCase);
       QuizzManagementLoginPage.submitBtn().click();
 
-      addQuizz(QuizzManagementGenerators.quizz());
-      if (QuizzManagementGenerators.quizz().question.length > 0) {
-        QuizzManagementGenerators.quizz().question.forEach((item, index) => {
-          QuizzAdminDashboardPage.addQuestionBtn().click();
-          addQustion(item, index);
-        });
-      }
+      addQuizz(QuizzManagementGenerators.quizz);
+      QuizzManagementGenerators.quizz.question.forEach((item, index) => {
+        QuizzAdminDashboardPage.addQuestionBtn().click();
+        addQustion(item, index);
+      });
 
       QuizzAdminDashboardPage.questionListItems()
         .its("length")
@@ -249,9 +224,9 @@ describe("QuizzManagement Suite", () => {
     });
 
     it("Quizz assign to selected users Test", () => {
-      login(QuizzManagementGenerators.loginAdminPositiveCase());
+      login(QuizzManagementGenerators.loginAdminPositiveCase);
       QuizzManagementLoginPage.submitBtn().click();
-      addQuizz(QuizzManagementGenerators.quizz());
+      addQuizz(QuizzManagementGenerators.quizz);
 
       QuizzAdminDashboardPage.assignMode().select("Selected Users");
       cy.wait("@getUsers").then((xhr) => {
