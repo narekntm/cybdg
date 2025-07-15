@@ -1,4 +1,5 @@
 ﻿import { UserManagementBuilders } from "Builders/Lecture/UserManagementBuilders";
+import { UserManagementGenerators } from "Generators/Lecture/UserManagementGenerators";
 import { UserManagementModels } from "Models/Lecture/UserManagementModels";
 
 /**
@@ -62,18 +63,15 @@ describe("User Management API – Cypress Sandbox", () => {
    * @test Creates a new user via API
    */
   it("POST /api/users creates a new user", () => {
-    const newUser: UserManagementModels.UserUpdate = {
-      name: "ApiUser",
-      role: UserManagementModels.Role.Viewer,
-      age: 24,
-      email: "apiuser@example.com",
-      gender: UserManagementModels.Gender.Other,
-      subscriptions: [UserManagementModels.Subscription.Newsletter],
-    };
-
-    UserManagementBuilders.createUser(newUser).then((resp) => {
+    const user = UserManagementGenerators.defaultUser;
+    UserManagementBuilders.createUser(user).then((resp) => {
       expect(resp.status).to.eq(200);
-      expect(resp.body).to.include({ name: newUser.name, email: newUser.email });
+      expect(resp.body.name).eq(user.name);
+      expect(resp.body.email).eq(user.email);
+      expect(resp.body.subscriptions).to.be.an("array");
+      expect(resp.body.subscriptions.length).to.eq(2);
+      expect(resp.body.status).eq("Active");
+
       createdUserId = resp.body.id;
     });
   });

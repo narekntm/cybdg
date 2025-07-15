@@ -1,0 +1,33 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Quizz View</title>
+    <link href="./css/base.css" rel="stylesheet" />
+    <link href="./css/forms.css" rel="stylesheet" />
+    <link href="./css/buttons.css" rel="stylesheet" />
+    <link href="./css/quiz.css" rel="stylesheet" />
+    <link href="./css/errors.css" rel="stylesheet" />
+    <link href="./css/responsive.css" rel="stylesheet" />
+    <link href="./css/toast.css" rel="stylesheet" />
+  </head>
+  <body>
+    <header>
+      <h1>Quizz</h1>
+      <button id="logout-btn">Logout</button>
+    </header>
+
+    <main>
+      <section id="quiz-container">
+        <h2 id="quiz-title"></h2>
+        <p id="quiz-description"></p>
+        <form id="quiz-form"></form>
+        <button id="submit-btn">Submit</button>
+      </section>
+    </main>
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="./js/quiz-view.js" type="module"></script>
+  </body>
+</html>

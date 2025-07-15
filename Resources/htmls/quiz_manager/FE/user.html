@@ -1,0 +1,37 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>User – Quizz Manager</title>
+    <link href="./css/base.css" rel="stylesheet" />
+    <link href="./css/buttons.css" rel="stylesheet" />
+    <link href="./css/submissions.css" rel="stylesheet" />
+    <link href="./css/badges.css" rel="stylesheet" />
+    <link href="./css/errors.css" rel="stylesheet" />
+    <link href="./css/responsive.css" rel="stylesheet" />
+    <link href="./css/user.css" rel="stylesheet" />
+    <link href="./css/toast.css" rel="stylesheet" />
+  </head>
+  <body>
+    <header>
+      <h1>Welcome, <span id="username"></span></h1>
+      <button id="logout-btn">Logout</button>
+    </header>
+
+    <main>
+      <section id="available-quizzes">
+        <h2>Available Quizzes <span id="quiz-count"></span></h2>
+        <ul id="quiz-list"></ul>
+      </section>
+
+      <section id="my-submissions">
+        <h2>My Submitted Quizzes <span id="submission-count"></span></h2>
+        <ul id="submission-list"></ul>
+      </section>
+    </main>
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="./js/user.js" type="module"></script>
+  </body>
+</html>
