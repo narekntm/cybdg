@@ -1,0 +1,89 @@
+﻿/* ========== Quiz View & Builder ========== */
+#quiz-container {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  max-width: 700px;
+  margin: 2rem auto;
+}
+
+#submit-btn {
+  display: block;
+  margin: 0rem auto 0;
+}
+
+/* ========== Question Form Elements ========== */
+#quiz-container form {
+  margin-top: 1rem;
+}
+
+.question {
+  background: #f9fbfd;
+  border: 1px solid #d6dee8;
+  padding: 1.25rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.question-header {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #212529;
+}
+
+.option-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.5rem 1.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.option-list label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.option-list.horizontal {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.question input[type="text"],
+.question select,
+.question textarea {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+/* ========== Readonly Note ========== */
+.readonly-note {
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ffeeba;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+/* ========== Select Dropdown Enhancements ========== */
+select {
+  max-width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  box-sizing: border-box;
+  appearance: auto;
+}

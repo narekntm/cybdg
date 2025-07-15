@@ -1,88 +1,92 @@
-﻿// Updated: server.js
-import bodyParser from 'body-parser'
-import cookieParser from 'cookie-parser'
-import cors from 'cors'
-import express from 'express'
-import { v4 as uuidv4 } from 'uuid'
+﻿// server.js (refactored to use seed.js)
+const express = require('express')
+const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
+const cors = require('cors')
+const { v4: uuidv4 } = require('uuid')
+let { users, quizzes, submissions } = require('./seed')
+
+if (!process.env.SEED) {
+  quizzes = [{
+    id: uuidv4(),
+    title: 'Welcome Quiz',
+    description: 'A sample quiz available to all users',
+    questions: [
+      { id: 'q1', label: 'What\'s your name?', type: 'input', options: [] },
+      { id: 'q2', label: 'Your gender?', type: 'radio', options: ['Male', 'Female', 'Other'] },
+      { id: 'q3', label: 'Technologies you like', type: 'checkbox', options: ['JavaScript', 'Python', 'Go'] },
+      { id: 'q4', label: 'Country', type: 'dropdown', options: ['Armenia', 'USA', 'Germany'] },
+    ],
+    createdBy: 'manager1',
+    assignedUsers: ['all'],
+    status: 'active',
+  },
+    {
+      id: uuidv4(),
+      title: 'test 1 title',
+      description: 'test 1 desc',
+      questions: [
+        {
+          id: 'q0',
+          label: 'quaestion 1',
+          type: 'input',
+          options: []
+        },
+        {
+          id: 'q1',
+          label: 'question radio 2',
+          type: 'radio',
+          options: [
+            'a',
+            'b',
+            'c'
+          ]
+        },
+        {
+          id: 'q2',
+          label: 'question checkbox 3',
+          type: 'checkbox',
+          options: [
+            'c',
+            'd',
+            'e'
+          ]
+        },
+        {
+          id: 'q3',
+          label: 'question dropdown 4',
+          type: 'dropdown',
+          options: [
+            'f',
+            'g',
+            'h'
+          ]
+        }
+      ],
+      assignedUsers: ['all'],
+      status: 'draft',
+      createdBy: 'manager1'
+    }]
+  users = [
+    { id: 'manager1', email: 'manager@quizz.com', password: 'manager123', role: 'manager' },
+    { id: 'user1', email: 'user1@quizz.com', password: 'user123', role: 'user' },
+    { id: 'user2', email: 'user2@quizz.com', password: 'user123', role: 'user' },
+  ]
+}
 
 const app = express()
-const PORT = 3000
+const PORT = 5252
+const sessions = {}
+const testSessions = {}
+const TEST_CREDENTIALS = {
+  email: 'testmanager@example.com',
+  password: 'test123'
+}
 
 // Middleware
 app.use(cors({ origin: true, credentials: true }))
 app.use(cookieParser())
 app.use(bodyParser.json())
-
-// In-memory stores
-const users = [
-  { id: 'admin1', email: 'admin@example.com', password: 'admin123', role: 'admin' },
-  { id: 'user1', email: 'user1@example.com', password: 'user123', role: 'user' },
-  { id: 'user2', email: 'user2@example.com', password: 'user123', role: 'user' },
-]
-const quizzes = []
-const submissions = []
-const sessions = {}
-
-quizzes.push({
-  id: uuidv4(),
-  title: 'Welcome Quiz',
-  description: 'A sample quiz available to all users',
-  questions: [
-    { id: 'q1', label: 'What\'s your name?', type: 'input', options: [] },
-    { id: 'q2', label: 'Your gender?', type: 'radio', options: ['Male', 'Female', 'Other'] },
-    { id: 'q3', label: 'Technologies you like', type: 'checkbox', options: ['JavaScript', 'Python', 'Go'] },
-    { id: 'q4', label: 'Country', type: 'dropdown', options: ['Armenia', 'USA', 'Germany'] },
-  ],
-  createdBy: 'admin1',
-  assignedUsers: 'all',
-  status: 'active',
-})
-quizzes.push({
-  'id': uuidv4(),
-  'title': 'test 1 title',
-  'description': 'test 1 desc',
-  'questions': [
-    {
-      'id': 'q0',
-      'label': 'quaestion 1',
-      'type': 'input',
-      'options': []
-    },
-    {
-      'id': 'q1',
-      'label': 'question radio 2',
-      'type': 'radio',
-      'options': [
-        'a',
-        'b',
-        'c'
-      ]
-    },
-    {
-      'id': 'q2',
-      'label': 'question checkbox 3',
-      'type': 'checkbox',
-      'options': [
-        'c',
-        'd',
-        'e'
-      ]
-    },
-    {
-      'id': 'q3',
-      'label': 'question dropdown 4',
-      'type': 'dropdown',
-      'options': [
-        'f',
-        'g',
-        'h'
-      ]
-    }
-  ],
-  'assignedUsers': 'all',
-  'status': 'draft',
-  'createdBy': 'admin1'
-})
 
 function authenticate (req, res, next) {
   const token = req.cookies.authToken
@@ -93,13 +97,14 @@ function authenticate (req, res, next) {
   res.status(401).json({ error: 'Unauthorized' })
 }
 
-function isAdmin (req, res, next) {
-  if (req.user.role === 'admin') return next()
+function isManager (req, res, next) {
+  if (req.user.role === 'manager') return next()
   res.status(403).json({ error: 'Forbidden' })
 }
 
 app.post('/api/login', (req, res) => {
   const { email, password } = req.body
+  
   const user = users.find(u => u.email === email && u.password === password)
   if (!user) return res.status(401).json({ error: 'Invalid credentials' })
 
@@ -108,7 +113,7 @@ app.post('/api/login', (req, res) => {
   res.cookie('authToken', sessionId, {
     httpOnly: false,
     sameSite: 'None',
-    secure: true,     // ⚠️ Must be HTTPS or browser will block it
+    secure: true,
     path: '/',
     crossSite: true,
   }
@@ -126,23 +131,23 @@ app.get('/api/auth/me', authenticate, (req, res) => {
   res.json(req.user)
 })
 
-app.get('/api/users', authenticate, isAdmin, (req, res) => {
-  const nonAdmins = users.filter(u => u.role !== 'admin').map(u => ({
+app.get('/api/users', authenticate, isManager, (req, res) => {
+  const nonManagers = users.filter(u => u.role !== 'manager').map(u => ({
     id: u.id,
     email: u.email,
     role: u.role
   }))
-  res.json(nonAdmins)
+  res.json(nonManagers)
 })
 
-app.post('/api/quizzes', authenticate, isAdmin, (req, res) => {
+app.post('/api/quizzes', authenticate, isManager, (req, res) => {
   const { title, description, questions, assignedUsers } = req.body
   const quiz = {
     id: uuidv4(),
     title,
     description,
     questions,
-    assignedUsers: assignedUsers || 'all',
+    assignedUsers: assignedUsers || ['all'],
     status: 'draft',
     createdBy: req.user.id,
   }
@@ -150,21 +155,21 @@ app.post('/api/quizzes', authenticate, isAdmin, (req, res) => {
   res.json(quiz)
 })
 
-app.patch('/api/quizzes/:id/publish', authenticate, isAdmin, (req, res) => {
+app.patch('/api/quizzes/:id/publish', authenticate, isManager, (req, res) => {
   const quiz = quizzes.find(q => q.id === req.params.id)
   if (!quiz) return res.status(404).json({ error: 'Quiz not found' })
   quiz.status = 'active'
   res.json({ success: true })
 })
 
-app.patch('/api/quizzes/:id/archive', authenticate, isAdmin, (req, res) => {
+app.patch('/api/quizzes/:id/archive', authenticate, isManager, (req, res) => {
   const quiz = quizzes.find(q => q.id === req.params.id)
   if (!quiz) return res.status(404).json({ error: 'Quiz not found' })
   quiz.status = 'archived'
   res.json({ success: true })
 })
 
-app.delete('/api/quizzes/:id', authenticate, isAdmin, (req, res) => {
+app.delete('/api/quizzes/:id', authenticate, isManager, (req, res) => {
   const quiz = quizzes.find(q => q.id === req.params.id)
   if (!quiz) return res.status(404).json({ error: 'Quiz not found' })
   const hasSubs = submissions.some(s => s.quizId === quiz.id)
@@ -175,10 +180,14 @@ app.delete('/api/quizzes/:id', authenticate, isAdmin, (req, res) => {
 
 app.get('/api/quizzes', authenticate, (req, res) => {
   const user = req.user
-  if (user.role === 'admin') {
+  if (user.role === 'manager') {
     return res.json(quizzes.filter(q => q.createdBy === user.id))
   }
-  const visible = quizzes.filter(q => q.status === 'active' && (q.assignedUsers === 'all' || (Array.isArray(q.assignedUsers) && q.assignedUsers.includes(user.email))))
+  const visible = quizzes.filter(q =>
+    q.status === 'active' &&
+    (q.assignedUsers[0] === 'all' ||
+      (Array.isArray(q.assignedUsers) && q.assignedUsers.includes(user.email)))
+  )
   res.json(visible)
 })
 
@@ -219,7 +228,7 @@ app.get('/api/submissions/me', authenticate, (req, res) => {
   res.json(submissions.filter(s => s.userId === req.user.id))
 })
 
-app.get('/api/quizzes/:id/submissions', authenticate, isAdmin, (req, res) => {
+app.get('/api/quizzes/:id/submissions', authenticate, isManager, (req, res) => {
   const quiz = quizzes.find(q => q.id === req.params.id)
   if (!quiz) return res.status(404).json({ error: 'Quiz not found' })
   res.json(submissions.filter(s => s.quizId === quiz.id))
@@ -228,10 +237,59 @@ app.get('/api/quizzes/:id/submissions', authenticate, isAdmin, (req, res) => {
 app.get('/api/submissions/:id', authenticate, (req, res) => {
   const sub = submissions.find(s => s.id === req.params.id)
   if (!sub) return res.status(404).json({ error: 'Submission not found' })
-  if (req.user.role !== 'admin' && sub.userId !== req.user.id) return res.status(403).json({ error: 'Forbidden' })
+  if (req.user.role !== 'manager' && sub.userId !== req.user.id)
+    return res.status(403).json({ error: 'Forbidden' })
   res.json(sub)
 })
 
-app.listen(PORT, () => console.log(`Quiz backend running at http://localhost:${PORT}`))
+// Test routs 
 
-export default app
+app.post('/api/test/auth', (req, res) => {
+  const { email, password } = req.body
+
+  if (email !== TEST_CREDENTIALS.email || password !== TEST_CREDENTIALS.password) {
+    return res.status(401).json({ error: 'Invalid test credentials' })
+  }
+
+  const token = uuidv4()
+  testSessions[token] = { email }
+
+  res.json({ token })
+})
+
+app.post('/api/test/users', testAuthenticate, (req, res) => {
+  const { id, email, password, role } = req.body
+
+  if (!id || !email || !password || !role) {
+    return res.status(400).json({ error: 'Missing required user fields' })
+  }
+
+  if (!['manager', 'user'].includes(role)) {
+    return res.status(400).json({ error: 'Role must be either "manager" or "user"' })
+  }
+
+  const exists = users.find(u => u.id === id || u.email === email)
+  if (exists) {
+    return res.status(409).json({ error: 'User with this ID or email already exists' })
+  }
+
+  users.push({ id, email, password, role })
+  return res.status(201).json({ message: 'User created successfully' })
+})
+
+function testAuthenticate (req, res, next) {
+  const authHeader = req.headers.authorization
+  if (!authHeader?.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Missing or invalid Authorization header' })
+  }
+
+  const token = authHeader.split(' ')[1]
+  if (!testSessions[token]) {
+    return res.status(403).json({ error: 'Invalid or expired test token' })
+  }
+
+  req.testUser = testSessions[token]
+  next()
+}
+
+app.listen(PORT, () => console.log(`Quiz backend running at http://127.0.0.1:${PORT}`))
