@@ -9,6 +9,7 @@ export class QuizzAdminDashboardPage {
 
   static questionText = (index: number) => QuizzAdminDashboardPage.questionListItem(index).find(".q-label");
   static questionSelect = (index: number) => QuizzAdminDashboardPage.questionListItem(index).find(".q-type");
+  static questionSelectOptions = (index: number) => QuizzAdminDashboardPage.questionListItem(index).find(".q-type option");  
   static questionOptions = (index: number) => QuizzAdminDashboardPage.questionListItem(index).find(".q-options");
   static questionRemoveBtn = (index: number) => QuizzAdminDashboardPage.questionListItem(index).find(".remove-question");
 
@@ -21,6 +22,7 @@ export class QuizzAdminDashboardPage {
   static quizzListSection = () => cy.get("#quiz-list");
   static quizzListTitle = () => cy.get("#quiz-list h2");
   static quizzList = () => cy.get("#admin-quiz-list");
+  static quizzListItems = () => cy.get("#admin-quiz-list li");
 
   static quizzTitle = (index: number) => cy.get(".quiz-title").eq(index);
   static statusBadgeSpan = (index: number) => cy.get(".status-badge").eq(index);

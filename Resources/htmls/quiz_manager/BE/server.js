@@ -105,14 +105,13 @@ app.post('/api/login', (req, res) => {
 
   const sessionId = uuidv4()
   sessions[sessionId] = user
-  res.cookie('authToken', sessionId
-  //   , {
-  //   httpOnly: false,
-  //   sameSite: 'None',
-  //   secure: true,     // ⚠️ Must be HTTPS or browser will block it
-  //   path: '/',
-  //   crossSite: true,
-  // }
+  res.cookie('authToken', sessionId, {
+    httpOnly: false,
+    sameSite: 'None',
+    secure: true,     // ⚠️ Must be HTTPS or browser will block it
+    path: '/',
+    crossSite: true,
+  }
 )
   res.json({ success: true })
 })
