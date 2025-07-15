@@ -72,6 +72,7 @@ if (!process.env.SEED) {
     { id: 'user1', email: 'user1@quizz.com', password: 'user123', role: 'user' },
     { id: 'user2', email: 'user2@quizz.com', password: 'user123', role: 'user' },
   ]
+  submissions = []
 }
 
 const app = express()
