@@ -1,12 +1,13 @@
 ﻿// login.js
 import { apiGet, apiPost } from "./api.js";
+import {showToast} from "./toast.js"
 
 // 1) Auto-redirect if already logged in
 (async function() {
   try {
     const user = await apiGet("/api/auth/me");
-    if (user.role === "admin") {
-      return window.location.href = "admin.html";
+    if (user.role === "manager") {
+      return window.location.href = "manager.html";
     }
     if (user.role === "user") {
       return window.location.href = "user.html";
@@ -18,12 +19,10 @@ import { apiGet, apiPost } from "./api.js";
 
 // 2) Login form handling with validation feedback
 const form = document.getElementById("login-form");
-const errorDiv = document.getElementById("error-message");
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   form.classList.add("submitted"); // trigger validation styles
-  errorDiv.textContent = "";
 
   if (!form.checkValidity()) {
     return; // let browser highlight invalid fields
@@ -35,8 +34,8 @@ form.addEventListener("submit", async (e) => {
   try {
     await apiPost("/api/login", { email, password });
     const user = await apiGet("/api/auth/me");
-    window.location.href = user.role === "admin" ? "admin.html" : "user.html";
+    window.location.href = user.role === "manager" ? "manager.html" : "user.html";
   } catch (err) {
-    errorDiv.textContent = err.message || "Login failed.";
+      showToast(`Login failed: ${err.message ?? "Unknown error"}`, "error");
   }
 });
