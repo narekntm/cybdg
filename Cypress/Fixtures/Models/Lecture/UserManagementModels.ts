@@ -27,14 +27,14 @@
 
   /** Represents a user in the system */
   export interface User {
-    id ?: number;
-    name ?: string;
-    role ?: Role;
-    age ?: number;
-    email ?: string;
-    gender ?: Gender;
-    subscriptions ?: Subscription[];
-    status ?: Status;
+    id?: number;
+    name?: string;
+    role?: Role;
+    age?: number;
+    email?: string;
+    gender?: Gender;
+    subscriptions?: Subscription[];
+    status?: Status;
   }
 
   /** Input required to create a new user */

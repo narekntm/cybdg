@@ -17,6 +17,9 @@
       "Generators/*": [
         "Cypress/Fixtures/Generators/*"
       ],
+      "Methods/*": [
+        "Cypress/Fixtures/Methods/*"
+      ],
       "Builders/*": [
         "Cypress/Fixtures/Builders/*"
       ],

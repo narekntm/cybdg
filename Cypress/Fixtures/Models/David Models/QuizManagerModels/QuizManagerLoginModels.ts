@@ -1,12 +1,10 @@
 export namespace QuizManagerLoginModels {
-
   export interface LoginModel {
-    login ?: string,
-    password ?: string
+    login?: string;
+    password?: string;
   }
 
-  export enum errorMessages {
-    invalidCreds = "Invalid credentials"
+  export enum ErrorMessages {
+    invalidCreds = "Invalid credentials",
   }
 }
-

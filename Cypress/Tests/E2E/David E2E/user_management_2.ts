@@ -1,5 +1,4 @@
-﻿import { UserManagementBuilders } from "Builders/David Builders/UserManagementBuilders";
-import { UserManagementPage } from "Pages/David Pages/UserManagementPage";
+﻿import { UserManagementPage } from "Pages/David Pages/UserManagementPage";
 
 describe("User Management – Cypress Sandbox", () => {
   const baseUrl = "/";
@@ -49,27 +48,27 @@ describe("User Management – Cypress Sandbox", () => {
 
   describe("🔐 Admin Login", () => {
     it("Logs in with valid credentials", () => {
-      cy.intercept({method: "POST", url: "/api/login"}).as('adminLogin')
+      cy.intercept({ method: "POST", url: "/api/login" }).as("adminLogin");
       loginAsAdmin();
-      cy.wait('@adminLogin').then(xhr => {
-        expect(xhr.response.statusCode).to.eq(200)
-        expect(xhr.response.body).deep.equal({success: true})
-      })
+      cy.wait("@adminLogin").then((xhr) => {
+        expect(xhr.response.statusCode).to.eq(200);
+        expect(xhr.response.body).deep.equal({ success: true });
+      });
       cy.get("#admin-controls").should("be.visible");
     });
 
     it("Fails with invalid credentials", () => {
-      cy.intercept({method: "POST", url: "/api/login"}).as('loginFail')
+      cy.intercept({ method: "POST", url: "/api/login" }).as("loginFail");
       cy.get("#admin-email").type("wrong@admin.com");
       cy.get("#admin-password").type("wrongpass");
       cy.get('#admin-login-form button[type="submit"]').click();
       cy.get("#login-status").should("be.visible");
-      cy.wait('@loginFail').then(xhr => {
-        expect(xhr.request.body).deep.equal({email: "wrong@admin.com", password: "wrongpass"})
-        expect(xhr.response.statusCode).to.eq(401)
-        expect(xhr.response.statusMessage).to.eq('Unauthorized')
-        expect(xhr.response.body).deep.equal({success: false})
-      })
+      cy.wait("@loginFail").then((xhr) => {
+        expect(xhr.request.body).deep.equal({ email: "wrong@admin.com", password: "wrongpass" });
+        expect(xhr.response.statusCode).to.eq(401);
+        expect(xhr.response.statusMessage).to.eq("Unauthorized");
+        expect(xhr.response.body).deep.equal({ success: false });
+      });
     });
 
     it("Logs out and hides admin controls", () => {
@@ -91,10 +90,10 @@ describe("User Management – Cypress Sandbox", () => {
         subscriptions: ["Newsletter"],
       });
       cy.get('#user-form button[type="submit"]').click();
-      cy.wait('@PostUser').then(xhr => {
-      expect(xhr.response.statusCode).to.eq(200);
-      expect(xhr.request.body.name).to.eq("John");
-      expect(xhr.request.body.email).to.eq("john@example.com");
+      cy.wait("@PostUser").then((xhr) => {
+        expect(xhr.response.statusCode).to.eq(200);
+        expect(xhr.request.body.name).to.eq("John");
+        expect(xhr.request.body.email).to.eq("john@example.com");
       });
       cy.contains("td", "John").should("exist");
     });
@@ -123,7 +122,7 @@ describe("User Management – Cypress Sandbox", () => {
     });
 
     it("Allows adding user with no subscriptions", () => {
-      cy.intercept({method: "POST", url: "/api/users"}).as('NewUser')
+      cy.intercept({ method: "POST", url: "/api/users" }).as("NewUser");
       fillUserForm({
         name: "Anna",
         role: "Viewer",
@@ -133,33 +132,33 @@ describe("User Management – Cypress Sandbox", () => {
         subscriptions: [],
       });
       cy.get('#user-form button[type="submit"]').click();
-      cy.wait('@NewUser').then(xhr => {
-        expect(xhr.response.statusCode).to.eq(200)
-        expect(xhr.response.body.name).to.eq("Anna")
-        expect(xhr.response.body.email).to.eq("anna@example.com")
-      })
+      cy.wait("@NewUser").then((xhr) => {
+        expect(xhr.response.statusCode).to.eq(200);
+        expect(xhr.response.body.name).to.eq("Anna");
+        expect(xhr.response.body.email).to.eq("anna@example.com");
+      });
       cy.contains("td", "Anna").should("exist");
     });
 
     it("Edit user and verify updated values", () => {
-      cy.intercept({method: "POST", url: "/api/users"}).as('NewUser')
+      cy.intercept({ method: "POST", url: "/api/users" }).as("NewUser");
       addUserAndFindRow("EditableUser");
-      cy.wait('@NewUser').then(xhr => {
-        expect(xhr.response.statusCode).to.eq(200)
-        expect(xhr.response.body.name).to.eq("EditableUser")
-        expect(xhr.response.body.email).to.eq("editableuser@example.com")
-      })
+      cy.wait("@NewUser").then((xhr) => {
+        expect(xhr.response.statusCode).to.eq(200);
+        expect(xhr.response.body.name).to.eq("EditableUser");
+        expect(xhr.response.body.email).to.eq("editableuser@example.com");
+      });
       cy.contains("tr", "EditableUser").within(() => {
         cy.get(".edit-btn").click();
       });
-      cy.intercept({method: "PUT", url: "/api/users/4"}).as('UpdateUser')
+      cy.intercept({ method: "PUT", url: "/api/users/4" }).as("UpdateUser");
       UserManagementPage.nameField().clear().type("EditedUser");
       cy.get('#user-form button[type="submit"]').click();
-      cy.wait('@UpdateUser').then(xhr => {
-        expect(xhr.response.statusCode).to.eq(200)
-        expect(xhr.response.body.id).to.eq(4)
-        expect(xhr.response.body.name).to.eq("EditedUser")  
-      })
+      cy.wait("@UpdateUser").then((xhr) => {
+        expect(xhr.response.statusCode).to.eq(200);
+        expect(xhr.response.body.id).to.eq(4);
+        expect(xhr.response.body.name).to.eq("EditedUser");
+      });
 
       cy.contains("td", "EditedUser").should("exist");
       cy.contains("td", "EditableUser").should("not.exist");
@@ -168,13 +167,13 @@ describe("User Management – Cypress Sandbox", () => {
 
   describe("🗑 Delete & Edit Actions", () => {
     it("Delete modal flow works correctly", () => {
-      cy.intercept({method: "POST", url: "/api/users"}).as('NewUser')
+      cy.intercept({ method: "POST", url: "/api/users" }).as("NewUser");
       addUserAndFindRow("TempUser");
-      cy.wait('@NewUser').then(xhr => {
-        expect(xhr.response.statusCode).to.eq(200)
-        expect(xhr.response.body.name).to.eq("TempUser")
-        expect(xhr.response.body.email).to.eq("tempuser@example.com")
-      })
+      cy.wait("@NewUser").then((xhr) => {
+        expect(xhr.response.statusCode).to.eq(200);
+        expect(xhr.response.body.name).to.eq("TempUser");
+        expect(xhr.response.body.email).to.eq("tempuser@example.com");
+      });
       cy.contains("tr", "TempUser").within(() => {
         cy.get(".delete-btn").click();
       });
@@ -191,35 +190,35 @@ describe("User Management – Cypress Sandbox", () => {
     });
 
     it("Admin can delete Admin user", () => {
-      cy.intercept({method: "POST", url: "/api/login"}).as('adminLogin')
+      cy.intercept({ method: "POST", url: "/api/login" }).as("adminLogin");
       loginAsAdmin();
-      cy.wait('@adminLogin').then(xhr => {
-        expect(xhr.response.statusCode).to.eq(200)
-        expect(xhr.response.body).deep.equal({success: true})
-      })
-      cy.intercept({method: "DELETE", url: "/api/users/1"}).as('DeleteUser')
+      cy.wait("@adminLogin").then((xhr) => {
+        expect(xhr.response.statusCode).to.eq(200);
+        expect(xhr.response.body).deep.equal({ success: true });
+      });
+      cy.intercept({ method: "DELETE", url: "/api/users/1" }).as("DeleteUser");
       cy.contains("tr", "Alice").within(() => {
         cy.get(".delete-btn").click();
       });
       cy.get("#confirm-delete").click();
-      cy.wait('@DeleteUser').then(xhr => {
-        expect(xhr.response.statusCode).to.eq(200)
-        expect(xhr.response.body).deep.equal({success: true})
-      })
+      cy.wait("@DeleteUser").then((xhr) => {
+        expect(xhr.response.statusCode).to.eq(200);
+        expect(xhr.response.body).deep.equal({ success: true });
+      });
       cy.contains("tr", "Alice").should("not.exist");
     });
   });
 
   describe("🔁 Status Toggle", () => {
     it("Toggles status between Active and Inactive", () => {
-      cy.intercept({method: "PATCH", url: "/api/users/3/status"}).as('StatusUpdate')
+      cy.intercept({ method: "PATCH", url: "/api/users/3/status" }).as("StatusUpdate");
       cy.contains("tr", "Eve").within(() => {
         cy.get("td").eq(6).should("contain", "Active");
         cy.get(".status-btn").click();
-        cy.wait('@StatusUpdate').then(xhr => {
-          expect(xhr.response.statusCode).to.eq(200)
-          expect(xhr.response.body.status).to.eq('Inactive')
-        })
+        cy.wait("@StatusUpdate").then((xhr) => {
+          expect(xhr.response.statusCode).to.eq(200);
+          expect(xhr.response.body.status).to.eq("Inactive");
+        });
         cy.get("td").eq(6).should("contain", "Inactive");
       });
     });
