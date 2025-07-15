@@ -133,3 +133,7 @@ export enum SubmissionAnswerText {
   Answer1 = "Answer 1",
   Answer2 = "Answer 2",
 }
+
+export enum QuizSuccessMessages {
+  QuizSaved = "Quiz saved successfully!",
+}
