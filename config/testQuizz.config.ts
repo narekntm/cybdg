@@ -28,7 +28,7 @@ export default defineConfig({
     USER1_EMAIL: "user1@example.com",
     USER1_PASSWORD: "user123",
     USER2_EMAIL: "user2@example.com",
-    USER2_PASSWORD: "user123"
+    USER2_PASSWORD: "user123",
   },
   e2e: {
     baseUrl: "http://127.0.0.1:8080", // UI base URL
@@ -38,5 +38,5 @@ export default defineConfig({
     },
     specPattern: "Cypress/Tests/{E2E,API,UI}/Larisa/*.ts",
     supportFile: e2eOptions.supportFile,
-  }
+  },
 });

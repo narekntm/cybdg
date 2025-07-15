@@ -1,11 +1,10 @@
-import { QuizzManagementEndPoints } from "../../../Fixtures/EndPoints/Larisa/QuizzManagementEndPoints";
-import { QuizzManagementGenerators } from "../../../Fixtures/Generators/Larisa/QuizzManagementGenerators";
-import { QuizzManagementModels } from "../../../Fixtures/Models/Larisa/QuizzManagementModels";
-import { QuizzAdminDashboardPage } from "../../../Fixtures/Pages/Larisa/QuizzAdminDashboardPage";
-import { QuizzManagementLoginPage } from "../../../Fixtures/Pages/Larisa/QuizzManagementPage";
-import { QuizzUserPage } from "../../../Fixtures/Pages/Larisa/QuizzUserPage";
+import { QuizzManagementEndPoints } from "EndPoints/Larisa/QuizzManagementEndPoints";
+import { QuizzManagementGenerators } from "Generators/Larisa/QuizzManagementGenerators";
+import { QuizzManagementModels } from "Models/Larisa/QuizzManagementModels";
+import { QuizzAdminDashboardPage } from "Pages/Larisa/QuizzAdminDashboardPage";
+import { QuizzManagementLoginPage } from "Pages/Larisa/QuizzManagementPage";
 
-describe('QuizzManagement Suite', () => {
+describe("QuizzManagement Suite", () => {
   const baseURL = "/login";
 
   function login(login: Partial<QuizzManagementModels.Login>) {
@@ -24,9 +23,7 @@ describe('QuizzManagement Suite', () => {
     if (quizz.description) QuizzAdminDashboardPage.quizzDescTextArea().clear().type(quizz.description);
   }
 
-  before(() => {
-
-  });
+  before(() => {});
 
   beforeEach(() => {
     cy.visit(baseURL);
@@ -41,9 +38,9 @@ describe('QuizzManagement Suite', () => {
 
   afterEach(() => {
     //cy.request({ method: "POST", url: QuizzManagementEndPoints.reset });
-  });  
+  });
 
-  context('Login to Quizz Management', () => {
+  context("Login to Quizz Management", () => {
     it("Login Modal Content Test", () => {
       QuizzManagementLoginPage.title().should("be.visible").and("have.text", "Login to Quiz Manager");
       QuizzManagementLoginPage.emailLbl().should("be.visible").and("have.text", "Email");
@@ -83,8 +80,8 @@ describe('QuizzManagement Suite', () => {
       });
 
       //QuizzAdminDashboardPage.autIframe().should('be.visible');
-    }); 
-    
+    });
+
     it("Login as User2, Positive case", () => {
       login(QuizzManagementGenerators.loginUser2PositiveCase());
       QuizzManagementLoginPage.submitBtn().click();
@@ -111,7 +108,7 @@ describe('QuizzManagement Suite', () => {
       login(QuizzManagementGenerators.loginAdminPositiveCase());
       QuizzManagementLoginPage.submitBtn().click();
 
-      QuizzAdminDashboardPage.title().should('be.visible').and('have.text', 'Create New Quiz');
+      QuizzAdminDashboardPage.title().should("be.visible").and("have.text", "Create New Quiz");
       QuizzAdminDashboardPage.quizzTitleInput().should("be.visible").and("be.enabled").and("have.attr", "required");
       QuizzAdminDashboardPage.quizzDescTextArea().should("be.visible").and("be.enabled").and("have.attr", "required");
       QuizzAdminDashboardPage.addQuestionBtn().should("be.visible").and("have.text", "+ Add Question");
@@ -119,8 +116,8 @@ describe('QuizzManagement Suite', () => {
 
       QuizzAdminDashboardPage.assignModeOptions().then((options) => {
         expect(options).to.have.length(2);
-        expect(options[0]).to.have.text('All Users');
-        expect(options[1]).to.have.text('Selected Users');
+        expect(options[0]).to.have.text("All Users");
+        expect(options[1]).to.have.text("Selected Users");
       });
 
       QuizzAdminDashboardPage.saveQuizzBtn().should("be.visible").and("have.text", "Save Quiz");
@@ -134,7 +131,7 @@ describe('QuizzManagement Suite', () => {
       QuizzAdminDashboardPage.addQuestionBtn().click();
       QuizzAdminDashboardPage.questionText(0).should("be.visible").and("be.enabled").and("have.attr", "required");
 
-      QuizzAdminDashboardPage.questionSelect(0).should('have.length', 4);
+      QuizzAdminDashboardPage.questionSelect(0).should("have.length", 4);
       QuizzAdminDashboardPage.questionOptions(0).should("be.visible");
       QuizzAdminDashboardPage.questionRemoveBtn(0).should("be.visible").and("have.text", "Remove");
     });
@@ -146,22 +143,22 @@ describe('QuizzManagement Suite', () => {
       addQuizz(QuizzManagementGenerators.quizz());
 
       if (QuizzManagementGenerators.quizz().question.length > 0) {
-         QuizzManagementGenerators.quizz().question.forEach((item, index) => {
-           QuizzAdminDashboardPage.addQuestionBtn().click();
-           addQustion(item, index);
-         });
+        QuizzManagementGenerators.quizz().question.forEach((item, index) => {
+          QuizzAdminDashboardPage.addQuestionBtn().click();
+          addQustion(item, index);
+        });
       }
 
       QuizzAdminDashboardPage.quizzList()
         .its("length")
         .then((count: number) => {
-            QuizzAdminDashboardPage.saveQuizzBtn().click();
-            cy.wait("@postQuizz").then((xhr) => {
-              expect(xhr.response.statusCode).to.eq(200);
-              expect(xhr.response.statusMessage).to.eq('OK');
-            });
-            QuizzAdminDashboardPage.quizzList().its("length").should("be.gt", count);
+          QuizzAdminDashboardPage.saveQuizzBtn().click();
+          cy.wait("@postQuizz").then((xhr) => {
+            expect(xhr.response.statusCode).to.eq(200);
+            expect(xhr.response.statusMessage).to.eq("OK");
           });
+          QuizzAdminDashboardPage.quizzList().its("length").should("be.gt", count);
+        });
     });
 
     it("Publish Quizz Test", () => {
@@ -170,19 +167,19 @@ describe('QuizzManagement Suite', () => {
 
       addQuizz(QuizzManagementGenerators.quizz());
       if (QuizzManagementGenerators.quizz().question.length > 0) {
-         QuizzManagementGenerators.quizz().question.forEach((item, index) => {
-           QuizzAdminDashboardPage.addQuestionBtn().click();
-           addQustion(item, index);
-         });
+        QuizzManagementGenerators.quizz().question.forEach((item, index) => {
+          QuizzAdminDashboardPage.addQuestionBtn().click();
+          addQustion(item, index);
+        });
       }
       QuizzAdminDashboardPage.saveQuizzBtn().click();
 
       QuizzAdminDashboardPage.quizzPublishBtn(0).click();
       cy.wait("@publishQuizz").then((xhr) => {
-       expect(xhr.response.statusCode).to.eq(200);
-       expect(xhr.response.statusMessage).to.eq('OK');
+        expect(xhr.response.statusCode).to.eq(200);
+        expect(xhr.response.statusMessage).to.eq("OK");
       });
-      QuizzAdminDashboardPage.statusBadgeSpan(0).invoke('text').should('eq', 'active');
+      QuizzAdminDashboardPage.statusBadgeSpan(0).invoke("text").should("eq", "active");
     });
 
     it("Archive Quizz Test", () => {
@@ -191,19 +188,19 @@ describe('QuizzManagement Suite', () => {
 
       addQuizz(QuizzManagementGenerators.quizz());
       if (QuizzManagementGenerators.quizz().question.length > 0) {
-         QuizzManagementGenerators.quizz().question.forEach((item, index) => {
-           QuizzAdminDashboardPage.addQuestionBtn().click();
-           addQustion(item, index);
-         });
+        QuizzManagementGenerators.quizz().question.forEach((item, index) => {
+          QuizzAdminDashboardPage.addQuestionBtn().click();
+          addQustion(item, index);
+        });
       }
       QuizzAdminDashboardPage.saveQuizzBtn().click();
 
       QuizzAdminDashboardPage.quizzArchiveBtn(0).click();
       cy.wait("@archiveQuizz").then((xhr) => {
-       expect(xhr.response.statusCode).to.eq(200);
-       expect(xhr.response.statusMessage).to.eq('OK');
+        expect(xhr.response.statusCode).to.eq(200);
+        expect(xhr.response.statusMessage).to.eq("OK");
       });
-      QuizzAdminDashboardPage.statusBadgeSpan(0).invoke('text').should('eq', 'archived');
+      QuizzAdminDashboardPage.statusBadgeSpan(0).invoke("text").should("eq", "archived");
     });
 
     it("Delete Quizz Test", () => {
@@ -212,23 +209,23 @@ describe('QuizzManagement Suite', () => {
 
       addQuizz(QuizzManagementGenerators.quizz());
       if (QuizzManagementGenerators.quizz().question.length > 0) {
-         QuizzManagementGenerators.quizz().question.forEach((item, index) => {
-           QuizzAdminDashboardPage.addQuestionBtn().click();
-           addQustion(item, index);
-         });
+        QuizzManagementGenerators.quizz().question.forEach((item, index) => {
+          QuizzAdminDashboardPage.addQuestionBtn().click();
+          addQustion(item, index);
+        });
       }
       QuizzAdminDashboardPage.saveQuizzBtn().click();
 
       QuizzAdminDashboardPage.quizzList()
         .its("length")
         .then((count: number) => {
-            QuizzAdminDashboardPage.quizzDeleteBtn(0).click();
-            cy.wait("@deleteQuizz").then((xhr) => {
-              expect(xhr.response.statusCode).to.eq(200);
-              expect(xhr.response.statusMessage).to.eq('OK');
-            });
-            QuizzAdminDashboardPage.quizzList().its("length").should("be.lt", count);
+          QuizzAdminDashboardPage.quizzDeleteBtn(0).click();
+          cy.wait("@deleteQuizz").then((xhr) => {
+            expect(xhr.response.statusCode).to.eq(200);
+            expect(xhr.response.statusMessage).to.eq("OK");
           });
+          QuizzAdminDashboardPage.quizzList().its("length").should("be.lt", count);
+        });
     });
 
     it("Remove question Test", () => {
@@ -237,32 +234,32 @@ describe('QuizzManagement Suite', () => {
 
       addQuizz(QuizzManagementGenerators.quizz());
       if (QuizzManagementGenerators.quizz().question.length > 0) {
-         QuizzManagementGenerators.quizz().question.forEach((item, index) => {
-           QuizzAdminDashboardPage.addQuestionBtn().click();
-           addQustion(item, index);
-         });
+        QuizzManagementGenerators.quizz().question.forEach((item, index) => {
+          QuizzAdminDashboardPage.addQuestionBtn().click();
+          addQustion(item, index);
+        });
       }
-      
+
       QuizzAdminDashboardPage.questionListItems()
         .its("length")
         .then((count: number) => {
           QuizzAdminDashboardPage.questionRemoveBtn(0).click();
-            QuizzAdminDashboardPage.questionListItems().its("length").should("be.lt", count);
-          });
+          QuizzAdminDashboardPage.questionListItems().its("length").should("be.lt", count);
+        });
     });
 
-    it.only("Quizz assign to selected users Test", () => {
+    it("Quizz assign to selected users Test", () => {
       login(QuizzManagementGenerators.loginAdminPositiveCase());
       QuizzManagementLoginPage.submitBtn().click();
       addQuizz(QuizzManagementGenerators.quizz());
 
-      QuizzAdminDashboardPage.assignMode().select('Selected Users');
-       cy.wait("@getUsers").then((xhr) => {
+      QuizzAdminDashboardPage.assignMode().select("Selected Users");
+      cy.wait("@getUsers").then((xhr) => {
         expect(xhr.response.statusCode).to.be.oneOf([200, 304]);
         const userCount = xhr.response.body.length;
 
-        QuizzAdminDashboardPage.assignModeOptions().should('have.length', userCount);
-       });
+        QuizzAdminDashboardPage.assignModeOptions().should("have.length", userCount);
+      });
     });
   });
 });

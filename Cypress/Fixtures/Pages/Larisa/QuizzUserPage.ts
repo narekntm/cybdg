@@ -1,3 +1,3 @@
 export class QuizzUserPage {
-  static autIframe = () => cy.get('.aut-iframe')
+  static autIframe = () => cy.get(".aut-iframe");
 }
