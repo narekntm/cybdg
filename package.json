@@ -15,7 +15,7 @@
     "serve:QuizzManager:BE": "node Resources/htmls/quiz_manager/BE/server.js",
     "serve:proxy": "node ./Resources/htmls/quiz_manager/proxy-server.js",
     "serve:QuizzManager:ALL": "concurrently -n FE,BE,PROXY -c green,blue,magenta \"npm run serve:QuizzManager:FE\" \"npm run serve:QuizzManager:BE\" \"npm run serve:proxy\"",
-    
+
     "prettier": "prettier --config .prettierrc --ignore-path .prettierignore",
     "eslint": "eslint --config .eslintrc.json --ignore-path .eslintignore",
     "tsc": "tsc --project ./tsconfig.json --noEmit",
