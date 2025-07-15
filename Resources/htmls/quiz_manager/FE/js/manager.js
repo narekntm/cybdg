@@ -229,8 +229,13 @@ async function loadQuizzes() {
 
     const quizCount = document.getElementById("quiz-count");
     quizCount.innerText = `(${quizzes.length})`;
+    
+    // randomize quizzes array
+    quizzes.sort(() => 0.5 - Math.random());
     quizzes.forEach(q => {
       const li = document.createElement("li");
+      li.classList.add("quiz-item");
+      li.dataset.id = q.id;
 
       const maxToShow = 5;
       const users = q.assignedUsers.slice(0, maxToShow).join(", ");

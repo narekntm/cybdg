@@ -1,7 +1,7 @@
 ﻿// view-submissions.js (Enhanced UI)
 import { apiGet } from './api.js'
 import './logout.js'
-import { showToast } from './toast'
+import { showToast } from './toast.js'
 
 const quizId = new URLSearchParams(window.location.search).get('quiz')
 const quizInfo = document.getElementById('quiz-info')
@@ -38,11 +38,14 @@ async function init () {
     list.innerHTML = ''
     list.appendChild(countDisplay)
 
+    // sort submissions by createdAt
+    submissions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     submissions.forEach((sub, index) => {
       const timestamp = new Date(sub.createdAt).toLocaleString()
       const container = document.createElement('div')
       container.className = 'submission submission-card submission-toggle'
-
+      container.dataset.id = sub.id
+      
       const header = document.createElement('h3')
       header.innerHTML = `
                 <span>Submission #${index + 1} </span>

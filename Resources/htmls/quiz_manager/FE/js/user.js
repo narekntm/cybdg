@@ -43,8 +43,11 @@ async function loadAvailableQuizzes () {
     const quizzCount = document.getElementById('quiz-count')
     quizzCount.innerText = `(${quizzes.length})`
     quizListEl.innerHTML = ''
+    // randomize quizzes array
+    quizzes.sort(() => 0.5 - Math.random());
     quizzes.forEach(q => {
       const li = document.createElement('li')
+      li.dataset.id = q.id;
       li.innerHTML = `
         <strong>${q.title}</strong> ${q.description}<br>
         <button onclick="window.location.href='quiz-view.html?quiz=${q.id}'">Submit</button>
@@ -73,11 +76,15 @@ async function loadSubmissions () {
     subCount.innerText = `(${subs.length})`
 
     submissionListEl.innerHTML = ''
+    
+    // sort submissions by createdAt
+    subs.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     for (const sub of subs) {
       try {
         const quiz = await apiGet(`/api/quizzes/${sub.quizId}`)
         const editable = quiz.status === 'active'
         const li = document.createElement('li')
+        li.dataset.id = sub.id
         li.innerHTML = `
           <strong>${quiz.title}</strong> Created At: ${new Date(sub.createdAt).toLocaleString()}<br>
           <button onclick="window.location.href='quiz-view.html?quiz=${quiz.id}&submission=${sub.id}'">
