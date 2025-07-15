@@ -1,0 +1,58 @@
+﻿/* ========== Buttons ========== */
+button,
+button[type="submit"],
+#add-question-btn,
+header button {
+  background-color: #254260;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover,
+button[type="submit"]:hover,
+#add-question-btn:hover,
+header button:hover {
+  background-color: #17334a;
+}
+
+button.remove-question {
+  background-color: #a84848;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.8rem;
+}
+
+button.remove-question:hover {
+  background-color: #913b3b;
+}
+
+.publish-btn {
+  background-color: #2f7660;
+  color: white;
+}
+
+.publish-btn:hover {
+  background-color: #276554;
+}
+
+.archive-btn {
+  background-color: #b38b49;
+  color: white;
+}
+
+.archive-btn:hover {
+  background-color: #99743a;
+}
+
+.delete-btn {
+  background-color: #a84848;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #913b3b;
+}

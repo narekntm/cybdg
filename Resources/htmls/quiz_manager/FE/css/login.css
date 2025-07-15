@@ -1,0 +1,10 @@
+﻿/* ========== Login Page ========== */
+.login-container {
+  background-color: white;
+  padding: 2rem 2.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  margin-top: 10vh;
+}
