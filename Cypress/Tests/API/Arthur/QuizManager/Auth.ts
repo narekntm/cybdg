@@ -1,28 +1,48 @@
-import { UserBuilder } from "Builders/Arthur/QuizManager/QuizManagerBuilders";
+import { TestUserBuilder } from "Builders/Arthur/QuizManager/TestUserBuilder";
+import { UserGenerator } from "Generators/Arthur/QuizManager/UserGenerator";
+import { TokenGenerator } from "Generators/Arthur/QuizManager/TokenGenerator";
 import { QuizManagerEndpoints } from "EndPoints/Arthur/QuizManager/QuizManagerEndpoints";
-import { clearAuth, loginViaApi, logoutViaApi } from "Helpers/Arthur/QuizManager/QuizManagerHelpers";
+import {
+  clearAuth,
+  loginViaApi,
+  logoutViaApi,
+} from "Helpers/Arthur/QuizManager/QuizManagerHelpers";
 import { AuthErrorMessages } from "Models/Arthur/QuizManager/QuizManagerErrorMessages";
-import { UserFields, UserRole, UserSummary } from "Models/Arthur/QuizManager/QuizManagerModels";
+import {
+  UserCredentials,
+  UserFields,
+  UserRole,
+  UserSummary,
+} from "Models/Arthur/QuizManager/QuizManagerModels";
 
 describe("Auth API Tests", () => {
   const authMe = QuizManagerEndpoints.authMe;
 
-  context("Positive login scenarios", () => {
-    it("Should login as Admin and access /auth/me", () => {
-      const user = UserBuilder.validAdmin();
+  let manager: UserCredentials;
+  let user: UserCredentials;
 
-      loginViaApi(user).then(() => {
+  before(() => {
+    TestUserBuilder.createUser(UserRole.Manager).then((createdManager) => {
+      manager = createdManager;
+    });
+
+    TestUserBuilder.createUser(UserRole.User).then((createdUser) => {
+      user = createdUser;
+    });
+  });
+
+  context("Positive login scenarios", () => {
+    it("Should login as Manager and access /auth/me", () => {
+      loginViaApi(manager).then(() => {
         cy.request(authMe).then((res) => {
           expect(res.status).to.eq(200);
-          expect(res.body.email).to.eq(user.email);
-          expect(res.body.role).to.eq(UserRole.Admin);
+          expect(res.body.email).to.eq(manager.email);
+          expect(res.body.role).to.eq(UserRole.Manager);
         });
       });
     });
 
     it("Should login as User and access /auth/me", () => {
-      const user = UserBuilder.validUser();
-
       loginViaApi(user).then(() => {
         cy.request(authMe).then((res) => {
           expect(res.status).to.eq(200);
@@ -33,13 +53,11 @@ describe("Auth API Tests", () => {
     });
 
     it("Should logout and block access to /auth/me", () => {
-      const user = UserBuilder.validUser();
-
       loginViaApi(user).then(() => {
         logoutViaApi().then(() => {
           cy.request({
             method: "GET",
-            url: QuizManagerEndpoints.authMe,
+            url: authMe,
             failOnStatusCode: false,
           }).then((res) => {
             expect(res.status).to.eq(401);
@@ -49,16 +67,18 @@ describe("Auth API Tests", () => {
       });
     });
 
-    it("Should allow Admin to access /api/users", () => {
-      const admin = UserBuilder.validAdmin();
-
-      loginViaApi(admin).then(() => {
+    it("Should allow Manager to access /api/users", () => {
+      loginViaApi(manager).then(() => {
         cy.request(QuizManagerEndpoints.users).then((res) => {
           expect(res.status).to.eq(200);
           expect(res.body).to.be.an("array");
 
           (res.body as UserSummary[]).forEach((user) => {
-            expect(user).to.have.all.keys(UserFields.Id, UserFields.Email, UserFields.Role);
+            expect(user).to.have.all.keys(
+              UserFields.Id,
+              UserFields.Email,
+              UserFields.Role
+            );
             expect(user.role).to.eq(UserRole.User);
           });
         });
@@ -72,18 +92,28 @@ describe("Auth API Tests", () => {
     });
 
     it("Should not login with invalid email", () => {
-      const user = UserBuilder.invalidUser();
+      const invalid = UserGenerator.invalidUser();
 
-      UserBuilder.LoginRequest(user, false).then((res) => {
+      cy.request({
+        method: "POST",
+        url: QuizManagerEndpoints.login,
+        body: { email: invalid.email, password: invalid.password },
+        failOnStatusCode: false,
+      }).then((res) => {
         expect(res.status).to.eq(401);
         expect(res.body.error).to.eq(AuthErrorMessages.InvalidCredentials);
       });
     });
 
     it("Should not login with wrong password", () => {
-      const user = UserBuilder.withWrongPassword();
+      const wrong = UserGenerator.withWrongPassword(user.email);
 
-      UserBuilder.LoginRequest(user, false).then((res) => {
+      cy.request({
+        method: "POST",
+        url: QuizManagerEndpoints.login,
+        body: { email: wrong.email, password: wrong.password },
+        failOnStatusCode: false,
+      }).then((res) => {
         expect(res.status).to.eq(401);
         expect(res.body.error).to.eq(AuthErrorMessages.InvalidCredentials);
       });
@@ -100,9 +130,7 @@ describe("Auth API Tests", () => {
       });
     });
 
-    it("Should not allow user to access /api/users (admin only)", () => {
-      const user = UserBuilder.validUser();
-
+    it("Should not allow User to access /api/users (manager only)", () => {
       loginViaApi(user).then(() => {
         cy.request({
           method: "GET",
@@ -116,11 +144,11 @@ describe("Auth API Tests", () => {
     });
 
     it("Should reject request with invalid authToken cookie", () => {
-      cy.setCookie("authToken", UserBuilder.generateInvalidToken());
+      cy.setCookie("authToken", TokenGenerator.invalidToken());
 
       cy.request({
         method: "GET",
-        url: QuizManagerEndpoints.authMe,
+        url: authMe,
         failOnStatusCode: false,
       }).then((res) => {
         expect(res.status).to.eq(401);
@@ -129,7 +157,11 @@ describe("Auth API Tests", () => {
     });
 
     it("Should block access to protected routes without login", () => {
-      const urls = [QuizManagerEndpoints.quizzes, QuizManagerEndpoints.users, QuizManagerEndpoints.mySubmissions];
+      const urls = [
+        QuizManagerEndpoints.quizzes,
+        QuizManagerEndpoints.users,
+        QuizManagerEndpoints.mySubmissions,
+      ];
 
       urls.forEach((url) => {
         cy.request({
@@ -140,6 +172,19 @@ describe("Auth API Tests", () => {
           expect(res.status).to.eq(401);
           expect(res.body.error).to.eq(AuthErrorMessages.Unauthorized);
         });
+      });
+    });
+
+    it("Should reject access if token is syntactically correct but not in session", () => {
+      cy.setCookie("authToken", TokenGenerator.validLookingButFakeToken());
+
+      cy.request({
+        method: "GET",
+        url: QuizManagerEndpoints.authMe,
+        failOnStatusCode: false,
+      }).then((res) => {
+        expect(res.status).to.eq(401);
+        expect(res.body.error).to.eq(AuthErrorMessages.Unauthorized);
       });
     });
   });

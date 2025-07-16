@@ -65,15 +65,15 @@ export interface AdminQuiz {
 }
 
 export enum UserRole {
-  Admin = "admin",
   User = "user",
+  Manager = "manager",
 }
 
 export interface UserCredentials {
   id: string;
   email: string;
   password: string;
-  role?: UserRole;
+  role: UserRole;
 }
 
 export enum UserFields {

@@ -1,5 +1,10 @@
 import { QuizManagerEndpoints } from "EndPoints/Arthur/QuizManager/QuizManagerEndpoints";
-import { UserCredentials } from "Models/Arthur/QuizManager/QuizManagerModels";
+import {
+  QuizRequest,
+  QuizResponse,
+  UserCredentials,
+} from "Models/Arthur/QuizManager/QuizManagerModels";
+import { QuizGenerator } from "Generators/Arthur/QuizManager/QuizGenerator";
 
 export function loginViaApi(user: UserCredentials): Cypress.Chainable {
   return cy
@@ -16,7 +21,6 @@ export function loginViaApi(user: UserCredentials): Cypress.Chainable {
       expect(setCookieHeader, "Set-Cookie header should exist").to.exist;
 
       const cookies = Array.isArray(setCookieHeader) ? setCookieHeader : [setCookieHeader];
-
       const authTokenCookie = cookies.find((c) => c.includes("authToken"));
       expect(authTokenCookie, "authToken cookie should be present").to.exist;
 
@@ -39,4 +43,26 @@ export function logoutViaApi(failOnStatusCode: boolean = true): Cypress.Chainabl
 
 export function clearAuth(): void {
   cy.clearCookie("authToken");
+}
+
+export function createAndPublishQuiz(quiz: QuizRequest): Cypress.Chainable<string> {
+  return cy
+    .request<QuizResponse>("POST", QuizManagerEndpoints.quizzes, quiz)
+    .then((res) => {
+      const quizId = res.body.id;
+      return cy
+        .request("PATCH", QuizManagerEndpoints.quizPublish(quizId))
+        .then(() => quizId);
+    });
+}
+
+export function createAndPublishGeneratedQuiz(): Cypress.Chainable<string> {
+  const quiz = QuizGenerator.generateQuizWithAllTypes();
+  return createAndPublishQuiz(quiz);
+}
+
+export function createDraftQuiz(quiz: QuizRequest): Cypress.Chainable<string> {
+  return cy
+    .request<QuizResponse>("POST", QuizManagerEndpoints.quizzes, quiz)
+    .then((res) => res.body.id);
 }

@@ -1,7 +1,15 @@
-import { QuizBuilder, UserBuilder } from "Builders/Arthur/QuizManager/QuizManagerBuilders";
+import { TestUserBuilder } from "Builders/Arthur/QuizManager/TestUserBuilder";
+import { QuizGenerator } from "Generators/Arthur/QuizManager/QuizGenerator";
 import { QuizManagerEndpoints } from "EndPoints/Arthur/QuizManager/QuizManagerEndpoints";
-import { loginViaApi } from "Helpers/Arthur/QuizManager/QuizManagerHelpers";
-import { AuthErrorMessages, QuizErrorMessages, SubmissionErrorMessages } from "Models/Arthur/QuizManager/QuizManagerErrorMessages";
+import {
+  loginViaApi,
+  createAndPublishQuiz,
+} from "Helpers/Arthur/QuizManager/QuizManagerHelpers";
+import {
+  AuthErrorMessages,
+  QuizErrorMessages,
+  SubmissionErrorMessages,
+} from "Models/Arthur/QuizManager/QuizManagerErrorMessages";
 import {
   Answer,
   QuestionType,
@@ -9,27 +17,35 @@ import {
   Submission,
   SubmissionAnswerText,
   UserCredentials,
+  UserRole,
 } from "Models/Arthur/QuizManager/QuizManagerModels";
 
 describe("Quiz Submissions API Tests", () => {
-  let admin: UserCredentials;
+  let manager: UserCredentials;
   let user: UserCredentials;
   let anotherUser: UserCredentials;
   let quiz: QuizRequest;
   let quizId: string;
 
   beforeEach(() => {
-    admin = UserBuilder.validAdmin();
-    user = UserBuilder.validUser();
-    anotherUser = UserBuilder.anotherValidUser();
-    quiz = QuizBuilder.generateValidQuiz();
-
-    loginViaApi(admin).then(() => {
-      cy.request("POST", QuizManagerEndpoints.quizzes, quiz).then((res) => {
-        quizId = res.body.id;
-        cy.request("PATCH", QuizManagerEndpoints.quizPublish(quizId));
+    return TestUserBuilder.createUser(UserRole.Manager)
+      .then((admin) => {
+        manager = admin;
+        return TestUserBuilder.createUser(UserRole.User);
+      })
+      .then((u) => {
+        user = u;
+        return TestUserBuilder.createUser(UserRole.User);
+      })
+      .then((u2) => {
+        anotherUser = u2;
+        quiz = QuizGenerator.generateQuizWithAllTypes();
+        return loginViaApi(manager);
+      })
+      .then(() => createAndPublishQuiz(quiz))
+      .then((id) => {
+        quizId = id;
       });
-    });
   });
 
   context("Submit", () => {
@@ -105,7 +121,9 @@ describe("Quiz Submissions API Tests", () => {
             answer: q.type === QuestionType.Input ? SubmissionAnswerText.Updated : [q.options[1]],
           }));
 
-          cy.request("PUT", QuizManagerEndpoints.submission(submissionId), { answers: updatedAnswers }).then((editRes) => {
+          cy.request("PUT", QuizManagerEndpoints.submission(submissionId), {
+            answers: updatedAnswers,
+          }).then((editRes) => {
             expect(editRes.status).to.eq(200);
             expect(editRes.body.success).to.be.true;
           });
@@ -123,7 +141,7 @@ describe("Quiz Submissions API Tests", () => {
         cy.request("POST", QuizManagerEndpoints.submitToQuiz(quizId), { answers }).then((res) => {
           const submissionId = res.body.id;
 
-          loginViaApi(admin).then(() => {
+          loginViaApi(manager).then(() => {
             cy.request("PATCH", QuizManagerEndpoints.quizArchive(quizId)).then(() => {
               loginViaApi(user).then(() => {
                 cy.request({
@@ -195,7 +213,7 @@ describe("Quiz Submissions API Tests", () => {
         }));
 
         cy.request("POST", QuizManagerEndpoints.submitToQuiz(quizId), { answers }).then(() => {
-          loginViaApi(admin).then(() => {
+          loginViaApi(manager).then(() => {
             cy.request(QuizManagerEndpoints.quizSubmissions(quizId)).then((res) => {
               expect(res.status).to.eq(200);
               res.body.forEach((s: Submission) => {
@@ -236,7 +254,7 @@ describe("Quiz Submissions API Tests", () => {
         cy.request("POST", QuizManagerEndpoints.submitToQuiz(quizId), { answers }).then((res) => {
           const submissionId = res.body.id;
 
-          loginViaApi(admin).then(() => {
+          loginViaApi(manager).then(() => {
             cy.request(QuizManagerEndpoints.submission(submissionId)).then((res) => {
               expect(res.status).to.eq(200);
               expect(res.body.id).to.eq(submissionId);
