@@ -111,18 +111,6 @@ export interface UserSummary {
   role: UserRole;
 }
 
-export enum TestUserIds {
-  Admin = "admin1",
-  User1 = "user1",
-  User2 = "user2",
-}
-
-export enum TestUserEmails {
-  Admin = "admin@example.com",
-  User1 = "user1@example.com",
-  User2 = "user2@example.com",
-}
-
 export enum AssignedUsers {
   All = "all",
 }

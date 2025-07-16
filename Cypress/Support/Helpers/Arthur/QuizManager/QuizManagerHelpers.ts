@@ -1,10 +1,6 @@
 import { QuizManagerEndpoints } from "EndPoints/Arthur/QuizManager/QuizManagerEndpoints";
-import {
-  QuizRequest,
-  QuizResponse,
-  UserCredentials,
-} from "Models/Arthur/QuizManager/QuizManagerModels";
 import { QuizGenerator } from "Generators/Arthur/QuizManager/QuizGenerator";
+import { QuizRequest, QuizResponse, UserCredentials } from "Models/Arthur/QuizManager/QuizManagerModels";
 
 export function loginViaApi(user: UserCredentials): Cypress.Chainable {
   return cy
@@ -46,14 +42,10 @@ export function clearAuth(): void {
 }
 
 export function createAndPublishQuiz(quiz: QuizRequest): Cypress.Chainable<string> {
-  return cy
-    .request<QuizResponse>("POST", QuizManagerEndpoints.quizzes, quiz)
-    .then((res) => {
-      const quizId = res.body.id;
-      return cy
-        .request("PATCH", QuizManagerEndpoints.quizPublish(quizId))
-        .then(() => quizId);
-    });
+  return cy.request<QuizResponse>("POST", QuizManagerEndpoints.quizzes, quiz).then((res) => {
+    const quizId = res.body.id;
+    return cy.request("PATCH", QuizManagerEndpoints.quizPublish(quizId)).then(() => quizId);
+  });
 }
 
 export function createAndPublishGeneratedQuiz(): Cypress.Chainable<string> {
@@ -62,7 +54,5 @@ export function createAndPublishGeneratedQuiz(): Cypress.Chainable<string> {
 }
 
 export function createDraftQuiz(quiz: QuizRequest): Cypress.Chainable<string> {
-  return cy
-    .request<QuizResponse>("POST", QuizManagerEndpoints.quizzes, quiz)
-    .then((res) => res.body.id);
+  return cy.request<QuizResponse>("POST", QuizManagerEndpoints.quizzes, quiz).then((res) => res.body.id);
 }

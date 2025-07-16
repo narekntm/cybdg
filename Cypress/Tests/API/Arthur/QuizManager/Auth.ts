@@ -1,19 +1,10 @@
 import { TestUserBuilder } from "Builders/Arthur/QuizManager/TestUserBuilder";
-import { UserGenerator } from "Generators/Arthur/QuizManager/UserGenerator";
-import { TokenGenerator } from "Generators/Arthur/QuizManager/TokenGenerator";
 import { QuizManagerEndpoints } from "EndPoints/Arthur/QuizManager/QuizManagerEndpoints";
-import {
-  clearAuth,
-  loginViaApi,
-  logoutViaApi,
-} from "Helpers/Arthur/QuizManager/QuizManagerHelpers";
+import { TokenGenerator } from "Generators/Arthur/QuizManager/TokenGenerator";
+import { UserGenerator } from "Generators/Arthur/QuizManager/UserGenerator";
+import { clearAuth, loginViaApi, logoutViaApi } from "Helpers/Arthur/QuizManager/QuizManagerHelpers";
 import { AuthErrorMessages } from "Models/Arthur/QuizManager/QuizManagerErrorMessages";
-import {
-  UserCredentials,
-  UserFields,
-  UserRole,
-  UserSummary,
-} from "Models/Arthur/QuizManager/QuizManagerModels";
+import { UserCredentials, UserFields, UserRole, UserSummary } from "Models/Arthur/QuizManager/QuizManagerModels";
 
 describe("Auth API Tests", () => {
   const authMe = QuizManagerEndpoints.authMe;
@@ -74,11 +65,7 @@ describe("Auth API Tests", () => {
           expect(res.body).to.be.an("array");
 
           (res.body as UserSummary[]).forEach((user) => {
-            expect(user).to.have.all.keys(
-              UserFields.Id,
-              UserFields.Email,
-              UserFields.Role
-            );
+            expect(user).to.have.all.keys(UserFields.Id, UserFields.Email, UserFields.Role);
             expect(user.role).to.eq(UserRole.User);
           });
         });
@@ -157,11 +144,7 @@ describe("Auth API Tests", () => {
     });
 
     it("Should block access to protected routes without login", () => {
-      const urls = [
-        QuizManagerEndpoints.quizzes,
-        QuizManagerEndpoints.users,
-        QuizManagerEndpoints.mySubmissions,
-      ];
+      const urls = [QuizManagerEndpoints.quizzes, QuizManagerEndpoints.users, QuizManagerEndpoints.mySubmissions];
 
       urls.forEach((url) => {
         cy.request({

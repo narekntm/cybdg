@@ -1,17 +1,8 @@
 import { TestUserBuilder } from "Builders/Arthur/QuizManager/TestUserBuilder";
-import { QuizGenerator } from "Generators/Arthur/QuizManager/QuizGenerator";
 import { QuizManagerEndpoints } from "EndPoints/Arthur/QuizManager/QuizManagerEndpoints";
-import {
-  loginViaApi,
-  createAndPublishQuiz,
-  createDraftQuiz,
-} from "Helpers/Arthur/QuizManager/QuizManagerHelpers";
-import {
-  QuizRequest,
-  QuizResponse,
-  UserCredentials,
-  UserRole,
-} from "Models/Arthur/QuizManager/QuizManagerModels";
+import { QuizGenerator } from "Generators/Arthur/QuizManager/QuizGenerator";
+import { createAndPublishQuiz, createDraftQuiz, loginViaApi } from "Helpers/Arthur/QuizManager/QuizManagerHelpers";
+import { QuizRequest, QuizResponse, UserCredentials, UserRole } from "Models/Arthur/QuizManager/QuizManagerModels";
 
 describe("Quiz Assignment Rules", () => {
   let manager: UserCredentials;

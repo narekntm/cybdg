@@ -1,12 +1,7 @@
 import { TestUserBuilder } from "Builders/Arthur/QuizManager/TestUserBuilder";
-import { QuizGenerator } from "Generators/Arthur/QuizManager/QuizGenerator";
 import { QuizManagerEndpoints } from "EndPoints/Arthur/QuizManager/QuizManagerEndpoints";
-import {
-  loginViaApi,
-  createAndPublishQuiz,
-  createAndPublishGeneratedQuiz,
-  createDraftQuiz,
-} from "Helpers/Arthur/QuizManager/QuizManagerHelpers";
+import { QuizGenerator } from "Generators/Arthur/QuizManager/QuizGenerator";
+import { createAndPublishQuiz, createDraftQuiz, loginViaApi } from "Helpers/Arthur/QuizManager/QuizManagerHelpers";
 import { QuizErrorMessages } from "Models/Arthur/QuizManager/QuizManagerErrorMessages";
 import {
   AssignedUsers,
@@ -106,10 +101,10 @@ describe("Quiz Creation Test Scenarios", () => {
     });
 
     it("Should assign ['all'] if assignedUsers is not provided", () => {
-      const { assignedUsers, ...rest } = QuizGenerator.generateQuizWithAllTypes();
-      const partialQuiz: Omit<QuizRequest, "assignedUsers"> = rest;
+      const quiz = QuizGenerator.generateQuizWithAllTypes();
+      delete quiz.assignedUsers;
 
-      createDraftQuiz(partialQuiz as QuizRequest).then((quizId) => {
+      createDraftQuiz(quiz).then((quizId) => {
         cy.request(QuizManagerEndpoints.quiz(quizId)).then((res) => {
           expect(res.body.assignedUsers).to.deep.eq([AssignedUsers.All]);
         });
@@ -120,25 +115,27 @@ describe("Quiz Creation Test Scenarios", () => {
       let managerA: UserCredentials;
       let managerB: UserCredentials;
 
-      TestUserBuilder.createUser(UserRole.Manager).then((createdA) => {
-        managerA = createdA;
-        return TestUserBuilder.createUser(UserRole.Manager);
-      }).then((createdB) => {
-        managerB = createdB;
+      TestUserBuilder.createUser(UserRole.Manager)
+        .then((createdA) => {
+          managerA = createdA;
+          return TestUserBuilder.createUser(UserRole.Manager);
+        })
+        .then((createdB) => {
+          managerB = createdB;
 
-        const quiz = QuizGenerator.generateQuizWithAllTypes();
+          const quiz = QuizGenerator.generateQuizWithAllTypes();
 
-        loginViaApi(managerA).then(() => {
-          createDraftQuiz(quiz).then((quizId) => {
-            loginViaApi(managerB).then(() => {
-              cy.request(QuizManagerEndpoints.quizzes).then((res) => {
-                const quizIds = (res.body as QuizResponse[]).map((q) => q.id);
-                expect(quizIds).not.to.include(quizId);
+          loginViaApi(managerA).then(() => {
+            createDraftQuiz(quiz).then((quizId) => {
+              loginViaApi(managerB).then(() => {
+                cy.request(QuizManagerEndpoints.quizzes).then((res) => {
+                  const quizIds = (res.body as QuizResponse[]).map((q) => q.id);
+                  expect(quizIds).not.to.include(quizId);
+                });
               });
             });
           });
         });
-      });
     });
   });
 

@@ -27,5 +27,5 @@ export class QuizManagerEndpoints {
 
   static testAuth = `${root}/api/test/auth`;
 
-  static testUsers = `${root}/api/test/users`
+  static testUsers = `${root}/api/test/users`;
 }

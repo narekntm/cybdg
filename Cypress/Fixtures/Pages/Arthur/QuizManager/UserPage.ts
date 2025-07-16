@@ -24,10 +24,4 @@ export class UserViewPage {
   static submittedQuizDate = (index: number = 0) => UserViewPage.submittedQuizItems().eq(index).invoke("text");
 
   static editSubmissionButton = (index: number = 0) => UserViewPage.submittedQuizItems().eq(index).find("button");
-
-  static url = "/user.html";
-
-  static visit(): void {
-    cy.visit(this.url);
-  }
 }

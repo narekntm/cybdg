@@ -1,4 +1,4 @@
-export class AdminPage {
+export class ManagerPage {
   static logoutButton = () => cy.get("#logout-btn");
 
   static quizTitleInput = () => cy.get("#quiz-title");
@@ -34,12 +34,6 @@ export class AdminPage {
   static firstViewSubmissionsLink = () => cy.get("#admin-quiz-list a.view-submissions").first();
 
   static viewSubmissionsByQuizId = (quizId: string) => cy.get(`#admin-quiz-list a.view-submissions[href*="${quizId}"]`);
-
-  static url = "/admin.html";
-
-  static visit(): void {
-    cy.visit(this.url);
-  }
 
   static quizTitles = () => cy.get("#admin-quiz-list .quiz-title");
 

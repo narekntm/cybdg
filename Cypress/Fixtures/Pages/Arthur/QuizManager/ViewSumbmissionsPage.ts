@@ -1,5 +1,3 @@
-// cypress/Support/Pages/QuizSubmissionsPage.ts
-
 export class QuizSubmissionsPage {
   static pageTitle = () => cy.get("h1").contains("Quiz Submissions");
 
