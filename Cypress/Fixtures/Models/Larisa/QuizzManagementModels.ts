@@ -22,4 +22,9 @@ export namespace QuizzManagementModels {
     description: string;
     question: Question[];
   }
+
+  export enum Role {
+    Admin = "Admin",
+    User = "User",
+  }
 }

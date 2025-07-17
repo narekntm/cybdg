@@ -1,9 +1,9 @@
-export class QuizzManagementLoginPage {
+export class QuizzLoginPage {
   static title = () => cy.get(".login-container h1");
-  static emailLbl = () => cy.get("#email").prev("label");
+  static emailLbl = () => cy.get('label[for="email"]');
   static emailInput = () => cy.get("input#email");
-  static passwordLbl = () => cy.get("#password").prev("label");
+  static passwordLbl = () => cy.get('label[for="password"]');
   static passwordInput = () => cy.get("#password");
   static submitBtn = () => cy.get('button[type="submit"]');
-  static errorMessage = () => cy.get("#error-message");
+  static toast = () => cy.get(".toast");
 }

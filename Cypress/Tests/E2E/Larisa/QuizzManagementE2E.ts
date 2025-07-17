@@ -1,26 +1,41 @@
 import { QuizzManagementEndPoints } from "EndPoints/Larisa/QuizzManagementEndPoints";
 import { QuizzManagementGenerators } from "Generators/Larisa/QuizzManagementGenerators";
 import { QuizzManagementModels } from "Models/Larisa/QuizzManagementModels";
-import { QuizzAdminDashboardPage } from "Pages/Larisa/QuizzAdminDashboardPage";
-import { QuizzManagementLoginPage } from "Pages/Larisa/QuizzManagementLoginPage";
+import { QuizzLoginPage } from "Pages/Larisa/QuizzLoginPage";
+import { QuizzManagerPage } from "Pages/Larisa/QuizzManagerPage";
 
 describe("QuizzManagement Suite", () => {
   const baseURL = "/login";
 
+  const loginAdminPositiveCase: QuizzManagementModels.Login = {
+    email: Cypress.env("ADMIN_EMAIL"),
+    password: Cypress.env("ADMIN_PASSWORD"),
+  };
+
+  const loginUser1PositiveCase: QuizzManagementModels.Login = {
+    email: Cypress.env("USER1_EMAIL"),
+    password: Cypress.env("USER1_PASSWORD"),
+  };
+
+  const loginNegativeCase: QuizzManagementModels.Login = {
+    email: "wrong@email.com",
+    password: "wrongPassword",
+  };
+
   function login(login: Partial<QuizzManagementModels.Login>) {
-    if (login.email) QuizzManagementLoginPage.emailInput().clear().type(login.email);
-    if (login.password) QuizzManagementLoginPage.passwordInput().clear().type(login.password);
+    if (login.email) QuizzLoginPage.emailInput().clear().type(login.email);
+    if (login.password) QuizzLoginPage.passwordInput().clear().type(login.password);
   }
 
   function addQustion(question: Partial<QuizzManagementModels.Question>, index: number) {
-    if (question.text) QuizzAdminDashboardPage.questionText(index).clear().type(question.text);
-    if (question.type) QuizzAdminDashboardPage.questionSelect(index).select(question.type);
-    if (question.options) QuizzAdminDashboardPage.questionOptions(index).clear().type(question.options);
+    if (question.text) QuizzManagerPage.questionText(index).clear().type(question.text);
+    if (question.type) QuizzManagerPage.questionSelect(index).select(question.type);
+    if (question.options) QuizzManagerPage.questionOptions(index).clear().type(question.options);
   }
 
   function addQuizz(quizz: Partial<QuizzManagementModels.Quizz>) {
-    if (quizz.title) QuizzAdminDashboardPage.quizzTitleInput().clear().type(quizz.title);
-    if (quizz.description) QuizzAdminDashboardPage.quizzDescTextArea().clear().type(quizz.description);
+    if (quizz.title) QuizzManagerPage.quizzTitleInput().clear().type(quizz.title);
+    if (quizz.description) QuizzManagerPage.quizzDescTextArea().clear().type(quizz.description);
   }
 
   before(() => {});
@@ -40,22 +55,22 @@ describe("QuizzManagement Suite", () => {
 
   context("Login to Quizz Management", () => {
     it("Login Modal Content Test", () => {
-      QuizzManagementLoginPage.title().should("be.visible").and("have.text", "Login to Quiz Manager");
-      QuizzManagementLoginPage.emailLbl().should("be.visible").and("have.text", "Email");
-      QuizzManagementLoginPage.emailInput().should("be.visible").and("be.enabled").and("have.attr", "required");
-      QuizzManagementLoginPage.passwordLbl().should("be.visible").and("have.text", "Password");
-      QuizzManagementLoginPage.passwordInput().should("be.visible").and("be.enabled").and("have.attr", "required");
-      QuizzManagementLoginPage.submitBtn().should("be.visible").and("have.text", "Login");
+      QuizzLoginPage.title().should("be.visible").and("have.text", "Login to Quiz Manager");
+      QuizzLoginPage.emailLbl().should("be.visible").and("have.text", "Email");
+      QuizzLoginPage.emailInput().should("be.visible").and("be.enabled").and("have.attr", "required");
+      QuizzLoginPage.passwordLbl().should("be.visible").and("have.text", "Password");
+      QuizzLoginPage.passwordInput().should("be.visible").and("be.enabled").and("have.attr", "required");
+      QuizzLoginPage.submitBtn().should("be.visible").and("have.text", "Login");
     });
 
     it("Login as Admin, Positive case", () => {
-      login(QuizzManagementGenerators.loginAdminPositiveCase);
-      QuizzManagementLoginPage.submitBtn().click();
+      login(loginAdminPositiveCase);
+      QuizzLoginPage.submitBtn().click();
 
       cy.wait("@postLogin").then((xhr) => {
         expect(xhr.request.body).to.include({
-          email: QuizzManagementGenerators.loginAdminPositiveCase.email,
-          password: QuizzManagementGenerators.loginAdminPositiveCase.password,
+          email: loginAdminPositiveCase.email,
+          password: loginAdminPositiveCase.password,
         });
         expect(xhr.response.statusCode).to.eq(200);
         expect(xhr.response.body).deep.equal({ success: true });
@@ -63,13 +78,13 @@ describe("QuizzManagement Suite", () => {
     });
 
     it("Login as User1, Positive case", () => {
-      login(QuizzManagementGenerators.loginUser1PositiveCase);
-      QuizzManagementLoginPage.submitBtn().click();
+      login(loginUser1PositiveCase);
+      QuizzLoginPage.submitBtn().click();
 
       cy.wait("@postLogin").then((xhr) => {
         expect(xhr.request.body).to.include({
-          email: QuizzManagementGenerators.loginUser1PositiveCase.email,
-          password: QuizzManagementGenerators.loginUser1PositiveCase.password,
+          email: loginUser1PositiveCase.email,
+          password: loginUser1PositiveCase.password,
         });
         expect(xhr.response.statusCode).to.eq(200);
         expect(xhr.response.body).deep.equal({ success: true });
@@ -77,159 +92,158 @@ describe("QuizzManagement Suite", () => {
     });
 
     it("Login, Negative case", () => {
-      login(QuizzManagementGenerators.loginNegativeCase);
-      QuizzManagementLoginPage.submitBtn().click();
-      //QuizzManagementLoginPage.errorMessage().should("be.visible").and("have.text", "Invalid credentials.");
+      login(loginNegativeCase);
+      QuizzLoginPage.submitBtn().click();
     });
   });
 
   context("Admin Dashboard suite", () => {
     it("Admin Dashboard Modal Content Test", () => {
-      login(QuizzManagementGenerators.loginAdminPositiveCase);
-      QuizzManagementLoginPage.submitBtn().click();
+      login(loginAdminPositiveCase);
+      QuizzLoginPage.submitBtn().click();
 
-      QuizzAdminDashboardPage.title().should("be.visible").and("have.text", "Create New Quiz");
-      QuizzAdminDashboardPage.quizzTitleInput().should("be.visible").and("be.enabled").and("have.attr", "required");
-      QuizzAdminDashboardPage.quizzDescTextArea().should("be.visible").and("be.enabled").and("have.attr", "required");
-      QuizzAdminDashboardPage.addQuestionBtn().should("be.visible").and("have.text", "+ Add Question");
-      QuizzAdminDashboardPage.assignToLbl().should("have.text", "Assign To:");
+      QuizzManagerPage.toggleHeader().should("be.visible").and("have.text", "Create New Quiz");
+      QuizzManagerPage.quizzTitleInput().should("be.visible").and("be.enabled").and("have.attr", "required");
+      QuizzManagerPage.quizzDescTextArea().should("be.visible").and("be.enabled").and("have.attr", "required");
+      QuizzManagerPage.addQuestionBtn().should("be.visible").and("have.text", "+ Add Question");
+      QuizzManagerPage.assignToLbl().should("have.text", "Assign To:");
 
-      QuizzAdminDashboardPage.assignModeOptions().then((options) => {
+      QuizzManagerPage.assignModeOptions().then((options) => {
         expect(options).to.have.length(2);
         expect(options[0]).to.have.text("All Users");
         expect(options[1]).to.have.text("Selected Users");
       });
 
-      QuizzAdminDashboardPage.saveQuizzBtn().should("be.visible").and("have.text", "Save Quiz");
-      QuizzAdminDashboardPage.quizzListTitle().should("have.text", "My Quizzes");
+      QuizzManagerPage.saveQuizzBtn().should("be.visible").and("have.text", "Save Quiz");
+      QuizzManagerPage.quizzListTitle().should("have.text", "My Quizzes");
     });
 
     it("Add Quizz Test Section Test", () => {
-      login(QuizzManagementGenerators.loginAdminPositiveCase);
-      QuizzManagementLoginPage.submitBtn().click();
+      login(loginAdminPositiveCase);
+      QuizzLoginPage.submitBtn().click();
 
-      QuizzAdminDashboardPage.addQuestionBtn().click();
-      QuizzAdminDashboardPage.questionText(0).should("be.visible").and("be.enabled").and("have.attr", "required");
+      QuizzManagerPage.addQuestionBtn().click();
+      QuizzManagerPage.questionText(0).should("be.visible").and("be.enabled").and("have.attr", "required");
 
-      QuizzAdminDashboardPage.questionSelectOptions(0).should("have.length", 4);
-      QuizzAdminDashboardPage.questionOptions(0).should("be.visible");
-      QuizzAdminDashboardPage.questionRemoveBtn(0).should("be.visible").and("have.text", "Remove");
+      QuizzManagerPage.questionSelectOptions(0).should("have.length", 4);
+      QuizzManagerPage.questionOptions(0).should("be.visible");
+      QuizzManagerPage.questionRemoveBtn(0).should("be.visible").and("have.text", "Remove");
     });
 
     it("Add Quizz Test", () => {
-      login(QuizzManagementGenerators.loginAdminPositiveCase);
-      QuizzManagementLoginPage.submitBtn().click();
+      login(loginAdminPositiveCase);
+      QuizzLoginPage.submitBtn().click();
 
       addQuizz(QuizzManagementGenerators.quizz);
 
       QuizzManagementGenerators.quizz.question.forEach((item, index) => {
-        QuizzAdminDashboardPage.addQuestionBtn().click();
+        QuizzManagerPage.addQuestionBtn().click();
         addQustion(item, index);
       });
 
-      QuizzAdminDashboardPage.quizzListItems()
+      QuizzManagerPage.quizzListItems()
         .its("length")
         .then((count: number) => {
-          QuizzAdminDashboardPage.saveQuizzBtn().click();
+          QuizzManagerPage.saveQuizzBtn().click();
           cy.wait("@postQuizz").then((xhr) => {
             expect(xhr.response.statusCode).to.eq(200);
             expect(xhr.response.statusMessage).to.eq("OK");
           });
-          QuizzAdminDashboardPage.quizzListItems().its("length").should("be.gt", count);
+          QuizzManagerPage.quizzListItems().its("length").should("be.gt", count);
         });
     });
 
     it("Publish Quizz Test", () => {
-      login(QuizzManagementGenerators.loginAdminPositiveCase);
-      QuizzManagementLoginPage.submitBtn().click();
+      login(loginAdminPositiveCase);
+      QuizzLoginPage.submitBtn().click();
 
       addQuizz(QuizzManagementGenerators.quizz);
       QuizzManagementGenerators.quizz.question.forEach((item, index) => {
-        QuizzAdminDashboardPage.addQuestionBtn().click();
+        QuizzManagerPage.addQuestionBtn().click();
         addQustion(item, index);
       });
 
-      QuizzAdminDashboardPage.saveQuizzBtn().click();
+      QuizzManagerPage.saveQuizzBtn().click();
 
-      QuizzAdminDashboardPage.quizzPublishBtn(0).click();
+      QuizzManagerPage.quizzPublishBtn(0).click();
       cy.wait("@publishQuizz").then((xhr) => {
         expect(xhr.response.statusCode).to.eq(200);
         expect(xhr.response.statusMessage).to.eq("OK");
       });
-      QuizzAdminDashboardPage.statusBadgeSpan(0).invoke("text").should("eq", "active");
+      QuizzManagerPage.statusBadgeSpan(0).invoke("text").should("eq", "active");
     });
 
     it("Archive Quizz Test", () => {
-      login(QuizzManagementGenerators.loginAdminPositiveCase);
-      QuizzManagementLoginPage.submitBtn().click();
+      login(loginAdminPositiveCase);
+      QuizzLoginPage.submitBtn().click();
 
       addQuizz(QuizzManagementGenerators.quizz);
       QuizzManagementGenerators.quizz.question.forEach((item, index) => {
-        QuizzAdminDashboardPage.addQuestionBtn().click();
+        QuizzManagerPage.addQuestionBtn().click();
         addQustion(item, index);
       });
-      QuizzAdminDashboardPage.saveQuizzBtn().click();
+      QuizzManagerPage.saveQuizzBtn().click();
 
-      QuizzAdminDashboardPage.quizzArchiveBtn(0).click();
+      QuizzManagerPage.quizzArchiveBtn(0).click();
       cy.wait("@archiveQuizz").then((xhr) => {
         expect(xhr.response.statusCode).to.eq(200);
         expect(xhr.response.statusMessage).to.eq("OK");
       });
-      QuizzAdminDashboardPage.statusBadgeSpan(0).invoke("text").should("eq", "archived");
+      QuizzManagerPage.statusBadgeSpan(0).invoke("text").should("eq", "archived");
     });
 
-    it.only("Delete Quizz Test", () => {
-      login(QuizzManagementGenerators.loginAdminPositiveCase);
-      QuizzManagementLoginPage.submitBtn().click();
+    it("Delete Quizz Test", () => {
+      login(loginAdminPositiveCase);
+      QuizzLoginPage.submitBtn().click();
 
       addQuizz(QuizzManagementGenerators.quizz);
       QuizzManagementGenerators.quizz.question.forEach((item, index) => {
-        QuizzAdminDashboardPage.addQuestionBtn().click();
+        QuizzManagerPage.addQuestionBtn().click();
         addQustion(item, index);
       });
-      QuizzAdminDashboardPage.saveQuizzBtn().click();
+      QuizzManagerPage.saveQuizzBtn().click();
 
-      QuizzAdminDashboardPage.quizzListItems()
+      QuizzManagerPage.quizzListItems()
         .its("length")
         .then((count: number) => {
-          QuizzAdminDashboardPage.quizzDeleteBtn(0).click();
+          QuizzManagerPage.quizzDeleteBtn(0).click();
           cy.wait("@deleteQuizz").then((xhr) => {
             expect(xhr.response.statusCode).to.eq(200);
             expect(xhr.response.statusMessage).to.eq("OK");
           });
-          QuizzAdminDashboardPage.quizzListItems().its("length").should("be.lt", count);
+          QuizzManagerPage.quizzListItems().its("length").should("be.lt", count);
         });
     });
 
     it("Remove question Test", () => {
-      login(QuizzManagementGenerators.loginAdminPositiveCase);
-      QuizzManagementLoginPage.submitBtn().click();
+      login(loginAdminPositiveCase);
+      QuizzLoginPage.submitBtn().click();
 
       addQuizz(QuizzManagementGenerators.quizz);
       QuizzManagementGenerators.quizz.question.forEach((item, index) => {
-        QuizzAdminDashboardPage.addQuestionBtn().click();
+        QuizzManagerPage.addQuestionBtn().click();
         addQustion(item, index);
       });
 
-      QuizzAdminDashboardPage.questionListItems()
+      QuizzManagerPage.questionListItems()
         .its("length")
         .then((count: number) => {
-          QuizzAdminDashboardPage.questionRemoveBtn(0).click();
-          QuizzAdminDashboardPage.questionListItems().its("length").should("be.lt", count);
+          QuizzManagerPage.questionRemoveBtn(0).click();
+          QuizzManagerPage.questionListItems().its("length").should("be.lt", count);
         });
     });
 
     it("Quizz assign to selected users Test", () => {
-      login(QuizzManagementGenerators.loginAdminPositiveCase);
-      QuizzManagementLoginPage.submitBtn().click();
+      login(loginAdminPositiveCase);
+      QuizzLoginPage.submitBtn().click();
       addQuizz(QuizzManagementGenerators.quizz);
 
-      QuizzAdminDashboardPage.assignMode().select("Selected Users");
+      QuizzManagerPage.assignModeOptions().select("Selected Users");
       cy.wait("@getUsers").then((xhr) => {
         expect(xhr.response.statusCode).to.be.oneOf([200, 304]);
         const userCount = xhr.response.body.length;
 
-        QuizzAdminDashboardPage.assignModeOptions().should("have.length", userCount);
+        QuizzManagerPage.assignModeOptions().should("have.length", userCount);
       });
     });
   });
