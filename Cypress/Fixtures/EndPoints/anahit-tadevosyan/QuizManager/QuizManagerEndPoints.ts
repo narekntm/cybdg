@@ -1,4 +1,4 @@
-const root = " http://127.0.0.1:5252/api";
+const root = "/be/api";
 
 export class QuizManagerEndpoints {
   static login = (): string => `${root}/login`;
