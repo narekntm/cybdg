@@ -1,117 +1,128 @@
 import { QuizManagerEndpoints } from "EndPoints/anahit-tadevosyan/QuizManager/QuizManagerEndPoints";
-import { QuizCreationData, QuizData } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import { QuizCreationData } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 
 export class QuizManagerBuilders {
-  static login(email: string, password: string) {
+  static login(email: string, password: string, failOnStatusCode: boolean = true) {
     return cy.request({
       method: "POST",
       url: QuizManagerEndpoints.login(),
       body: { email, password },
-      failOnStatusCode: false,
+      failOnStatusCode,
     });
   }
 
-  static logout() {
+  static logout(failOnStatusCode: boolean = true) {
     return cy.request({
       method: "POST",
       url: QuizManagerEndpoints.logout(),
-      failOnStatusCode: false,
+      failOnStatusCode,
     });
   }
 
-  static getCurrentUser() {
+  static getCurrentUser(failOnStatusCode: boolean = true) {
     return cy.request({
       method: "GET",
       url: QuizManagerEndpoints.me(),
-      failOnStatusCode: false,
+      failOnStatusCode,
     });
   }
 
-  static getUsers() {
+  static getUsers(failOnStatusCode: boolean = true) {
     return cy.request({
       method: "GET",
       url: QuizManagerEndpoints.users(),
+      failOnStatusCode,
     });
   }
 
-  static createQuiz(quizData: QuizCreationData) {
+  static createQuiz(quizData: QuizCreationData, failOnStatusCode: boolean = true) {
     return cy.request({
       method: "POST",
       url: QuizManagerEndpoints.quizzes(),
       body: quizData,
+      failOnStatusCode,
     });
   }
 
-  static publishQuiz(quizId: string) {
+  static publishQuiz(quizId: string, failOnStatusCode: boolean = true) {
     return cy.request({
       method: "PATCH",
       url: QuizManagerEndpoints.publishQuiz(quizId),
+      failOnStatusCode,
     });
   }
 
-  static archiveQuiz(quizId: string) {
+  static archiveQuiz(quizId: string, failOnStatusCode: boolean = true) {
     return cy.request({
       method: "PATCH",
       url: QuizManagerEndpoints.archiveQuiz(quizId),
+      failOnStatusCode,
     });
   }
 
-  static deleteQuiz(quizId: string) {
+  static deleteQuiz(quizId: string, failOnStatusCode: boolean = true) {
     return cy.request({
       method: "DELETE",
       url: QuizManagerEndpoints.quizzes(quizId),
+      failOnStatusCode,
     });
   }
 
-  static getQuizzes() {
+  static getQuizzes(failOnStatusCode: boolean = true) {
     return cy.request({
       method: "GET",
       url: QuizManagerEndpoints.quizzes(),
+      failOnStatusCode,
     });
   }
 
-  static getQuizById(quizId: string) {
+  static getQuizById(quizId: string, failOnStatusCode: boolean = true) {
     return cy.request({
       method: "GET",
       url: QuizManagerEndpoints.quizzes(quizId),
+      failOnStatusCode,
     });
   }
 
-  static submitQuizAnswers(quizId: string, answers: { [questionId: string]: string | string[] }) {
+  static submitQuizAnswers(quizId: string, answers: { [questionId: string]: string | string[] }, failOnStatusCode: boolean = true) {
     return cy.request({
       method: "POST",
       url: QuizManagerEndpoints.quizSubmissions(quizId),
       body: { answers },
+      failOnStatusCode,
     });
   }
 
-  static updateSubmission(submissionId: string, answers: { [questionId: string]: string | string[] }) {
+  static updateSubmission(submissionId: string, answers: { [questionId: string]: string | string[] }, failOnStatusCode: boolean = true) {
     return cy.request({
       method: "PUT",
       url: QuizManagerEndpoints.submissionById(submissionId),
       body: { answers },
+      failOnStatusCode,
     });
   }
 
-  static getMySubmissions() {
+  static getUserSubmissions(failOnStatusCode: boolean = true) {
     return cy.request({
       method: "GET",
       url: QuizManagerEndpoints.submissionsMe(),
+      failOnStatusCode,
     });
   }
 
-  static getQuizSubmissions(quizId: string) {
+  static getQuizSubmissions(quizId: string, failOnStatusCode: boolean = true) {
     return cy.request({
       method: "GET",
       url: QuizManagerEndpoints.quizSubmissions(quizId),
-      failOnStatusCode: false,
+      failOnStatusCode,
     });
   }
 
-  static getSubmission(submissionId: string) {
+  static getSubmission(submissionId: string, failOnStatusCode: boolean = true) {
     return cy.request({
       method: "GET",
       url: QuizManagerEndpoints.submissionById(submissionId),
+      failOnStatusCode,
     });
   }
 }

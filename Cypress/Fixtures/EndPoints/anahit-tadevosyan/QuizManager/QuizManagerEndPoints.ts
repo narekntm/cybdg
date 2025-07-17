@@ -1,4 +1,4 @@
-const root = "http://localhost:3000/api";
+const root = "/be/api";
 
 export class QuizManagerEndpoints {
   static login = (): string => `${root}/login`;

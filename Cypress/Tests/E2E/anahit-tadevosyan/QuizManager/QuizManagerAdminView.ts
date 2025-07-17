@@ -1,4 +1,3 @@
-import { before } from "mocha";
 import { QuizManagerEndpoints } from "EndPoints/anahit-tadevosyan/QuizManager/QuizManagerEndPoints";
 
 describe("QuizManager Admin View", () => {

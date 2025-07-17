@@ -1,12 +1,18 @@
 import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
-import { QuizManagerGenerators } from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
-import { UserManagementGenerator } from "Generators/anahit-tadevosyan/UserManagementV2Generators";
 
 describe("Login test cases", () => {
-  const baseUrl = "/login.html";
+  const managerEmail = Cypress.env("MANAGER_EMAIL");
+  const managerPassword = Cypress.env("MANAGER_PASSWORD");
+  const user1Email = Cypress.env("USER1_EMAIL");
+  const user1Password = Cypress.env("USER1_PASSWORD");
+  const user2Email = Cypress.env("USER2_EMAIL");
+  const user2Password = Cypress.env("USER2_PASSWORD");
+
+  const invalidEmail = "user3@example.com";
+  const invalidPassword = "user12345";
+
   beforeEach(() => {
-    cy.visit(baseUrl);
-    QuizManagerBuilders.getCurrentUser().then((response) => {
+    QuizManagerBuilders.getCurrentUser(false).then((response) => {
       expect(response.status).to.eq(401);
       expect(response.body).to.include({ error: "Unauthorized" });
     });
@@ -18,82 +24,86 @@ describe("Login test cases", () => {
         expect(response.status).to.eq(200);
       });
     });
-    it("Enters Admin logins details", () => {
-      QuizManagerBuilders.login(QuizManagerGenerators.adminUser.email, QuizManagerGenerators.adminUser.password).then((response) => {
+
+    it("Enters Admin login details", () => {
+      QuizManagerBuilders.login(managerEmail, managerPassword).then((response) => {
         expect(response.status).to.eq(200);
       });
+
       QuizManagerBuilders.getCurrentUser().then((response) => {
         expect(response.status).to.eq(200);
-        expect(response.body).to.deep.eq(QuizManagerGenerators.adminUser);
+        expect(response.body.email).to.eq(managerEmail);
       });
     });
+
     it("Enters User1 login details", () => {
-      QuizManagerBuilders.login(QuizManagerGenerators.user1WithPassword.email, QuizManagerGenerators.user1WithPassword.password).then(
-        (response) => {
-          expect(response.status).to.eq(200);
-        }
-      );
+      QuizManagerBuilders.login(user1Email, user1Password).then((response) => {
+        expect(response.status).to.eq(200);
+      });
+
       QuizManagerBuilders.getCurrentUser().then((response) => {
         expect(response.status).to.eq(200);
-        expect(response.body).to.deep.eq(QuizManagerGenerators.user1WithPassword);
+        expect(response.body.email).to.eq(user1Email);
       });
     });
+
     it("Enters User2 login details", () => {
-      QuizManagerBuilders.login(QuizManagerGenerators.user2WithPassword.email, QuizManagerGenerators.user2WithPassword.password).then(
-        (response) => {
-          expect(response.status).to.eq(200);
-        }
-      );
+      QuizManagerBuilders.login(user2Email, user2Password).then((response) => {
+        expect(response.status).to.eq(200);
+      });
+
       QuizManagerBuilders.getCurrentUser().then((response) => {
         expect(response.status).to.eq(200);
-        expect(response.body).to.deep.eq(QuizManagerGenerators.user2WithPassword);
+        expect(response.body.email).to.eq(user2Email);
       });
     });
   });
+
   describe("negative login test cases", () => {
-    it("enters invalid email address", () => {
-      QuizManagerBuilders.login(QuizManagerGenerators.invalidCredentials.email, QuizManagerGenerators.adminUser.password).then(
-        (response) => {
-          expect(response.status).to.eq(401);
-          expect(response.body).to.include({ error: "Invalid credentials" });
-        }
-      );
-    });
-    it("Enters invalid password details", () => {
-      QuizManagerBuilders.login(QuizManagerGenerators.user1.email, QuizManagerGenerators.invalidCredentials.password).then((response) => {
+    it("Enters invalid email address", () => {
+      QuizManagerBuilders.login(invalidEmail, managerPassword, false).then((response) => {
         expect(response.status).to.eq(401);
         expect(response.body).to.include({ error: "Invalid credentials" });
       });
     });
-    it("Enter invalid email and password", () => {
-      it("Enters invalid password details", () => {
-        QuizManagerBuilders.login(QuizManagerGenerators.invalidCredentials.email, QuizManagerGenerators.invalidCredentials.password).then(
-          (response) => {
-            expect(response.status).to.eq(401);
-            expect(response.body).to.include({ error: "Invalid credentials" });
-          }
-        );
+
+    it("Enters invalid password", () => {
+      QuizManagerBuilders.login(user1Email, invalidPassword, false).then((response) => {
+        expect(response.status).to.eq(401);
+        expect(response.body).to.include({ error: "Invalid credentials" });
       });
     });
-    describe("logout test cases", () => {
-      it("Logout when logged in", () => {
-        QuizManagerBuilders.login(QuizManagerGenerators.user2.email, QuizManagerGenerators.user2WithPassword.password).then((response) => {
-          expect(response.status).to.eq(200);
-        });
-        QuizManagerBuilders.logout().then((response) => {
-          expect(response.status).to.eq(200);
-        });
-        QuizManagerBuilders.getCurrentUser().then((response) => {
-          expect(response.status).to.eq(401);
-        });
+
+    it("Enters invalid email and password", () => {
+      QuizManagerBuilders.login(invalidEmail, invalidPassword, false).then((response) => {
+        expect(response.status).to.eq(401);
+        expect(response.body).to.include({ error: "Invalid credentials" });
       });
-      it("Logout when not logged in", () => {
-        QuizManagerBuilders.login(QuizManagerGenerators.user2.email, QuizManagerGenerators.invalidCredentials.password).then((response) => {
-          expect(response.status).to.eq(401);
-        });
-        QuizManagerBuilders.logout().then((response) => {
-          expect(response.status).to.eq(401);
-        });
+    });
+  });
+
+  describe("logout test cases", () => {
+    it("Logout when logged in", () => {
+      QuizManagerBuilders.login(user2Email, user2Password).then((response) => {
+        expect(response.status).to.eq(200);
+      });
+
+      QuizManagerBuilders.logout().then((response) => {
+        expect(response.status).to.eq(200);
+      });
+
+      QuizManagerBuilders.getCurrentUser(false).then((response) => {
+        expect(response.status).to.eq(401);
+      });
+    });
+
+    it("Logout when not logged in", () => {
+      QuizManagerBuilders.login(user2Email, invalidPassword, false).then((response) => {
+        expect(response.status).to.eq(401);
+      });
+
+      QuizManagerBuilders.logout(false).then((response) => {
+        expect(response.status).to.eq(401);
       });
     });
   });

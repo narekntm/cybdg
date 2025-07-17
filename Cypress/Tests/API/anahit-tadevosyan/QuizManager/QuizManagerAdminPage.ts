@@ -1,40 +1,60 @@
 import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
 import { QuizManagerGenerators } from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
-import { QuizStatus } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
-import { QuizData } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import { QuizData, QuizStatus, UserBase } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 
 describe("QuizManager Admin Page", () => {
-  const baseUrl = "/login.html";
+  const managerEmail = Cypress.env("MANAGER_EMAIL");
+  const managerPassword = Cypress.env("MANAGER_PASSWORD");
+  const user1Email = Cypress.env("USER1_EMAIL");
+  const user2Email = Cypress.env("USER2_EMAIL");
+
   beforeEach(() => {
-    cy.visit(baseUrl);
-    QuizManagerBuilders.login(QuizManagerGenerators.adminUser.email, QuizManagerGenerators.adminUser.password).then((response) => {
+    QuizManagerBuilders.login(managerEmail, managerPassword).then((response) => {
       expect(response.status).to.eq(200);
     });
+
     QuizManagerBuilders.getCurrentUser().then((response) => {
       expect(response.status).to.eq(200);
-      expect(response.body).to.deep.eq(QuizManagerGenerators.adminUser);
+      expect(response.body.email).to.eq(managerEmail);
     });
+
     QuizManagerBuilders.getQuizzes().then((response) => {
-        expect(response.status).to.eq(200);
-    })
+      expect(response.status).to.eq(200);
+    });
+
     QuizManagerBuilders.getUsers().then((response) => {
       expect(response.status).to.eq(200);
-      expect(response.body).to.deep.eq([QuizManagerGenerators.user1, QuizManagerGenerators.user2]);
+
+      const returnedEmails = response.body.map((user: UserBase) => user.email);
+      expect(returnedEmails).to.include.members([user1Email, user2Email]);
     });
   });
+
   describe("Add Quiz", () => {
     it("Adds a quiz", () => {
       QuizManagerBuilders.getCurrentUser().then((response) => {
         expect(response.status).to.eq(200);
         const currentUserId = response.body.id;
+
         const fakeQuiz = QuizManagerGenerators.fakeQuiz;
+
         QuizManagerBuilders.createQuiz(fakeQuiz).then((response) => {
           expect(response.status).to.eq(200);
-          expect(response.body).to.deep.include({ ...fakeQuiz, status: QuizStatus.Draft, createdBy: currentUserId });
+          expect(response.body).to.deep.include({
+            ...fakeQuiz,
+            status: QuizStatus.Draft,
+            createdBy: currentUserId,
+          });
+        });
+        QuizManagerBuilders.getQuizzes().then((response) => {
+          const created = response.body.find((quiz: QuizData) => quiz.title === fakeQuiz.title);
+          expect(response.status).to.eq(200);
+          expect(created).to.exist;
         });
       });
     });
   });
+
   describe("Status changes check", () => {
     it("Archives the quiz", () => {
       QuizManagerBuilders.getQuizzes().then((response) => {
@@ -52,36 +72,58 @@ describe("QuizManager Admin Page", () => {
         });
       });
     });
-    it('Publishes the quiz from Archived', () => {
-        QuizManagerBuilders.getQuizzes().then((response) => {
-            const quizzes = response.body;
-            const firstQuizId = quizzes[0].id;
-            QuizManagerBuilders.publishQuiz(firstQuizId).then((publishResponse) => {
-                expect(publishResponse.status).to.eq(200);
-                expect(publishResponse.body).to.include({ success: true });
-                QuizManagerBuilders.getQuizzes().then((newResponse) => {
-                    const updatedQuizzes = newResponse.body;
-                    expect(updatedQuizzes[0].status).to.eq("active");
-                });
-            });
+
+    it("Publishes the quiz from Archived", () => {
+      QuizManagerBuilders.getQuizzes().then((response) => {
+        const quizzes = response.body;
+        const firstQuizId = quizzes[0].id;
+
+        QuizManagerBuilders.publishQuiz(firstQuizId).then((publishResponse) => {
+          expect(publishResponse.status).to.eq(200);
+          expect(publishResponse.body).to.include({ success: true });
+
+          QuizManagerBuilders.getQuizzes().then((newResponse) => {
+            const updatedQuizzes = newResponse.body;
+            expect(updatedQuizzes[0].status).to.eq("active");
+          });
         });
-    })
-      it('Publishes the quiz from Draft', () => {
-          QuizManagerBuilders.getQuizzes().then((response) => {
-              const quizzes = response.body;
-              const firstDraftQuiz = quizzes.find((quiz: QuizData) => quiz.status === 'draft');
+      });
+    });
 
-              expect(firstDraftQuiz, 'Expected at least one draft quiz').to.exist;
+    it("Publishes the quiz from Draft", () => {
+      QuizManagerBuilders.getQuizzes().then((response) => {
+        const quizzes = response.body;
+        const firstDraftQuiz = quizzes.find((quiz: QuizData) => quiz.status === QuizStatus.Draft);
 
-              const firstQuizId = firstDraftQuiz.id;
-              QuizManagerBuilders.publishQuiz(firstQuizId).then((publishResponse) => {
-                  expect(publishResponse.status).to.eq(200);
-                  expect(publishResponse.body).to.include({ success: true });
-                  QuizManagerBuilders.getQuizzes().then((newResponse) => {
-                      const updatedQuizzes = newResponse.body;
-                      expect(updatedQuizzes[0].status).to.eq("active");
-                  });
-              });
-      })
+        expect(firstDraftQuiz, "Expected at least one draft quiz").to.exist;
+
+        const firstQuizId = firstDraftQuiz.id;
+        QuizManagerBuilders.publishQuiz(firstQuizId).then((publishResponse) => {
+          expect(publishResponse.status).to.eq(200);
+          expect(publishResponse.body).to.include({ success: true });
+
+          QuizManagerBuilders.getQuizzes().then((newResponse) => {
+            const updatedQuizzes = newResponse.body;
+            const updated = updatedQuizzes.find((q: QuizData) => q.id === firstQuizId);
+            expect(updated?.status).to.eq("active");
+          });
+        });
+      });
+    });
+
+    it("Fails to publish an archived quiz as regular user", () => {
+      QuizManagerBuilders.login(user1Email, Cypress.env("USER1_PASSWORD")).then((response) => {
+        expect(response.status).to.eq(200);
+      });
+
+      QuizManagerBuilders.getQuizzes().then((response) => {
+        const quizzes = response.body;
+        const quizId = quizzes[0].id;
+
+        QuizManagerBuilders.publishQuiz(quizId, false).then((response) => {
+          expect(response.status).to.eq(403);
+        });
+      });
+    });
   });
 });

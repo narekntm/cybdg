@@ -10,15 +10,15 @@ import {
 
 export class QuizManagerGenerators {
   static adminUser: User = {
-    id: "admin1",
-    email: "admin@example.com",
-    password: "admin123",
-    role: Role.Admin,
+    id: "manager1",
+    email: "manager@quizz.com",
+    password: "manager123",
+    role: Role.Manager,
   };
 
   static user1: UserBase = {
     id: "user1",
-    email: "user1@example.com",
+    email: "user1@quizz.com",
     role: Role.User,
   };
 
@@ -29,7 +29,7 @@ export class QuizManagerGenerators {
 
   static user2: UserBase = {
     id: "user2",
-    email: "user2@example.com",
+    email: "user2@quizz.com",
     role: Role.User,
   };
   static user2WithPassword: User = {
