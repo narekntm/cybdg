@@ -1,6 +1,6 @@
-import {QuizManagerBuilders} from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
-import {QuizManagerGenerators} from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
-import {QuizData, QuizStatus, UserBase} from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
+import { QuizManagerGenerators } from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
+import { QuizData, QuizStatus, UserBase } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 
 describe("QuizManager Admin Page", () => {
   const managerEmail = Cypress.env("MANAGER_EMAIL");

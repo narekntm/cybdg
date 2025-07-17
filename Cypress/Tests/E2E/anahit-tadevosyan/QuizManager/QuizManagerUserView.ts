@@ -1,2 +1,0 @@
-describe("QuizManager User View", () => {
-});
