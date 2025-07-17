@@ -1,5 +1,5 @@
 import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
-import { QuizData, Submission } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import { Submission } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 
 describe("QuizManager View Submissions", () => {
   const managerEmail = Cypress.env("MANAGER_EMAIL");

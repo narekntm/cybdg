@@ -84,11 +84,7 @@ export class QuizManagerBuilders {
     });
   }
 
-  static submitQuizAnswers(
-      quizId: string,
-      answers: { [questionId: string]: string | string[] },
-      failOnStatusCode: boolean = true
-  ) {
+  static submitQuizAnswers(quizId: string, answers: { [questionId: string]: string | string[] }, failOnStatusCode: boolean = true) {
     return cy.request({
       method: "POST",
       url: QuizManagerEndpoints.quizSubmissions(quizId),
@@ -97,11 +93,7 @@ export class QuizManagerBuilders {
     });
   }
 
-  static updateSubmission(
-      submissionId: string,
-      answers: { [questionId: string]: string | string[] },
-      failOnStatusCode: boolean = true
-  ) {
+  static updateSubmission(submissionId: string, answers: { [questionId: string]: string | string[] }, failOnStatusCode: boolean = true) {
     return cy.request({
       method: "PUT",
       url: QuizManagerEndpoints.submissionById(submissionId),
