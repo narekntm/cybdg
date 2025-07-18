@@ -3,7 +3,7 @@ export class QuizManagerLoginPage {
 
   static passwordInput = () => cy.get("#password");
 
-  static loginButton = () => cy.get('button[type="submit"]');
+  static loginButton = () => cy.get('button[type = "submit"');
 
   static loginForm = () => cy.get("#login-form");
 
@@ -14,4 +14,6 @@ export class QuizManagerLoginPage {
   static emailLabel = () => cy.get("label").contains("Email");
 
   static passwordLabel = () => cy.get("label").contains("Password");
+
+  static toastContainer = () => cy.get("#toast-container");
 }

@@ -22,10 +22,10 @@ describe("Quiz Submission Flow", () => {
               cy.get(`${selectorPrefix} input`).type("Sample answer");
               break;
             case QuestionType.Radio:
-              cy.get(`${selectorPrefix} input[type="radio"]`).first().check({ force: true });
+              cy.get(`${selectorPrefix} input[type="radio"]`).first().check();
               break;
             case QuestionType.Checkbox:
-              cy.get(`${selectorPrefix} input[type="checkbox"]`).first().check({ force: true });
+              cy.get(`${selectorPrefix} input[type="checkbox"]`).first().check();
               break;
             case QuestionType.Dropdown:
               cy.get(`${selectorPrefix} select`).select(question.options[0]);

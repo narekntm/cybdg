@@ -1,4 +1,4 @@
-export class QuizManagerAdminViewPage {
+export class QuizManagerManagerViewPage {
   static logoutButton = () => cy.get("#logout-btn");
 
   static headerTitle = () => cy.get("header h1");
@@ -22,4 +22,6 @@ export class QuizManagerAdminViewPage {
   static quizListSection = () => cy.get("#quiz-list");
 
   static adminQuizList = () => cy.get("#admin-quiz-list");
+
+  static quizToggle = () => cy.get(".quiz-toggle");
 }

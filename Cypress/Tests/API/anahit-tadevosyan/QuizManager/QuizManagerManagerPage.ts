@@ -30,8 +30,8 @@ describe("QuizManager Admin Page", () => {
     });
   });
 
-  describe("Add Quiz", () => {
-    it("Adds a quiz", () => {
+  describe("Add Quiz and delete a quiz", () => {
+    it("Adds a quiz and then deletes it", () => {
       QuizManagerBuilders.getCurrentUser().then((response) => {
         expect(response.status).to.eq(200);
         const currentUserId = response.body.id;
@@ -51,6 +51,13 @@ describe("QuizManager Admin Page", () => {
           const created = response.body.find((quiz: QuizData) => quiz.title === fakeQuiz.title);
           expect(response.status).to.eq(200);
           expect(created).to.exist;
+        });
+      });
+      cy.get("@quizId").then((quizId) => {
+        const quizIdString = quizId.toString();
+        QuizManagerBuilders.deleteQuiz(quizIdString).then((response) => {
+          expect(response.status).to.eq(200);
+          expect(response.body).to.deep.include({ success: true });
         });
       });
     });
@@ -77,6 +84,15 @@ describe("QuizManager Admin Page", () => {
           const created = response.body.find((quiz: QuizData) => quiz.title === fakeQuiz.title);
           expect(response.status).to.eq(200);
           expect(created).to.exist;
+        });
+      });
+    });
+    afterEach("delete the created quiz", () => {
+      cy.get("@quizId").then((quizId) => {
+        const quizIdString = quizId.toString();
+        QuizManagerBuilders.deleteQuiz(quizIdString).then((response) => {
+          expect(response.status).to.eq(200);
+          expect(response.body).to.deep.include({ success: true });
         });
       });
     });
@@ -118,7 +134,8 @@ describe("QuizManager Admin Page", () => {
       cy.get("@quizId").then((quizId) => {
         QuizManagerBuilders.getQuizzes().then((response) => {
           const quizzes = response.body;
-          const firstDraftQuiz = quizzes.find((quiz: QuizData) => quiz.id === `${quizId}`);
+          const quizIdString = quizId.toString();
+          const firstDraftQuiz = quizzes.find((quiz: QuizData) => quiz.id === quizIdString);
 
           expect(firstDraftQuiz, "Expected at least one draft quiz").to.exist;
 
@@ -136,6 +153,8 @@ describe("QuizManager Admin Page", () => {
         });
       });
     });
+  });
+  describe("Quiz access by other user", () => {
     it("Fails to publish an archived quiz as regular user", () => {
       QuizManagerBuilders.login(user1Email, Cypress.env("USER1_PASSWORD")).then((response) => {
         expect(response.status).to.eq(200);

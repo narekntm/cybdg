@@ -24,15 +24,15 @@ export class QuizManagerGenerators {
         id: "q2",
         label: chance.sentence({ words: 4 }),
         type: QuestionType.Checkbox,
-        options: chance.unique(chance.word, 4),
+        options: chance.unique(() => chance.word(), 4),
       },
       {
         id: "q3",
         label: chance.sentence({ words: 4 }),
         type: QuestionType.Dropdown,
-        options: chance.unique(chance.word, 7),
+        options: chance.unique(() => chance.word(), 7),
       },
     ],
-    assignedUsers: "all",
+    assignedUsers: ["all"],
   };
 }

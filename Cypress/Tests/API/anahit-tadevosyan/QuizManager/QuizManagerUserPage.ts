@@ -1,6 +1,6 @@
 import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
-import { Question, QuestionType, QuizData, QuizStatus } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 import { QuizManagerGenerators } from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
+import { Question, QuestionType, QuizData, QuizStatus } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 
 describe("User View Submissions", () => {
   const user1Email = Cypress.env("USER1_EMAIL");
@@ -12,8 +12,7 @@ describe("User View Submissions", () => {
   let originalQuiz: QuizData;
   let submissionId: string;
 
-  before(() => {
-
+  before("add a testing quiz", () => {
     QuizManagerBuilders.login(managerEmail, managerPassword).then(() => {
       const fakeQuiz = QuizManagerGenerators.fakeQuiz;
 
@@ -23,7 +22,7 @@ describe("User View Submissions", () => {
         QuizManagerBuilders.createQuiz(fakeQuiz).then((response) => {
           expect(response.status).to.eq(200);
           expect(response.body).to.deep.include({
-              ...fakeQuiz,
+            ...fakeQuiz,
             status: QuizStatus.Draft,
             createdBy: managerId,
           });
@@ -37,7 +36,14 @@ describe("User View Submissions", () => {
       });
     });
   });
-
+  after("try to delete the quiz", () => {
+    QuizManagerBuilders.login(managerEmail, managerPassword).then(() => {
+      QuizManagerBuilders.deleteQuiz(quizId, false).then((response) => {
+        expect(response.status).to.eq(400);
+        expect(response.body).to.deep.include({ error: "Quiz has submissions" });
+      });
+    });
+  });
   it("should submit and edit a quiz submission", () => {
     QuizManagerBuilders.login(user1Email, user1Password).then(() => {
       QuizManagerBuilders.getQuizById(quizId).then((quizRes) => {
@@ -83,9 +89,9 @@ describe("User View Submissions", () => {
                 break;
             }
           });
-            QuizManagerBuilders.updateSubmission(submissionId, updatedAnswers).then((editRes) => {
-              expect(editRes.status).to.eq(200);
-            });
+          QuizManagerBuilders.updateSubmission(submissionId, updatedAnswers).then((editRes) => {
+            expect(editRes.status).to.eq(200);
+          });
         });
       });
     });
