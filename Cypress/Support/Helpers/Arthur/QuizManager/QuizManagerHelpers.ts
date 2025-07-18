@@ -1,13 +1,6 @@
 import { QuizManagerEndpoints } from "EndPoints/Arthur/QuizManager/QuizManagerEndpoints";
 import { QuizGenerator } from "Generators/Arthur/QuizManager/QuizGenerator";
-import {
-  AssignedUsers,
-  QuestionType,
-  QuizRequest,
-  QuizResponse,
-  QuizSuccessMessages,
-  UserCredentials,
-} from "Models/Arthur/QuizManager/QuizManagerModels";
+import { QuizRequest, QuizResponse, UserCredentials } from "Models/Arthur/QuizManager/QuizManagerModels";
 import { ManagerPage } from "Pages/Arthur/QuizManager/ManagerPage";
 
 export function loginViaApi(user: UserCredentials): Cypress.Chainable {
@@ -58,42 +51,23 @@ export function createAndPublishGeneratedQuiz(): Cypress.Chainable<string> {
   return createAndPublishQuiz(quiz);
 }
 
-export function createDraftQuiz(quiz: QuizRequest): Cypress.Chainable<string> {
-  return cy.request<QuizResponse>("POST", QuizManagerEndpoints.quizzes, quiz).then((res) => res.body.id);
-}
-
-export function createAndPublishQuizUI(type: QuestionType = QuestionType.Input): Cypress.Chainable<QuizRequest> {
-  const quiz = QuizGenerator.generateQuizWithOnly(type);
-
+export function fillQuizFormUI(quiz: QuizRequest): void {
   ManagerPage.quizTitleInput().type(quiz.title);
   ManagerPage.quizDescriptionInput().type(quiz.description);
-  ManagerPage.addQuestionButton().click();
-  ManagerPage.questionTextInputs().eq(0).type(quiz.questions[0].label);
-  ManagerPage.questionTypeSelects().eq(0).select(quiz.questions[0].type);
-  ManagerPage.selectAssignMode().select(AssignedUsers.All);
 
-  ManagerPage.saveQuizButton().click();
-  ManagerPage.toastSuccess().should("contain", QuizSuccessMessages.QuizSaved);
-
-  ManagerPage.quizItemByTitle(quiz.title).within(() => {
-    ManagerPage.publishButtonWithin().click();
+  quiz.questions.forEach((q, index) => {
+    ManagerPage.addQuestionButton().click();
+    ManagerPage.questionTextInputs().eq(index).type(q.label);
+    ManagerPage.questionTypeSelects().eq(index).select(q.type);
+    q.options.forEach((opt) => {
+      ManagerPage.optionInputFields().eq(index).type(opt);
+      ManagerPage.addOptionButtons().eq(index).click();
+    });
   });
 
-  return cy.wrap(quiz);
+  ManagerPage.selectAssignMode().select("all");
 }
 
-export function createDraftQuizUI(type: QuestionType = QuestionType.Input): Cypress.Chainable<QuizRequest> {
-  const quiz = QuizGenerator.generateQuizWithOnly(type);
-
-  ManagerPage.quizTitleInput().type(quiz.title);
-  ManagerPage.quizDescriptionInput().type(quiz.description);
-  ManagerPage.addQuestionButton().click();
-  ManagerPage.questionTextInputs().eq(0).type(quiz.questions[0].label);
-  ManagerPage.questionTypeSelects().eq(0).select(quiz.questions[0].type);
-  ManagerPage.selectAssignMode().select(AssignedUsers.All);
-
-  ManagerPage.saveQuizButton().click();
-  ManagerPage.toastSuccess().should("contain", QuizSuccessMessages.QuizSaved);
-
-  return cy.wrap(quiz);
+export function createDraftQuiz(quiz: QuizRequest): Cypress.Chainable<string> {
+  return cy.request<QuizResponse>("POST", QuizManagerEndpoints.quizzes, quiz).then((res) => res.body.id);
 }

@@ -1,10 +1,11 @@
 import { TestUserBuilder } from "Builders/Arthur/QuizManager/TestUserBuilder";
-import { createAndPublishQuizUI, loginViaApi, logoutViaApi } from "Cypress/Support/Helpers/Arthur/QuizManager/QuizManagerHelpers";
+import { fillQuizFormUI, loginViaApi, logoutViaApi } from "Cypress/Support/Helpers/Arthur/QuizManager/QuizManagerHelpers";
 import { frontendRoutes } from "EndPoints/Arthur/QuizManager/FrontendRoutes";
 import { QuizManagerEndpoints } from "EndPoints/Arthur/QuizManager/QuizManagerEndpoints";
 import { QuizGenerator } from "Generators/Arthur/QuizManager/QuizGenerator";
 import { GeneralErrorMessages } from "Models/Arthur/QuizManager/QuizManagerErrorMessages";
 import {
+  QuestionType,
   QuizButtonTexts,
   QuizStatus,
   SubmissionTexts,
@@ -38,7 +39,10 @@ describe("User View Page", () => {
   it("Should list available quizzes assigned to the user", () => {
     const mockQuizzes = QuizGenerator.generateMockQuizList(3);
     loginViaApi(user);
-    cy.intercept("GET", QuizManagerEndpoints.quizzes, { statusCode: 200, body: mockQuizzes });
+    cy.intercept("GET", QuizManagerEndpoints.quizzes, {
+      statusCode: 200,
+      body: mockQuizzes,
+    });
     cy.visit(frontendRoutes.User);
 
     UserViewPage.availableQuizList().should("be.visible");
@@ -50,7 +54,10 @@ describe("User View Page", () => {
   it("Should display quiz count in the header if quizzes are available", () => {
     const mockQuizzes = QuizGenerator.generateMockQuizList(4);
     loginViaApi(user);
-    cy.intercept("GET", QuizManagerEndpoints.quizzes, { statusCode: 200, body: mockQuizzes });
+    cy.intercept("GET", QuizManagerEndpoints.quizzes, {
+      statusCode: 200,
+      body: mockQuizzes,
+    });
     cy.visit(frontendRoutes.User);
 
     UserViewPage.availableQuizList().find("li").should("have.length", mockQuizzes.length);
@@ -68,27 +75,42 @@ describe("User View Page", () => {
     cy.visit(frontendRoutes.Manager);
     ManagerPage.quizCreatorDropdown().click();
 
-    createAndPublishQuizUI().then((quiz) => {
-      ManagerPage.getQuizIdByTitle(quiz.title).then((quizId) => {
-        loginViaApi(user);
-        cy.visit(frontendRoutes.User);
-        UserViewPage.availableQuizItemByTitle(quiz.title).should("exist");
-        UserViewPage.openQuizButtonByTitle(quiz.title).click();
-        cy.url().should("include", frontendRoutes.QuizView(quizId));
+    const quiz = QuizGenerator.generateQuizWithOnly(QuestionType.Input);
+    fillQuizFormUI(quiz);
+    ManagerPage.saveQuizButton().click();
+    ManagerPage.toastSuccess().should("exist");
+
+    ManagerPage.getQuizIdByTitle(quiz.title).then((quizId) => {
+      ManagerPage.quizItemByTitle(quiz.title).within(() => {
+        ManagerPage.publishButtonWithin().click();
       });
+
+      logoutViaApi();
+      loginViaApi(user);
+      cy.visit(frontendRoutes.User);
+
+      UserViewPage.availableQuizItemByTitle(quiz.title).should("exist");
+      UserViewPage.openQuizButtonByTitle(quiz.title).click();
+      cy.url().should("include", frontendRoutes.QuizView(quizId));
     });
   });
 
   it("Should show message 'No available quizzes' if none assigned", () => {
     loginViaApi(user);
-    cy.intercept("GET", QuizManagerEndpoints.quizzes, { statusCode: 200, body: [] });
+    cy.intercept("GET", QuizManagerEndpoints.quizzes, {
+      statusCode: 200,
+      body: [],
+    });
     cy.visit(frontendRoutes.User);
     UserViewPage.availableQuizList().should("contain", UserViewTexts.NoAvailableQuizzes);
   });
 
   it("Should show message 'No submissions found' if user has none", () => {
     loginViaApi(user);
-    cy.intercept("GET", QuizManagerEndpoints.mySubmissions, { statusCode: 200, body: [] });
+    cy.intercept("GET", QuizManagerEndpoints.mySubmissions, {
+      statusCode: 200,
+      body: [],
+    });
     cy.visit(frontendRoutes.User);
     UserViewPage.submittedQuizList().should("contain", UserViewTexts.NoSubmissions);
   });

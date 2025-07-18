@@ -1,4 +1,4 @@
-import { Chance } from "chance";
+import Chance from "chance";
 import {
   Answer,
   AssignedUsers,
@@ -17,15 +17,15 @@ import {
 const chance = new Chance();
 
 export class QuizGenerator {
-  static generateQuestion(type: QuestionType, index: number): Question {
+  static generateQuestion(type: QuestionType, index: number, withOptions = true): Question {
     const id = `q${index}`;
     const label = `Question ${index + 1} (${type})`;
 
     const optionsMap: Record<QuestionType, string[]> = {
       [QuestionType.Input]: [],
-      [QuestionType.SingleChoice]: Object.values(Gender),
-      [QuestionType.MultipleChoice]: Object.values(Technology),
-      [QuestionType.Dropdown]: Object.values(Country),
+      [QuestionType.SingleChoice]: withOptions ? Object.values(Gender) : [],
+      [QuestionType.MultipleChoice]: withOptions ? Object.values(Technology) : [],
+      [QuestionType.Dropdown]: withOptions ? Object.values(Country) : [],
     };
 
     return {
@@ -67,17 +67,17 @@ export class QuizGenerator {
     };
   }
 
-  static generateQuizWithOnly(type: QuestionType): QuizRequest {
+  static generateQuizWithOnly(type: QuestionType, withOptions = true): QuizRequest {
     return {
       title: `Quiz ${Date.now()}`,
       description: `Test quiz for ${type} input.`,
       assignedUsers: [AssignedUsers.All],
-      questions: [this.generateQuestion(type, 0)],
+      questions: [this.generateQuestion(type, 0, withOptions)],
     };
   }
 
   static generateMockQuizList(count: number): QuizResponse[] {
-    return Array.from({ length: count }, (unused, index): QuizResponse => {
+    return Array.from({ length: count }).map((unused, index): QuizResponse => {
       const question = this.generateQuestion(QuestionType.Input, index);
 
       return {

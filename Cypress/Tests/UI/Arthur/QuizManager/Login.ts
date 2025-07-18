@@ -14,13 +14,8 @@ describe("UI Login Flow", () => {
   let user: UserCredentials;
 
   before(() => {
-    // Всё через Cypress chain → оборачиваем в cy.wrap
-    cy.wrap(null).then(() => {
-      return TestUserBuilder.createUser(UserRole.Manager).then((m) => (manager = m));
-    });
-    cy.wrap(null).then(() => {
-      return TestUserBuilder.createUser(UserRole.User).then((u) => (user = u));
-    });
+    TestUserBuilder.createUser(UserRole.Manager).then((m) => (manager = m));
+    TestUserBuilder.createUser(UserRole.User).then((u) => (user = u));
   });
 
   beforeEach(() => {
