@@ -23,6 +23,8 @@ export default defineConfig({
   },
   env: {
     API_URL: "http://127.0.0.1:5353/be",
+    TEST_MANAGER_EMAIL: "testmanager@example.com",
+    TEST_MANAGER_PASSWORD: "test123",
   },
   e2e: {
     baseUrl: "http://127.0.0.1:5353/fe",

@@ -25,31 +25,23 @@ describe("User View Page", () => {
   });
 
   afterEach(() => {
-    logoutViaApi(true);
+    logoutViaApi();
   });
 
   it("Should display the logged-in user's id in the header", () => {
     loginViaApi(user);
     cy.visit(frontendRoutes.User);
-
     UserViewPage.pageTitle().should("be.visible");
     UserViewPage.usernameLabel().should("have.text", user.id);
   });
 
   it("Should list available quizzes assigned to the user", () => {
     const mockQuizzes = QuizGenerator.generateMockQuizList(3);
-
     loginViaApi(user);
-
-    cy.intercept("GET", QuizManagerEndpoints.quizzes, {
-      statusCode: 200,
-      body: mockQuizzes,
-    }).as("mockUserQuizzes");
-
+    cy.intercept("GET", QuizManagerEndpoints.quizzes, { statusCode: 200, body: mockQuizzes });
     cy.visit(frontendRoutes.User);
 
     UserViewPage.availableQuizList().should("be.visible");
-
     mockQuizzes.forEach((quiz) => {
       UserViewPage.availableQuizItemByTitle(quiz.title).should("exist").and("contain", quiz.description);
     });
@@ -57,23 +49,17 @@ describe("User View Page", () => {
 
   it("Should display quiz count in the header if quizzes are available", () => {
     const mockQuizzes = QuizGenerator.generateMockQuizList(4);
-
     loginViaApi(user);
-
-    cy.intercept("GET", QuizManagerEndpoints.quizzes, {
-      statusCode: 200,
-      body: mockQuizzes,
-    }).as("mockQuizCount");
-
+    cy.intercept("GET", QuizManagerEndpoints.quizzes, { statusCode: 200, body: mockQuizzes });
     cy.visit(frontendRoutes.User);
-    UserViewPage.availableQuizList().find("li").should("have.length", mockQuizzes.length);
 
+    UserViewPage.availableQuizList().find("li").should("have.length", mockQuizzes.length);
     UserViewPage.availableQuizCount()
       .invoke("text")
       .then((text) => {
         const match = text.match(/\d+/);
-        expect(match, "Quiz count should be a number").to.not.be.null;
-        expect(Number(match[0]), "Quiz count should match list length").to.equal(mockQuizzes.length);
+        expect(match).to.not.be.null;
+        expect(Number(match[0])).to.equal(mockQuizzes.length);
       });
   });
 
@@ -86,11 +72,8 @@ describe("User View Page", () => {
       ManagerPage.getQuizIdByTitle(quiz.title).then((quizId) => {
         loginViaApi(user);
         cy.visit(frontendRoutes.User);
-
         UserViewPage.availableQuizItemByTitle(quiz.title).should("exist");
-
         UserViewPage.openQuizButtonByTitle(quiz.title).click();
-
         cy.url().should("include", frontendRoutes.QuizView(quizId));
       });
     });
@@ -98,27 +81,15 @@ describe("User View Page", () => {
 
   it("Should show message 'No available quizzes' if none assigned", () => {
     loginViaApi(user);
-
-    cy.intercept("GET", QuizManagerEndpoints.quizzes, {
-      statusCode: 200,
-      body: [],
-    }).as("mockNoQuizzes");
-
+    cy.intercept("GET", QuizManagerEndpoints.quizzes, { statusCode: 200, body: [] });
     cy.visit(frontendRoutes.User);
-
     UserViewPage.availableQuizList().should("contain", UserViewTexts.NoAvailableQuizzes);
   });
 
   it("Should show message 'No submissions found' if user has none", () => {
     loginViaApi(user);
-
-    cy.intercept("GET", QuizManagerEndpoints.mySubmissions, {
-      statusCode: 200,
-      body: [],
-    }).as("mockEmptySubmissions");
-
+    cy.intercept("GET", QuizManagerEndpoints.mySubmissions, { statusCode: 200, body: [] });
     cy.visit(frontendRoutes.User);
-
     UserViewPage.submittedQuizList().should("contain", UserViewTexts.NoSubmissions);
   });
 
@@ -127,15 +98,9 @@ describe("User View Page", () => {
     const submissions = QuizGenerator.generateMockSubmissionList(quizzes, user.id);
 
     loginViaApi(user);
-
     cy.intercept("GET", QuizManagerEndpoints.quizzes, { body: quizzes });
     cy.intercept("GET", QuizManagerEndpoints.mySubmissions, { body: submissions });
-    quizzes.forEach((quiz) => {
-      cy.intercept("GET", QuizManagerEndpoints.quiz(quiz.id), {
-        statusCode: 200,
-        body: quiz,
-      });
-    });
+    cy.intercept("GET", QuizManagerEndpoints.quiz(quizzes[0].id), { body: quizzes[0] });
 
     cy.visit(frontendRoutes.User);
 
@@ -149,20 +114,13 @@ describe("User View Page", () => {
 
     const submissionActive = QuizGenerator.generateMockSubmission(quizActive, user.id, QuizStatus.Active);
     const submissionArchived = QuizGenerator.generateMockSubmission(quizArchived, user.id, QuizStatus.Archived);
-    loginViaApi(user);
-    cy.intercept("GET", QuizManagerEndpoints.quizzes, {
-      body: [quizActive, quizArchived],
-    });
 
-    cy.intercept("GET", QuizManagerEndpoints.mySubmissions, {
-      body: [submissionActive, submissionArchived],
-    });
+    loginViaApi(user);
+    cy.intercept("GET", QuizManagerEndpoints.quizzes, { body: [quizActive, quizArchived] });
+    cy.intercept("GET", QuizManagerEndpoints.mySubmissions, { body: [submissionActive, submissionArchived] });
 
     [quizActive, quizArchived].forEach((quiz) => {
-      cy.intercept("GET", QuizManagerEndpoints.quiz(quiz.id), {
-        statusCode: 200,
-        body: quiz,
-      });
+      cy.intercept("GET", QuizManagerEndpoints.quiz(quiz.id), { body: quiz });
     });
 
     cy.visit(frontendRoutes.User);
@@ -173,14 +131,11 @@ describe("User View Page", () => {
 
   it("Should handle failure to load available quizzes with toast", () => {
     loginViaApi(user);
-
     cy.intercept("GET", QuizManagerEndpoints.quizzes, {
       statusCode: 500,
       body: { error: "Server crashed" },
-    }).as("mockQuizzesFail");
-
+    });
     cy.visit(frontendRoutes.User);
-
     UserViewPage.toastError().should("be.visible").should("contain", GeneralErrorMessages.QuizLoadError);
   });
 });

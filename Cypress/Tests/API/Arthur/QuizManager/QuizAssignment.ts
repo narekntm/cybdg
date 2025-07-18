@@ -14,12 +14,9 @@ describe("Quiz Assignment Rules", () => {
   let quizTargetedId: string;
 
   before(() => {
-    return TestUserBuilder.createUser(UserRole.Manager)
-      .then((m) => (manager = m))
-      .then(() => TestUserBuilder.createUser(UserRole.User))
-      .then((u1) => (user1 = u1))
-      .then(() => TestUserBuilder.createUser(UserRole.User))
-      .then((u2) => (user2 = u2));
+    TestUserBuilder.createUser(UserRole.Manager).then((m) => (manager = m));
+    TestUserBuilder.createUser(UserRole.User).then((u1) => (user1 = u1));
+    TestUserBuilder.createUser(UserRole.User).then((u2) => (user2 = u2));
   });
 
   beforeEach(() => {
@@ -29,52 +26,38 @@ describe("Quiz Assignment Rules", () => {
       assignedUsers: [user1.email],
     };
 
-    return loginViaApi(manager)
-      .then(() => createAndPublishQuiz(quizAll))
-      .then((id) => {
-        quizAllId = id;
-        return createAndPublishQuiz(quizTargeted);
-      })
-      .then((id) => {
-        quizTargetedId = id;
-      });
+    loginViaApi(manager);
+    createAndPublishQuiz(quizAll).then((id) => (quizAllId = id));
+    createAndPublishQuiz(quizTargeted).then((id) => (quizTargetedId = id));
   });
 
   context("Assignment logic for quiz", () => {
     it("Should show quiz for all users", () => {
-      return loginViaApi(user1)
-        .then(() =>
-          cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
-            const quizIds = res.body.map((q) => q.id);
-            expect(quizIds).to.include(quizAllId);
-          })
-        )
-        .then(() =>
-          loginViaApi(user2).then(() =>
-            cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
-              const quizIds = res.body.map((q) => q.id);
-              expect(quizIds).to.include(quizAllId);
-            })
-          )
-        );
+      loginViaApi(user1);
+      cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
+        const quizIds = res.body.map((q) => q.id);
+        expect(quizIds).to.include(quizAllId);
+      });
+
+      loginViaApi(user2);
+      cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
+        const quizIds = res.body.map((q) => q.id);
+        expect(quizIds).to.include(quizAllId);
+      });
     });
 
     it("Should show quiz only to specified users", () => {
-      return loginViaApi(user1)
-        .then(() =>
-          cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
-            const quizIds = res.body.map((q) => q.id);
-            expect(quizIds).to.include(quizTargetedId);
-          })
-        )
-        .then(() =>
-          loginViaApi(user2).then(() =>
-            cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
-              const quizIds = res.body.map((q) => q.id);
-              expect(quizIds).not.to.include(quizTargetedId);
-            })
-          )
-        );
+      loginViaApi(user1);
+      cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
+        const quizIds = res.body.map((q) => q.id);
+        expect(quizIds).to.include(quizTargetedId);
+      });
+
+      loginViaApi(user2);
+      cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
+        const quizIds = res.body.map((q) => q.id);
+        expect(quizIds).not.to.include(quizTargetedId);
+      });
     });
   });
 
@@ -85,25 +68,20 @@ describe("Quiz Assignment Rules", () => {
         assignedUsers: [],
       };
 
-      return loginViaApi(manager)
-        .then(() => createAndPublishQuiz(quizEmpty))
-        .then((quizId) =>
-          loginViaApi(user1)
-            .then(() =>
-              cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
-                const ids = res.body.map((q) => q.id);
-                expect(ids).not.to.include(quizId);
-              })
-            )
-            .then(() =>
-              loginViaApi(user2).then(() =>
-                cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
-                  const ids = res.body.map((q) => q.id);
-                  expect(ids).not.to.include(quizId);
-                })
-              )
-            )
-        );
+      loginViaApi(manager);
+      createAndPublishQuiz(quizEmpty).then((quizId) => {
+        loginViaApi(user1);
+        cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
+          const ids = res.body.map((q) => q.id);
+          expect(ids).not.to.include(quizId);
+        });
+
+        loginViaApi(user2);
+        cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
+          const ids = res.body.map((q) => q.id);
+          expect(ids).not.to.include(quizId);
+        });
+      });
     });
 
     it("Should NOT show inactive quizzes even if user is assigned", () => {
@@ -112,16 +90,14 @@ describe("Quiz Assignment Rules", () => {
         assignedUsers: [user1.email],
       };
 
-      return loginViaApi(manager)
-        .then(() => createDraftQuiz(draftQuiz))
-        .then((quizId) =>
-          loginViaApi(user1).then(() =>
-            cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
-              const ids = res.body.map((q) => q.id);
-              expect(ids).not.to.include(quizId);
-            })
-          )
-        );
+      loginViaApi(manager);
+      createDraftQuiz(draftQuiz).then((quizId) => {
+        loginViaApi(user1);
+        cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
+          const ids = res.body.map((q) => q.id);
+          expect(ids).not.to.include(quizId);
+        });
+      });
     });
 
     it("Should allow manager to see ALL own quizzes, regardless of status or assignment", () => {
@@ -130,14 +106,13 @@ describe("Quiz Assignment Rules", () => {
         assignedUsers: [user2.email],
       };
 
-      return loginViaApi(manager)
-        .then(() => createDraftQuiz(quizCustom))
-        .then((quizId) =>
-          cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
-            const ids = res.body.map((q) => q.id);
-            expect(ids).to.include(quizId);
-          })
-        );
+      loginViaApi(manager);
+      createDraftQuiz(quizCustom).then((quizId) => {
+        cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
+          const ids = res.body.map((q) => q.id);
+          expect(ids).to.include(quizId);
+        });
+      });
     });
 
     it("Should NOT show quiz to user if status is not active even if assignedUsers = 'all'", () => {
@@ -146,16 +121,14 @@ describe("Quiz Assignment Rules", () => {
         assignedUsers: ["all"],
       };
 
-      return loginViaApi(manager)
-        .then(() => createDraftQuiz(quizNotActive))
-        .then((quizId) =>
-          loginViaApi(user1).then(() =>
-            cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
-              const ids = res.body.map((q) => q.id);
-              expect(ids).not.to.include(quizId);
-            })
-          )
-        );
+      loginViaApi(manager);
+      createDraftQuiz(quizNotActive).then((quizId) => {
+        loginViaApi(user1);
+        cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
+          const ids = res.body.map((q) => q.id);
+          expect(ids).not.to.include(quizId);
+        });
+      });
     });
   });
 });

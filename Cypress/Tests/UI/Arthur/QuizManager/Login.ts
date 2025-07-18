@@ -14,11 +14,12 @@ describe("UI Login Flow", () => {
   let user: UserCredentials;
 
   before(() => {
-    TestUserBuilder.createUser(UserRole.Manager).then((cred) => {
-      manager = cred;
+    // Всё через Cypress chain → оборачиваем в cy.wrap
+    cy.wrap(null).then(() => {
+      return TestUserBuilder.createUser(UserRole.Manager).then((m) => (manager = m));
     });
-    TestUserBuilder.createUser(UserRole.User).then((cred) => {
-      user = cred;
+    cy.wrap(null).then(() => {
+      return TestUserBuilder.createUser(UserRole.User).then((u) => (user = u));
     });
   });
 
@@ -62,28 +63,25 @@ describe("UI Login Flow", () => {
   });
 
   it("Should redirect if already logged in (manager)", () => {
-    loginViaApi(manager).then(() => {
-      cy.visit(frontendRoutes.Login);
-      cy.url().should("include", frontendRoutes.Manager);
-    });
+    loginViaApi(manager);
+    cy.visit(frontendRoutes.Login);
+    cy.url().should("include", frontendRoutes.Manager);
   });
 
   it("Should redirect if already logged in (user)", () => {
-    loginViaApi(user).then(() => {
-      cy.visit(frontendRoutes.Login);
-      cy.url().should("include", frontendRoutes.User);
-    });
+    loginViaApi(user);
+    cy.visit(frontendRoutes.Login);
+    cy.url().should("include", frontendRoutes.User);
   });
 
   it("Should logout and restrict access", () => {
-    loginViaApi(user).then(() => {
-      cy.visit(frontendRoutes.User);
-      UserPage.logoutButton().click();
-      cy.url().should("include", frontendRoutes.Login);
+    loginViaApi(user);
+    cy.visit(frontendRoutes.User);
+    UserPage.logoutButton().click();
+    cy.url().should("include", frontendRoutes.Login);
 
-      cy.visit(frontendRoutes.User);
-      cy.url().should("include", frontendRoutes.Login);
-    });
+    cy.visit(frontendRoutes.User);
+    cy.url().should("include", frontendRoutes.Login);
   });
 });
 

@@ -4,12 +4,14 @@ import { UserCredentials, UserRole } from "Models/Arthur/QuizManager/QuizManager
 
 export class TestUserBuilder {
   static getToken(): Cypress.Chainable<string> {
-    return cy
-      .request<{ token: string }>("POST", QuizManagerEndpoints.testAuth, {
-        email: UserGenerator.testManagerCredentials.email,
-        password: UserGenerator.testManagerCredentials.password,
-      })
-      .then((res) => res.body.token);
+    const email = Cypress.env("TEST_MANAGER_EMAIL");
+    const password = Cypress.env("TEST_MANAGER_PASSWORD");
+
+    if (!email || !password) {
+      throw new Error("Missing TEST_MANAGER_EMAIL or TEST_MANAGER_PASSWORD in Cypress.env");
+    }
+
+    return cy.request<{ token: string }>("POST", QuizManagerEndpoints.testAuth, { email, password }).then((res) => res.body.token);
   }
 
   static createUser(role: UserRole, overrides = {}): Cypress.Chainable<UserCredentials> {

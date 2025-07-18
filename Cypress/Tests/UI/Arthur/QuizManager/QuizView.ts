@@ -8,7 +8,6 @@ import { QuizStatus, UserCredentials, UserRole } from "Models/Arthur/QuizManager
 import { QuizViewPage } from "Pages/Arthur/QuizManager/QuizView";
 
 const chance = new Chance();
-
 let user: UserCredentials;
 
 describe("Quiz View Page", () => {
@@ -17,7 +16,7 @@ describe("Quiz View Page", () => {
   });
 
   afterEach(() => {
-    logoutViaApi(false);
+    logoutViaApi();
   });
 
   it("Should display quiz title and description", () => {

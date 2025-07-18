@@ -82,21 +82,14 @@ describe("Quiz Creation Test Scenarios", () => {
 
     it("Should publish quiz and set status to 'active'", () => {
       createAndPublishQuiz(quiz).then((quizId) => {
-        cy.request(QuizManagerEndpoints.quiz(quizId)).then((getRes) => {
-          expect(getRes.body.status).to.eq(QuizStatus.Active);
-        });
+        cy.request(QuizManagerEndpoints.quiz(quizId)).its("body.status").should("eq", QuizStatus.Active);
       });
     });
 
     it("Should archive quiz and set status to 'archived'", () => {
       createAndPublishQuiz(quiz).then((quizId) => {
-        cy.request("PATCH", QuizManagerEndpoints.quizArchive(quizId)).then((archiveRes) => {
-          expect(archiveRes.status).to.eq(200);
-
-          cy.request(QuizManagerEndpoints.quiz(quizId)).then((getRes) => {
-            expect(getRes.body.status).to.eq(QuizStatus.Archived);
-          });
-        });
+        cy.request("PATCH", QuizManagerEndpoints.quizArchive(quizId)).its("status").should("eq", 200);
+        cy.request(QuizManagerEndpoints.quiz(quizId)).its("body.status").should("eq", QuizStatus.Archived);
       });
     });
 
@@ -105,154 +98,126 @@ describe("Quiz Creation Test Scenarios", () => {
       delete quiz.assignedUsers;
 
       createDraftQuiz(quiz).then((quizId) => {
-        cy.request(QuizManagerEndpoints.quiz(quizId)).then((res) => {
-          expect(res.body.assignedUsers).to.deep.eq([AssignedUsers.All]);
-        });
+        cy.request(QuizManagerEndpoints.quiz(quizId)).its("body.assignedUsers").should("deep.eq", [AssignedUsers.All]);
       });
     });
 
     it("Should NOT allow other managers to see a quiz they didn't create", () => {
-      let managerA: UserCredentials;
-      let managerB: UserCredentials;
+      let quizId: string;
 
-      TestUserBuilder.createUser(UserRole.Manager)
-        .then((createdA) => {
-          managerA = createdA;
-          return TestUserBuilder.createUser(UserRole.Manager);
-        })
-        .then((createdB) => {
-          managerB = createdB;
-
+      TestUserBuilder.createUser(UserRole.Manager).then((managerA) => {
+        TestUserBuilder.createUser(UserRole.Manager).then((managerB) => {
           const quiz = QuizGenerator.generateQuizWithAllTypes();
-
-          loginViaApi(managerA).then(() => {
-            createDraftQuiz(quiz).then((quizId) => {
-              loginViaApi(managerB).then(() => {
-                cy.request(QuizManagerEndpoints.quizzes).then((res) => {
-                  const quizIds = (res.body as QuizResponse[]).map((q) => q.id);
-                  expect(quizIds).not.to.include(quizId);
-                });
-              });
+          loginViaApi(managerA);
+          createDraftQuiz(quiz).then((id) => {
+            quizId = id;
+            loginViaApi(managerB);
+            cy.request(QuizManagerEndpoints.quizzes).then((res) => {
+              const quizIds = (res.body as QuizResponse[]).map((q) => q.id);
+              expect(quizIds).not.to.include(quizId);
             });
           });
         });
+      });
     });
   });
 
   context("Negative cases", () => {
+    beforeEach(() => {
+      loginViaApi(manager);
+    });
+
     it("Should not allow User to create quiz", () => {
+      loginViaApi(user);
       const quiz = QuizGenerator.generateQuizWithAllTypes();
 
-      loginViaApi(user).then(() => {
-        cy.request({
-          method: "POST",
-          url: QuizManagerEndpoints.quizzes,
-          body: quiz,
-          failOnStatusCode: false,
-        }).then((res) => {
-          expect(res.status).to.eq(403);
-        });
-      });
+      cy.request({
+        method: "POST",
+        url: QuizManagerEndpoints.quizzes,
+        body: quiz,
+        failOnStatusCode: false,
+      })
+        .its("status")
+        .should("eq", 403);
     });
 
     it("Should not allow User to publish quiz", () => {
-      const fakeQuizId = "not-existing-id";
+      loginViaApi(user);
 
-      loginViaApi(user).then(() => {
-        cy.request({
-          method: "PATCH",
-          url: QuizManagerEndpoints.quizPublish(fakeQuizId),
-          failOnStatusCode: false,
-        }).then((res) => {
-          expect(res.status).to.eq(403);
-        });
-      });
+      cy.request({
+        method: "PATCH",
+        url: QuizManagerEndpoints.quizPublish("not-existing-id"),
+        failOnStatusCode: false,
+      })
+        .its("status")
+        .should("eq", 403);
     });
 
     it("Should not allow User to archive quiz", () => {
-      const fakeQuizId = "not-existing-id";
+      loginViaApi(user);
 
-      loginViaApi(user).then(() => {
-        cy.request({
-          method: "PATCH",
-          url: QuizManagerEndpoints.quizArchive(fakeQuizId),
-          failOnStatusCode: false,
-        }).then((res) => {
-          expect(res.status).to.eq(403);
-        });
-      });
+      cy.request({
+        method: "PATCH",
+        url: QuizManagerEndpoints.quizArchive("not-existing-id"),
+        failOnStatusCode: false,
+      })
+        .its("status")
+        .should("eq", 403);
     });
 
     it("Should not allow User to delete quiz", () => {
-      const fakeId = "some-id";
+      loginViaApi(user);
 
-      loginViaApi(user).then(() => {
-        cy.request({
-          method: "DELETE",
-          url: QuizManagerEndpoints.quiz(fakeId),
-          failOnStatusCode: false,
-        }).then((res) => {
-          expect(res.status).to.eq(403);
-        });
-      });
+      cy.request({
+        method: "DELETE",
+        url: QuizManagerEndpoints.quiz("some-id"),
+        failOnStatusCode: false,
+      })
+        .its("status")
+        .should("eq", 403);
     });
 
     it("Should return 404 when publishing not-existing quiz", () => {
-      const fakeId = "not-existing-id";
-
-      loginViaApi(manager).then(() => {
-        cy.request({
-          method: "PATCH",
-          url: QuizManagerEndpoints.quizPublish(fakeId),
-          failOnStatusCode: false,
-        }).then((res) => {
-          expect(res.status).to.eq(404);
-          expect(res.body.error).to.include(QuizErrorMessages.QuizNotFound);
-        });
+      cy.request({
+        method: "PATCH",
+        url: QuizManagerEndpoints.quizPublish("not-existing-id"),
+        failOnStatusCode: false,
+      }).then((res) => {
+        expect(res.status).to.eq(404);
+        expect(res.body.error).to.include(QuizErrorMessages.QuizNotFound);
       });
     });
 
     it("Should return 404 when archiving not-existing quiz", () => {
-      const fakeId = "not-existing-id";
-
-      loginViaApi(manager).then(() => {
-        cy.request({
-          method: "PATCH",
-          url: QuizManagerEndpoints.quizArchive(fakeId),
-          failOnStatusCode: false,
-        }).then((res) => {
-          expect(res.status).to.eq(404);
-          expect(res.body.error).to.include(QuizErrorMessages.QuizNotFound);
-        });
+      cy.request({
+        method: "PATCH",
+        url: QuizManagerEndpoints.quizArchive("not-existing-id"),
+        failOnStatusCode: false,
+      }).then((res) => {
+        expect(res.status).to.eq(404);
+        expect(res.body.error).to.include(QuizErrorMessages.QuizNotFound);
       });
     });
 
     it("Should return 400 when deleting quiz with submissions", () => {
       const quiz = QuizGenerator.generateQuizWithAllTypes();
+      createAndPublishQuiz(quiz).then((quizId) => {
+        loginViaApi(user);
+        const answers = quiz.questions.map((q) => ({
+          questionId: q.id,
+          answer: q.type === QuestionType.Input ? "Some answer" : [q.options[0] || "fallback"],
+        }));
 
-      loginViaApi(manager).then(() => {
-        createAndPublishQuiz(quiz).then((quizId) => {
-          loginViaApi(user).then(() => {
-            const answers = quiz.questions.map((q) => ({
-              questionId: q.id,
-              answer: q.type === QuestionType.Input ? "Some answer" : [q.options[0] || "fallback"],
-            }));
+        cy.request("POST", QuizManagerEndpoints.submitToQuiz(quizId), { answers });
+        loginViaApi(manager);
 
-            cy.request("POST", QuizManagerEndpoints.submitToQuiz(quizId), {
-              answers,
-            }).then(() => {
-              loginViaApi(manager).then(() => {
-                cy.request({
-                  method: "DELETE",
-                  url: QuizManagerEndpoints.quiz(quizId),
-                  failOnStatusCode: false,
-                }).then((res) => {
-                  expect(res.status).to.eq(400);
-                  expect(res.body.error).to.include(QuizErrorMessages.QuizHasSubmissions);
-                });
-              });
-            });
-          });
+        cy.request({
+          method: "DELETE",
+          url: QuizManagerEndpoints.quiz(quizId),
+          failOnStatusCode: false,
+        }).then((res) => {
+          expect(res.status).to.eq(400);
+          expect(res.body.error).to.include(QuizErrorMessages.QuizHasSubmissions);
         });
       });
     });

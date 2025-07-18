@@ -22,11 +22,6 @@ export class UserGenerator {
     };
   }
 
-  static testManagerCredentials = {
-    email: "testmanager@example.com",
-    password: "test123",
-  };
-
   static generateUser(role: UserRole): UserCredentials {
     const id = `id-${chance.hash({ length: 6 })}`;
     return {

@@ -20,15 +20,12 @@ export function loginViaApi(user: UserCredentials): Cypress.Chainable {
         password: user.password,
       },
     })
-    .then((res) => {
-      const setCookieHeader = res.headers["set-cookie"];
-      expect(setCookieHeader, "Set-Cookie header should exist").to.exist;
-
-      const cookies = Array.isArray(setCookieHeader) ? setCookieHeader : [setCookieHeader];
-      const authTokenCookie = cookies.find((c) => c.includes("authToken"));
-      expect(authTokenCookie, "authToken cookie should be present").to.exist;
-
-      const token = authTokenCookie.split(";")[0].split("=")[1];
+    .its("headers.set-cookie")
+    .should("exist")
+    .then((cookies) => {
+      const cookieString = Array.isArray(cookies) ? cookies.find((c) => c.includes("authToken")) : cookies;
+      expect(cookieString, "authToken cookie should be present").to.exist;
+      const token = cookieString.split(";")[0].split("=")[1];
       cy.setCookie("authToken", token);
     });
 }

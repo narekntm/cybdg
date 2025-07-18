@@ -21,7 +21,6 @@ import { ManagerPage } from "Pages/Arthur/QuizManager/ManagerPage";
 import { QuizViewPage } from "Pages/Arthur/QuizManager/QuizView";
 
 const chance = new Chance();
-
 let manager: UserCredentials;
 let user: UserCredentials;
 
@@ -38,7 +37,7 @@ describe("Manager Dashboard UI", () => {
   });
 
   afterEach(() => {
-    logoutViaApi(false);
+    logoutViaApi();
   });
 
   context("Positive Cases", () => {
@@ -52,12 +51,10 @@ describe("Manager Dashboard UI", () => {
         ManagerPage.addQuestionButton().click();
         ManagerPage.questionTextInputs().eq(index).type(q.label);
         ManagerPage.questionTypeSelects().eq(index).select(q.type);
-        if (q.options.length > 0) {
-          q.options.forEach((opt) => {
-            ManagerPage.optionInputFields().eq(index).type(opt);
-            ManagerPage.addOptionButtons().eq(index).click();
-          });
-        }
+        q.options.forEach((opt) => {
+          ManagerPage.optionInputFields().eq(index).type(opt);
+          ManagerPage.addOptionButtons().eq(index).click();
+        });
       });
 
       ManagerPage.selectAssignMode().select(AssignedUsers.All);
@@ -82,13 +79,7 @@ describe("Manager Dashboard UI", () => {
       createDraftQuizUI().then((quiz) => {
         ManagerPage.quizItemByTitle(quiz.title).within(() => {
           ManagerPage.publishButtonWithin().click();
-        });
-
-        ManagerPage.quizItemByTitle(quiz.title).within(() => {
           ManagerPage.archiveButtonWithin().click();
-        });
-
-        ManagerPage.quizItemByTitle(quiz.title).within(() => {
           ManagerPage.statusBadgeWithinItem().should("contain", QuizStatus.Archived);
         });
       });
@@ -132,7 +123,6 @@ describe("Manager Dashboard UI", () => {
       ManagerPage.questionTextInputs().eq(0).type(quiz.questions[0].label);
       ManagerPage.questionTypeSelects().eq(0).select(QuestionType.Input);
       ManagerPage.selectAssignMode().select(AssignedUsers.Custom);
-
       ManagerPage.saveQuizButton().click();
       ManagerPage.toastError().should("contain", ValidationErrorMessages.CustomAssignmentMissingUsers);
     });
@@ -155,16 +145,16 @@ describe("Manager Dashboard UI", () => {
       });
 
       ManagerPage.getQuizIdByTitle(quiz.title).then((quizId) => {
-        logoutViaApi(false);
+        logoutViaApi();
         loginViaApi(user);
-
         cy.visit(frontendRoutes.QuizView(quizId));
+
         QuizViewPage.inputByName(quiz.questions[0].id)
           .clear()
           .type(chance.word({ length: 8 }));
         QuizViewPage.submitButton().click();
 
-        logoutViaApi(false);
+        logoutViaApi();
         loginViaApi(manager);
         cy.visit(frontendRoutes.Manager);
 

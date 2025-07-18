@@ -11,48 +11,47 @@ import { QuizSubmissionsPage } from "Pages/Arthur/QuizManager/ViewSumbmissionsPa
 
 const chance = new Chance();
 
-let quizId = "";
-let submissionId = "";
-let userName = "";
 let quiz: QuizRequest;
+let quizId: string;
+let submissionId: string;
+let userName: string;
 let user: { id: string; email: string; password: string; role: UserRole };
 let manager: { id: string; email: string; password: string; role: UserRole };
 
 before(() => {
   TestUserBuilder.createUser(UserRole.Manager).then((m) => (manager = m));
   TestUserBuilder.createUser(UserRole.User).then((u) => (user = u));
-
-  cy.then(() => {
-    quiz = QuizGenerator.generateQuizWithAllTypes();
-    loginViaApi(manager);
-    createAndPublishQuiz(quiz).then((id) => {
-      quizId = id;
-    });
-  });
 });
 
 describe("Quiz Submissions Page", () => {
   context("Setup: Submit quiz", () => {
     it("Should submit quiz via UI", () => {
-      loginViaApi(user);
-      cy.visit(frontendRoutes.QuizView(quizId));
+      quiz = QuizGenerator.generateQuizWithAllTypes();
 
-      userName = chance.name();
-      QuizViewPage.inputByLabel(quiz.questions[0].label).type(userName);
-      QuizViewPage.radioByLabel(quiz.questions[1].label, Gender.Male).check({ force: true });
-      QuizViewPage.checkboxByLabel(quiz.questions[2].label, Technology.JavaScript).check({ force: true });
-      QuizViewPage.checkboxByLabel(quiz.questions[2].label, Technology.Python).check({ force: true });
-      QuizViewPage.selectDropdown(quiz.questions[3].label, Country.USA);
+      loginViaApi(manager);
+      createAndPublishQuiz(quiz).then((id) => {
+        quizId = id;
 
-      cy.intercept("POST", QuizManagerEndpoints.quizSubmissions(quizId)).as("submitQuiz");
-      QuizViewPage.submitButton().click();
+        loginViaApi(user);
+        cy.visit(frontendRoutes.QuizView(quizId));
 
-      cy.wait("@submitQuiz").then((interception) => {
-        submissionId = interception.response?.body.id;
-        expect(submissionId, "submission ID should exist").to.exist;
+        userName = chance.name();
+        QuizViewPage.inputByLabel(quiz.questions[0].label).type(userName);
+        QuizViewPage.radioByLabel(quiz.questions[1].label, Gender.Male).check({ force: true });
+        QuizViewPage.checkboxByLabel(quiz.questions[2].label, Technology.JavaScript).check({ force: true });
+        QuizViewPage.checkboxByLabel(quiz.questions[2].label, Technology.Python).check({ force: true });
+        QuizViewPage.selectDropdown(quiz.questions[3].label, Country.USA);
+
+        cy.intercept("POST", QuizManagerEndpoints.quizSubmissions(quizId)).as("submitQuiz");
+        QuizViewPage.submitButton().click();
+
+        cy.wait("@submitQuiz").then((interception) => {
+          submissionId = interception.response?.body.id;
+          expect(submissionId).to.exist;
+        });
+
+        cy.url().should("include", frontendRoutes.User);
       });
-
-      cy.url().should("include", frontendRoutes.User);
     });
   });
 
@@ -63,12 +62,11 @@ describe("Quiz Submissions Page", () => {
     });
 
     it("Should show quiz title, description and total submission count", () => {
-      const expectedSubmissionCount = 1;
       QuizSubmissionsPage.quizTitle().should("contain", quiz.title);
       QuizSubmissionsPage.quizDescription().should("contain", quiz.description);
       QuizSubmissionsPage.totalSubmissionsText().should("contain", SubmissionTexts.TotalSubmissions);
-      QuizSubmissionsPage.totalSubmissionsValue().should("contain", expectedSubmissionCount.toString());
-      QuizSubmissionsPage.submissionCards().should("have.length", expectedSubmissionCount);
+      QuizSubmissionsPage.totalSubmissionsValue().should("contain", "1");
+      QuizSubmissionsPage.submissionCards().should("have.length", 1);
       QuizSubmissionsPage.submissionUser(0).should("contain", user.id);
     });
 
@@ -111,5 +109,5 @@ describe("Quiz Submissions Page", () => {
 });
 
 afterEach(() => {
-  logoutViaApi(true);
+  logoutViaApi();
 });
