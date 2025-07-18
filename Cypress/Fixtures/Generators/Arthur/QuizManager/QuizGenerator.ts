@@ -47,8 +47,8 @@ export class QuizGenerator {
 
   static generateQuizWithOnly(type: QuestionType): QuizRequest {
     return {
-      title: `Only ${type} Quiz`,
-      description: chance.sentence({ words: 6 }),
+      title: `Quiz ${Date.now()}`,
+      description: `Test quiz for ${type} input.`,
       assignedUsers: AssignedUsers.All,
       questions: [this.generateQuestion(type, 0)],
     };

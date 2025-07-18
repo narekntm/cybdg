@@ -113,6 +113,7 @@ export interface UserSummary {
 
 export enum AssignedUsers {
   All = "all",
+  Custom = "custom",
 }
 
 export enum SubmissionAnswerText {
@@ -124,4 +125,10 @@ export enum SubmissionAnswerText {
 
 export enum QuizSuccessMessages {
   QuizSaved = "Quiz saved successfully!",
+  QuizPublished = "Quiz published",
+}
+
+export enum SubmissionTexts {
+  TotalSubmissions = "Total Submissions:",
+  CreatedAt = "Created At:",
 }

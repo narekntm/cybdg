@@ -15,9 +15,19 @@ export class QuizSubmissionsPage {
 
   static submissionCard = (index: number = 0) => QuizSubmissionsPage.submissionCards().eq(index);
 
-  static submissionUser = (index: number = 0) => QuizSubmissionsPage.submissionCard(index).find("strong").contains("User:").next();
+  static submissionUser = (index = 0) => QuizSubmissionsPage.submissionCard(index).find("h3 span");
 
   static submissionTimestamp = (index: number = 0) => QuizSubmissionsPage.submissionCard(index).find(".submission-timestamp");
 
   static submissionDetails = (index: number = 0) => QuizSubmissionsPage.submissionCard(index).find("dl").should("be.visible");
+
+  static submissionCardById = (id: string) => cy.get(`.submission-card[data-id="${id}"]`);
+
+  static submissionAnswersById = (id: string) => QuizSubmissionsPage.submissionCardById(id).find(".answers");
+
+  static errorText = () => cy.get(".error");
+
+  static answerTerm = (label: string) => cy.get("dt").contains(label);
+
+  static answerValue = (label: string) => QuizSubmissionsPage.answerTerm(label).next("dd");
 }

@@ -9,5 +9,5 @@ export const frontendRoutes = {
     if (submissionId) params.append("submission", submissionId);
     return `${path}?${params.toString()}`;
   },
-  ViewSubmissions: (quizId: string) => `/fe/view-submissions.html?quiz=${quizId}`,
+  ViewSubmissions: (quizId: string) => `/view-submissions.html?quiz=${quizId}`,
 };
