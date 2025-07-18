@@ -27,4 +27,5 @@ export enum GeneralErrorMessages {
   NotFound = "Error: Not found",
   InternalServerError = "Internal Server Error",
   Forbidden = "Forbidden",
+  QuizLoadError = "Failed to load quizzes",
 }

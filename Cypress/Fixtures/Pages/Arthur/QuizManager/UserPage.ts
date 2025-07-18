@@ -1,27 +1,45 @@
 export class UserViewPage {
-  static pageTitle = () => cy.get("h1").contains("Welcome, User");
+  static pageTitle = () => cy.get("h1");
+
+  static usernameLabel = () => cy.get("#username");
 
   static logoutButton = () => cy.get("#logout-btn");
 
   static availableQuizzesSection = () => cy.get("#available-quizzes");
 
-  static availableQuizzesTitle = () => UserViewPage.availableQuizzesSection().find("h2").contains("Available Quizzes");
+  static availableQuizzesHeader = () => cy.get("#available-quizzes h2");
 
-  static availableQuizItems = () => cy.get("#quiz-list li");
+  static availableQuizCount = () => cy.get("#quiz-count");
 
-  static availableQuizTitle = (index: number = 0) => UserViewPage.availableQuizItems().eq(index).find("strong");
+  static availableQuizList = () => cy.get("#quiz-list");
 
-  static openQuizButton = (index: number = 0) => UserViewPage.availableQuizItems().eq(index).find("button");
+  static availableQuizItemById = (quizId: string) => cy.get(`#quiz-list li[data-id="${quizId}"]`);
+
+  static availableQuizTitleById = (quizId: string) => UserViewPage.availableQuizItemById(quizId).find("strong");
+
+  static openQuizButtonById = (quizId: string) => UserViewPage.availableQuizItemById(quizId).find("button");
 
   static submittedQuizzesSection = () => cy.get("#my-submissions");
 
-  static submittedQuizzesTitle = () => UserViewPage.submittedQuizzesSection().find("h2").contains("My Submitted Quizzes");
+  static submittedQuizzesHeader = () => cy.get("#my-submissions h2");
 
-  static submittedQuizItems = () => cy.get("#submission-list li");
+  static submittedQuizCount = () => cy.get("#submission-count");
 
-  static submittedQuizTitle = (index: number = 0) => UserViewPage.submittedQuizItems().eq(index).find("strong");
+  static submittedQuizList = () => cy.get("#submission-list");
 
-  static submittedQuizDate = (index: number = 0) => UserViewPage.submittedQuizItems().eq(index).invoke("text");
+  static submittedQuizItemById = (submissionId: string) => cy.get(`#submission-list li[data-id="${submissionId}"]`);
 
-  static editSubmissionButton = (index: number = 0) => UserViewPage.submittedQuizItems().eq(index).find("button");
+  static submittedQuizTitleById = (submissionId: string) => UserViewPage.submittedQuizItemById(submissionId).find("strong");
+
+  static submittedQuizDateById = (submissionId: string) => UserViewPage.submittedQuizItemById(submissionId).invoke("text");
+
+  static editSubmissionButtonById = (submissionId: string) => UserViewPage.submittedQuizItemById(submissionId).find("button");
+
+  static availableQuizTitleByText = (title: string) => cy.get("#quiz-list li").contains("strong", title);
+
+  static availableQuizItemByTitle = (title: string) => UserViewPage.availableQuizTitleByText(title).parents("li");
+
+  static openQuizButtonByTitle = (title: string) => UserViewPage.availableQuizItemByTitle(title).find("button");
+
+  static toastError = () => cy.get(".toast.error");
 }

@@ -130,5 +130,16 @@ export enum QuizSuccessMessages {
 
 export enum SubmissionTexts {
   TotalSubmissions = "Total Submissions:",
-  CreatedAt = "Created At:",
+  CreatedAt = "Created At",
+}
+
+export enum UserViewTexts {
+  AvailableQuizzes = "Available Quizzes",
+  NoAvailableQuizzes = "No available quizzes.",
+  NoSubmissions = "No submissions found.",
+}
+
+export enum QuizButtonTexts {
+  Edit = "Edit",
+  View = "View",
 }
