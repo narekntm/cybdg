@@ -1,7 +1,7 @@
 export class QuizManagerAdminDashboardPage {
   static headerTitle = () => cy.get('header h1');
 
-  static logoutButton = () => cy.get('header #logout-btn');
+  static logoutButton = () => cy.get('#logout-btn');
 
   static quizCreatorSection = () => cy.get('#quiz-creator');
 
@@ -20,5 +20,7 @@ export class QuizManagerAdminDashboardPage {
   static quizOptionsInput = () => cy.get('.q-options');
 
   static quizQuestionRemoveBtn = () => cy.get('.remove-question');
+
+  static saveQuizBtn = () =>  cy.get('#quiz-form button[type="submit"]');
 
 }
