@@ -9,10 +9,9 @@ export class QuizManagerLoginPage {
 
   static loginContainer = () => cy.get(".login-container");
 
-  static emailLabel = () => cy.get('label').contains('Email');
+  static emailLabel = () => cy.get("label").contains("Email");
 
-  static passwordLabel = () => cy.get('label').contains('Password');
+  static passwordLabel = () => cy.get("label").contains("Password");
 
   static loginHeader = () => cy.get("h1").contains("Login to Quiz Manager");
-
 }

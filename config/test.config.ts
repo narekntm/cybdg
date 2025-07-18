@@ -23,7 +23,7 @@ export default defineConfig({
   },
   env: {},
   e2e: {
-    baseUrl: "http://127.0.0.1:3000",
+    baseUrl: "http://127.0.0.1:5151/login.html",
     experimentalRunAllSpecs: true,
     setupNodeEvents(on, config) {
       return plugin(on, config);

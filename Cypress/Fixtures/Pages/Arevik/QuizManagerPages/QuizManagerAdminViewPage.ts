@@ -1,7 +1,7 @@
-export class QuizManagerAdminViewPage{
-  static header = () => cy.get("header h1")
+export class QuizManagerAdminViewPage {
+  static header = () => cy.get("header");
 
-  static headerTitle = () => cy.get("header h1").contains("Admin Dashboard");
+  static managerUsername = () => cy.get("#manager-username");
 
   static logoutButton = () => cy.get("#logout-btn");
 
@@ -23,31 +23,43 @@ export class QuizManagerAdminViewPage{
 
   static questionTypeOptionsInput = () => cy.get(".q-type option");
 
-  static removeQuestionButton  =() => cy.get(".remove-question");
+  static removeQuestionButton = () => cy.get(".remove-question");
 
   static assignModeSelect = () => cy.get("#assign-mode");
 
+  static assignModeAllOption = () => cy.get("#assign-mode option[value='all']");
+
+  static assignModeCustomOption = () => cy.get("#assign-mode option[value='custom']");
+
   static userCheckboxes = () => cy.get("#user-checkboxes");
 
-  static userCheckboxesUser = (index: number) => cy.get('#user-checkboxes label').eq(index)
+  static userCheckboxesUser = (index: number) => cy.get("#user-checkboxes label").eq(index);
 
   static saveQuizButton = () => cy.get("#quiz-form button[type='submit']");
 
   static quizListSection = () => cy.get("#quiz-list");
 
-  static quizList = () => cy.get('#admin-quiz-list');
+  static quizList = () => cy.get("#admin-quiz-list");
 
-  static quizStatus = (index: number) =>  cy.get('li .status-badge').eq(index);
+  static quizStatus = (index: number) => cy.get("li .status-badge").eq(index);
 
-  static quizActions = (index: number) =>  cy.get('.quiz-actions').eq(index);
+  static quizActions = (index: number) => cy.get(".quiz-actions").eq(index);
 
-  static quizActionsPublishButton = () => cy.get('.publish-btn');
+  static quizActionsPublishButton = () => cy.get(".publish-btn");
 
-  static quizActionsArchiveButton = () => cy.get('.archive-btn');
+  static quizActionsArchiveButton = () => cy.get(".archive-btn");
 
-  static quizActionsDeleteButton = () => cy.get('.delete-btn');
+  static quizListHeader = () => cy.get("#quiz-list-header");
 
-  static quizTitle = (index: number) =>  cy.get('li .quiz-title').eq(index);
+  static managerQuizList = () => cy.get("#manager-quiz-list");
+
+  static quizCount = () => cy.get("#quiz-count");
+
+  static quizActionsDeleteButton = () => cy.get(".delete-btn");
+
+  static quizTitle = (index: number) => cy.get("li .quiz-title").eq(index);
+
+  static toastContainer = () => cy.get("#toast-container");
 
   static adminQuizList = () => cy.get("#admin-quiz-list");
 }

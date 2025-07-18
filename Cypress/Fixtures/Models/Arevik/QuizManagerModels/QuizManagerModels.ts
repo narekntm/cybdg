@@ -1,6 +1,6 @@
 export enum Role {
-  Admin = "admin",
   User = "user",
+  Manager = "manager",
 }
 
 export enum AssignMode {
@@ -22,13 +22,18 @@ export enum QuizStatus {
 }
 
 export interface Question {
-  id: string,
-  label: string,
-  type: QuestionType,
-  options?: string[],
+  id: string;
+  label: string;
+  type: QuestionType;
+  options?: string[];
 }
 
-export interface Quiz {
+export interface LoginModel {
+  login?: string;
+  password?: string;
+}
+
+export interface QuizInfo {
   id: string;
   title: string;
   description: string;
@@ -46,7 +51,6 @@ export enum QuizErrorMessages {
 
 export interface User {
   id: string;
-  name: string;
   email: string;
   role: Role;
 }
@@ -55,7 +59,7 @@ export interface Submission {
   id: string;
   quizId: string;
   userId: string;
-  answers: { [questionId: string]: string | string[]; };
+  answers: { [questionId: string]: string | string[] };
   createdAt: string;
 }
 
@@ -69,4 +73,13 @@ export enum AuthErrorMessages {
   Unauthorized = "Unauthorized",
   Forbidden = "Forbidden",
 }
+export type QuizCreationData = Omit<QuizInfo, "id" | "createdBy" | "status">;
 
+export interface UserBase {
+  email: string;
+  id: string;
+  role: Role;
+}
+export interface User extends UserBase {
+  password: string;
+}

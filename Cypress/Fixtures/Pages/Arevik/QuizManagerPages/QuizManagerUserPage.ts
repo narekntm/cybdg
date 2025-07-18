@@ -1,5 +1,4 @@
 export class QuizManagerUserViewPage {
-
   static welcomeHeader = () => cy.get("header h1").contains("Welcome, User");
 
   static logoutButton = () => cy.get("#logout-btn");
