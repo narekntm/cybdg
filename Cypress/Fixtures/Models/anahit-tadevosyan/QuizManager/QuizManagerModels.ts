@@ -40,17 +40,55 @@ export interface QuizData {
 
 export type QuizCreationData = Omit<QuizData, "id" | "createdBy" | "status">;
 
+export enum QuizSuccessMessages {
+  QuizSaved = "Quiz saved successfully!",
+  QuizPublished = "Quiz published",
+}
+
+export enum SubmissionTexts {
+  TotalSubmissions = "Total Submissions:",
+  CreatedAt = "Created At",
+}
+
+export enum UserViewTexts {
+  AvailableQuizzes = "Available Quizzes",
+  NoAvailableQuizzes = "No available quizzes.",
+  NoSubmissions = "No submissions found.",
+}
+
+export enum QuizErrorMessages {
+  QuizNotFound = "Quiz not found",
+  QuizHasSubmissions = "Quiz has submissions",
+  QuizNotEditable = "Quiz is not editable",
+}
+
+export enum SubmissionErrorMessages {
+  AlreadySubmitted = "Already submitted",
+  SubmissionNotFound = "Submission not found",
+}
+
+export enum ValidationErrorMessages {
+  TitleRequired = "Quiz title cannot be empty.",
+  DescriptionRequired = "Quiz description cannot be empty.",
+  AtLeastOneQuestion = "At least one question is required.",
+  AtLeastOneOption = "must have at least one option",
+  CustomAssignmentMissingUsers = "Please select at least one user.",
+  MustHaveALabel = "Question 1 must have a label.",
+}
+
 export type AssignedUsers = "all" | string[];
 
+export interface Answers {
+  [questionId: string]: string | string[];
+}
 export interface Submission {
   id: string;
   quizId: string;
   userId: string;
-  answers: {
-    [questionId: string]: string | string[];
-  };
+  answers: Answers;
   createdAt: string;
 }
+
 export interface UserBase {
   email: string;
   id: string;

@@ -1,21 +1,52 @@
+import Chance from "chance";
 import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
 import { QuizManagerGenerators } from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
-import { QuizData, QuizStatus, UserBase } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import { QuizData, QuizStatus, Role, User, UserBase } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+
+const chance = new Chance();
 
 describe("QuizManager Admin Page", () => {
-  const managerEmail = Cypress.env("MANAGER_EMAIL");
-  const managerPassword = Cypress.env("MANAGER_PASSWORD");
-  const user1Email = Cypress.env("USER1_EMAIL");
-  const user2Email = Cypress.env("USER2_EMAIL");
+  let managerUser: User;
+  let regularUser1: User;
+  let regularUser2: User;
+  before(() => {
+    QuizManagerBuilders.Auth().then(() => {
+      managerUser = {
+        id: chance.guid(),
+        email: chance.email({ domain: "example.com" }),
+        password: chance.string({ length: 10 }),
+        role: Role.Manager,
+      };
 
+      regularUser1 = {
+        id: chance.guid(),
+        email: chance.email({ domain: "example.com" }),
+        password: chance.string({ length: 10 }),
+        role: Role.User,
+      };
+
+      regularUser2 = {
+        id: chance.guid(),
+        email: chance.email({ domain: "example.com" }),
+        password: chance.string({ length: 10 }),
+        role: Role.User,
+      };
+
+      return Promise.all([
+        QuizManagerBuilders.User(managerUser),
+        QuizManagerBuilders.User(regularUser1),
+        QuizManagerBuilders.User(regularUser2),
+      ]);
+    });
+  });
   beforeEach(() => {
-    QuizManagerBuilders.login(managerEmail, managerPassword).then((response) => {
+    QuizManagerBuilders.login(managerUser.email, managerUser.password).then((response) => {
       expect(response.status).to.eq(200);
     });
 
     QuizManagerBuilders.getCurrentUser().then((response) => {
       expect(response.status).to.eq(200);
-      expect(response.body.email).to.eq(managerEmail);
+      expect(response.body.email).to.eq(managerUser.email);
     });
 
     QuizManagerBuilders.getQuizzes().then((response) => {
@@ -26,7 +57,7 @@ describe("QuizManager Admin Page", () => {
       expect(response.status).to.eq(200);
 
       const returnedEmails = response.body.map((user: UserBase) => user.email);
-      expect(returnedEmails).to.include.members([user1Email, user2Email]);
+      expect(returnedEmails).to.include.members([regularUser1.email, regularUser2.email]);
     });
   });
 
@@ -156,7 +187,7 @@ describe("QuizManager Admin Page", () => {
   });
   describe("Quiz access by other user", () => {
     it("Fails to publish an archived quiz as regular user", () => {
-      QuizManagerBuilders.login(user1Email, Cypress.env("USER1_PASSWORD")).then((response) => {
+      QuizManagerBuilders.login(regularUser1.email, regularUser1.password).then((response) => {
         expect(response.status).to.eq(200);
       });
 

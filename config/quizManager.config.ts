@@ -30,6 +30,8 @@ export default defineConfig({
     USER1_PASSWORD: "user123",
     USER2_EMAIL: "user2@quizz.com",
     USER2_PASSWORD: "user123",
+    TESTING_USER_EMAIL: "testmanager@example.com",
+    TESTING_USER_PASSWORD: "test123",
   },
   e2e: {
     baseUrl: "http://127.0.0.1:5353", // UI base URL

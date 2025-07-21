@@ -55,6 +55,12 @@ export class QuizManagerUserViewPage {
 
   static publishButton = (index: number) => cy.get("#admin-quiz-list li").eq(index).find(".publish-btn");
 
+  static submitById = (quizId: string) => cy.get(`button[onclick="window.location.href='quiz-view.html?quiz=${quizId}'"]`);
+
+  static submitBtn = () => cy.get("#submit-btn");
+
+  static editSubmission = (quizId: string) => cy.get(`#submission-list li[data-id='${quizId}'] button`);
+
   static archiveButton = (index: number) => cy.get("#admin-quiz-list li").eq(index).find(".archive-btn");
 
   static deleteButton = (index: number) => cy.get("#admin-quiz-list li").eq(index).find(".delete-btn");

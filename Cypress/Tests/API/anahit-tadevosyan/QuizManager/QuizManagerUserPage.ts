@@ -1,19 +1,49 @@
+import Chance from "chance";
 import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
 import { QuizManagerGenerators } from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
-import { Question, QuestionType, QuizData, QuizStatus } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import { Question, QuestionType, QuizData, QuizStatus, Role, User } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+
+const chance = new Chance();
 
 describe("User View Submissions", () => {
-  const user1Email = Cypress.env("USER1_EMAIL");
-  const user1Password = Cypress.env("USER1_PASSWORD");
-  const managerEmail = Cypress.env("MANAGER_EMAIL");
-  const managerPassword = Cypress.env("MANAGER_PASSWORD");
-
   let quizId: string;
   let originalQuiz: QuizData;
   let submissionId: string;
+  let managerUser: User;
+  let regularUser1: User;
+  let regularUser2: User;
+  before(() => {
+    QuizManagerBuilders.Auth().then(() => {
+      managerUser = {
+        id: chance.guid(),
+        email: chance.email({ domain: "example.com" }),
+        password: chance.string({ length: 10 }),
+        role: Role.Manager,
+      };
 
+      regularUser1 = {
+        id: chance.guid(),
+        email: chance.email({ domain: "example.com" }),
+        password: chance.string({ length: 10 }),
+        role: Role.User,
+      };
+
+      regularUser2 = {
+        id: chance.guid(),
+        email: chance.email({ domain: "example.com" }),
+        password: chance.string({ length: 10 }),
+        role: Role.User,
+      };
+
+      return Promise.all([
+        QuizManagerBuilders.User(managerUser),
+        QuizManagerBuilders.User(regularUser1),
+        QuizManagerBuilders.User(regularUser2),
+      ]);
+    });
+  });
   before("add a testing quiz", () => {
-    QuizManagerBuilders.login(managerEmail, managerPassword).then(() => {
+    QuizManagerBuilders.login(managerUser.email, managerUser.password).then(() => {
       const fakeQuiz = QuizManagerGenerators.fakeQuiz;
 
       QuizManagerBuilders.getCurrentUser().then((response) => {
@@ -37,7 +67,7 @@ describe("User View Submissions", () => {
     });
   });
   after("try to delete the quiz", () => {
-    QuizManagerBuilders.login(managerEmail, managerPassword).then(() => {
+    QuizManagerBuilders.login(managerUser.email, managerUser.password).then(() => {
       QuizManagerBuilders.deleteQuiz(quizId, false).then((response) => {
         expect(response.status).to.eq(400);
         expect(response.body).to.deep.include({ error: "Quiz has submissions" });
@@ -45,8 +75,8 @@ describe("User View Submissions", () => {
     });
   });
   it("should submit and edit a quiz submission", () => {
-    QuizManagerBuilders.login(user1Email, user1Password).then(() => {
-      QuizManagerBuilders.getQuizById(quizId).then((quizRes) => {
+    QuizManagerBuilders.login(regularUser1.email, regularUser1.password).then(() => {
+      QuizManagerBuilders.getSubmissionsMe(quizId).then((quizRes) => {
         expect(quizRes.status).to.eq(200);
         originalQuiz = quizRes.body;
 
