@@ -22,16 +22,12 @@ export default defineConfig({
     openMode: 0,
   },
   env: {
-    API_URL: "http://127.0.0.1:3000",
-    ADMIN_EMAIL: "admin@example.com",
-    ADMIN_PASSWORD: "admin123",
-    USER_EMAIL: "user1@example.com",
-    USER_PASSWORD: "user123",
-    USER2_EMAIL: "user2@example.com",
-    USER2_PASSWORD: "user123",
+    API_URL: "http://127.0.0.1:5353/be",
+    TEST_MANAGER_EMAIL: "testmanager@example.com",
+    TEST_MANAGER_PASSWORD: "test123",
   },
   e2e: {
-    baseUrl: "http://127.0.0.1:8080/",
+    baseUrl: "http://127.0.0.1:5353/fe",
     experimentalRunAllSpecs: true,
     setupNodeEvents(on, config) {
       return plugin(on, config);

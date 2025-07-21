@@ -5,25 +5,7 @@ export class LoginPage {
 
   static getSubmitButton = () => cy.get('#login-form button[type="submit"]');
 
-  static getLoginError = () => cy.get("#error-message");
+  static getLoginError = () => cy.get(".toast.error");
 
   static loginFormHeader = () => cy.get('[class="login-container"] h1');
-
-  static visit(): void {
-    cy.visit("/login.html");
-  }
-
-  static fillEmail(email: string): void {
-    this.getEmailInput().clear().type(email);
-  }
-
-  static fillPassword(password: string): void {
-    this.getPasswordInput().clear().type(password);
-  }
-
-  static submit(): void {
-    this.getSubmitButton().click();
-  }
-
-  static url = "/login.html";
 }

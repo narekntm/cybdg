@@ -65,15 +65,15 @@ export interface AdminQuiz {
 }
 
 export enum UserRole {
-  Admin = "admin",
   User = "user",
+  Manager = "manager",
 }
 
 export interface UserCredentials {
   id: string;
   email: string;
   password: string;
-  role?: UserRole;
+  role: UserRole;
 }
 
 export enum UserFields {
@@ -111,20 +111,9 @@ export interface UserSummary {
   role: UserRole;
 }
 
-export enum TestUserIds {
-  Admin = "admin1",
-  User1 = "user1",
-  User2 = "user2",
-}
-
-export enum TestUserEmails {
-  Admin = "admin@example.com",
-  User1 = "user1@example.com",
-  User2 = "user2@example.com",
-}
-
 export enum AssignedUsers {
   All = "all",
+  Custom = "custom",
 }
 
 export enum SubmissionAnswerText {
@@ -136,4 +125,21 @@ export enum SubmissionAnswerText {
 
 export enum QuizSuccessMessages {
   QuizSaved = "Quiz saved successfully!",
+  QuizPublished = "Quiz published",
+}
+
+export enum SubmissionTexts {
+  TotalSubmissions = "Total Submissions:",
+  CreatedAt = "Created At",
+}
+
+export enum UserViewTexts {
+  AvailableQuizzes = "Available Quizzes",
+  NoAvailableQuizzes = "No available quizzes.",
+  NoSubmissions = "No submissions found.",
+}
+
+export enum QuizButtonTexts {
+  Edit = "Edit",
+  View = "View",
 }

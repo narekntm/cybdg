@@ -24,4 +24,8 @@ export class QuizManagerEndpoints {
   static mySubmissions = `${root}/api/submissions/me`;
 
   static submission = (submissionId: string) => `${root}/api/submissions/${submissionId}`;
+
+  static testAuth = `${root}/api/test/auth`;
+
+  static testUsers = `${root}/api/test/users`;
 }
