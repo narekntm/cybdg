@@ -60,4 +60,12 @@ export class ManagerPage {
   static archiveButtonWithin = () => cy.get(".archive-btn");
 
   static deleteButtonWithin = () => cy.get(".delete-btn");
+
+  static managerUsername = () => cy.get("#manager-username");
+
+  static quizItemById = (id: string) => cy.get(`#manager-quiz-list li[data-id="${id}"]`);
+
+  static quizTitleInItem = () => cy.get(".quiz-title");
+
+  static quizDescriptionInItem = () => cy.get(".quiz-description");
 }
