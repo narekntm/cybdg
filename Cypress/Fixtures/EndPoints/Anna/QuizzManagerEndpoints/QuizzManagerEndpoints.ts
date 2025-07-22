@@ -1,4 +1,4 @@
-const root = "/api"
+const root = "be/api"
 
 export class QuizzManagerEndpoints {
 
@@ -6,9 +6,20 @@ export class QuizzManagerEndpoints {
 
   static adminLogout = `${root}/logout`;
 
-  static quizzes = (id?:string) => `${root}/quizzes${id ? `/${id}` : ""}`;
+  static quizzes = (quizid?:string):string => `${root}/quizzes${quizid ? `/${quizid}` : ""}`;
 
-  static status =  (id: string) => (`${this.quizzes(id)}/status`)
+  static users = (): string => `${root}/users`;
 
-  static submissions = (id:string) => (`${this.quizzes(id)}/submissions`)
+  static manager=():string => `${root}/auth/me`;
+
+  static publishQuiz = (quizId: string): string => `${this.quizzes(quizId)}/publish`;
+
+  static archiveQuiz = (quizId: string): string => `${this.quizzes(quizId)}/archive`;
+
+  static deleteQuiz =  (quizid: string) => (`${this.quizzes(quizid)}`);
+
+  static submissions = (quizid:string) => (`${this.quizzes(quizid)}/submissions`);
+
+  static submissionById = (submissionId: string): string => `${root}/submissions/${submissionId}`;
+
 }

@@ -1,47 +1,90 @@
 export namespace QuizzManagerModels {
+  export interface Login {
+    email: string;
+    password: string;
+  }
 
-export interface Newquizz {
-  quizzTitle: string,
-  quizzDescription: string,
-  AddQuestionFields: AddQuestionFields,
-}
+  export enum Role {
+    Manager = "manager",
+    User = "user",
+  }
 
-  export enum SelectInput {
-   Input = "Input",
+  export enum QuestionType {
+    Input = "Input",
     Radio = "Radio",
     Checkbox = "Checkbox",
-    DropDown = "DropDown",
+    Dropdown = "Dropdown",
   }
 
-  export enum AssignTo {
-    AllUsers = "All Users",
-    SelectedUsers = "Selected Users",
+  export interface Question {
+    label: string;
+    type: QuestionType;
+    options: string;
+    questionText: string ;
   }
 
-  export enum Status {
-    ACTIVE = "ACTIVE",
-    ARCHIVED = "ARCHIVED",
-    DRAFT = "DRAFT"
+  export interface Users {
+    id: string;
+    email: string;
+    role: Role;
   }
 
-  export interface StatusResponse {
-    status: Status;
-  }
-  /** API response for login */
-  export interface LoginResponse {
-    success: boolean;
-    message?: string;
+
+  export enum QuizStatus {
+    Active = "Active",
+    Archived = "Archived",
+    Draft = "Draft",
   }
 
-  /** Generic API error response */
-  export interface ErrorResponse {
-    error: string;
+  export interface Quizz {
+    title: string;
+    description: string;
+    question: Question[];
   }
 
-  export interface AddQuestionFields {
-    questionText: string | number,
-    input: SelectInput,
-    options: string | number
+  export interface QuizCreation {
+    title: string;
+    description: string;
+    question: string;
+    type: OptionType;
+    option:string;
+    assignTo: AssignTo;
   }
 
-}
+
+  export interface QuizData {
+    id: string;
+    title: string;
+    description: string;
+    questions: Question[];
+    createdBy: string;
+    assignedUsers: AssignedUsers;
+    status: QuizStatus;
+  }
+
+  export type QuizCreationData = Omit < QuizData, "id" | "createdBy" | "status" >;
+
+
+  export type AssignedUsers = "all" | string[];
+
+  export interface Submission {
+    id: string;
+    quizId: string;
+    userId: string;
+    answers: {
+      [questionId: string]: string | string[];
+    };
+    createdAt: string;
+  }
+
+  export interface UserBase {
+    email: string;
+    id: string;
+    role: Role;
+  }
+
+  export interface User extends UserBase {
+    password: string;
+  }
+
+  }

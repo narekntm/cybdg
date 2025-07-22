@@ -21,7 +21,8 @@ export default defineConfig({
     runMode: 0,
     openMode: 0,
   },
-  env: {},
+  env: {
+  },
   e2e: {
     baseUrl: "http://127.0.0.1:5353",
     experimentalRunAllSpecs: true,
