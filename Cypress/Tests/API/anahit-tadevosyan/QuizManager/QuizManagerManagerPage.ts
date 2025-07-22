@@ -1,36 +1,18 @@
-import Chance from "chance";
 import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
 import { QuizManagerGenerators } from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
+import { generateUser } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
 import { QuizData, QuizStatus, Role, User, UserBase } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
-
-const chance = new Chance();
 
 describe("QuizManager Admin Page", () => {
   let managerUser: User;
   let regularUser1: User;
   let regularUser2: User;
+  let quizId: string;
   before(() => {
     QuizManagerBuilders.Auth().then(() => {
-      managerUser = {
-        id: chance.guid(),
-        email: chance.email({ domain: "example.com" }),
-        password: chance.string({ length: 10 }),
-        role: Role.Manager,
-      };
-
-      regularUser1 = {
-        id: chance.guid(),
-        email: chance.email({ domain: "example.com" }),
-        password: chance.string({ length: 10 }),
-        role: Role.User,
-      };
-
-      regularUser2 = {
-        id: chance.guid(),
-        email: chance.email({ domain: "example.com" }),
-        password: chance.string({ length: 10 }),
-        role: Role.User,
-      };
+      managerUser = generateUser(Role.Manager);
+      regularUser1 = generateUser(Role.User);
+      regularUser2 = generateUser(Role.User);
 
       return Promise.all([
         QuizManagerBuilders.User(managerUser),
@@ -39,6 +21,7 @@ describe("QuizManager Admin Page", () => {
       ]);
     });
   });
+
   beforeEach(() => {
     QuizManagerBuilders.login(managerUser.email, managerUser.password).then((response) => {
       expect(response.status).to.eq(200);
@@ -67,7 +50,7 @@ describe("QuizManager Admin Page", () => {
         expect(response.status).to.eq(200);
         const currentUserId = response.body.id;
 
-        const fakeQuiz = QuizManagerGenerators.fakeQuiz;
+        const fakeQuiz = QuizManagerGenerators.randomQuiz;
 
         QuizManagerBuilders.createQuiz(fakeQuiz).then((response) => {
           expect(response.status).to.eq(200);
@@ -76,7 +59,7 @@ describe("QuizManager Admin Page", () => {
             status: QuizStatus.Draft,
             createdBy: currentUserId,
           });
-          cy.wrap(response.body.id).as("quizId");
+          quizId = response.body.id;
         });
         QuizManagerBuilders.getQuizzes().then((response) => {
           const created = response.body.find((quiz: QuizData) => quiz.title === fakeQuiz.title);
@@ -84,12 +67,9 @@ describe("QuizManager Admin Page", () => {
           expect(created).to.exist;
         });
       });
-      cy.get("@quizId").then((quizId) => {
-        const quizIdString = quizId.toString();
-        QuizManagerBuilders.deleteQuiz(quizIdString).then((response) => {
-          expect(response.status).to.eq(200);
-          expect(response.body).to.deep.include({ success: true });
-        });
+      QuizManagerBuilders.deleteQuiz(quizId).then((response) => {
+        expect(response.status).to.eq(200);
+        expect(response.body).to.deep.include({ success: true });
       });
     });
   });
@@ -100,7 +80,7 @@ describe("QuizManager Admin Page", () => {
         expect(response.status).to.eq(200);
         const currentUserId = response.body.id;
 
-        const fakeQuiz = QuizManagerGenerators.fakeQuiz;
+        const fakeQuiz = QuizManagerGenerators.randomQuiz;
 
         QuizManagerBuilders.createQuiz(fakeQuiz).then((response) => {
           expect(response.status).to.eq(200);
@@ -119,12 +99,9 @@ describe("QuizManager Admin Page", () => {
       });
     });
     afterEach("delete the created quiz", () => {
-      cy.get("@quizId").then((quizId) => {
-        const quizIdString = quizId.toString();
-        QuizManagerBuilders.deleteQuiz(quizIdString).then((response) => {
-          expect(response.status).to.eq(200);
-          expect(response.body).to.deep.include({ success: true });
-        });
+      QuizManagerBuilders.deleteQuiz(quizId).then((response) => {
+        expect(response.status).to.eq(200);
+        expect(response.body).to.deep.include({ success: true });
       });
     });
     it("Archives the quiz", () => {
@@ -162,24 +139,21 @@ describe("QuizManager Admin Page", () => {
     });
 
     it("Publishes the quiz from Draft", () => {
-      cy.get("@quizId").then((quizId) => {
-        QuizManagerBuilders.getQuizzes().then((response) => {
-          const quizzes = response.body;
-          const quizIdString = quizId.toString();
-          const firstDraftQuiz = quizzes.find((quiz: QuizData) => quiz.id === quizIdString);
+      QuizManagerBuilders.getQuizzes().then((response) => {
+        const quizzes = response.body;
+        const firstDraftQuiz = quizzes.find((quiz: QuizData) => quiz.id === quizId);
 
-          expect(firstDraftQuiz, "Expected at least one draft quiz").to.exist;
+        expect(firstDraftQuiz, "Expected at least one draft quiz").to.exist;
 
-          const firstQuizId = firstDraftQuiz.id;
-          QuizManagerBuilders.publishQuiz(firstQuizId).then((publishResponse) => {
-            expect(publishResponse.status).to.eq(200);
-            expect(publishResponse.body).to.include({ success: true });
+        const firstQuizId = firstDraftQuiz.id;
+        QuizManagerBuilders.publishQuiz(firstQuizId).then((publishResponse) => {
+          expect(publishResponse.status).to.eq(200);
+          expect(publishResponse.body).to.include({ success: true });
 
-            QuizManagerBuilders.getQuizzes().then((newResponse) => {
-              const updatedQuizzes = newResponse.body;
-              const updated = updatedQuizzes.find((q: QuizData) => q.id === firstQuizId);
-              expect(updated?.status).to.eq("active");
-            });
+          QuizManagerBuilders.getQuizzes().then((newResponse) => {
+            const updatedQuizzes = newResponse.body;
+            const updated = updatedQuizzes.find((q: QuizData) => q.id === firstQuizId);
+            expect(updated?.status).to.eq("active");
           });
         });
       });

@@ -1,36 +1,18 @@
-import Chance from "chance";
 import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
 import { QuizManagerGenerators } from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
+import { generateUser } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
 import { QuizData, QuizStatus, Role, Submission, User } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
-
-const chance = new Chance();
 
 describe("QuizManager View Submissions", () => {
   let managerUser: User;
   let regularUser1: User;
   let regularUser2: User;
+
   before(() => {
     QuizManagerBuilders.Auth().then(() => {
-      managerUser = {
-        id: chance.guid(),
-        email: chance.email({ domain: "example.com" }),
-        password: chance.string({ length: 10 }),
-        role: Role.Manager,
-      };
-
-      regularUser1 = {
-        id: chance.guid(),
-        email: chance.email({ domain: "example.com" }),
-        password: chance.string({ length: 10 }),
-        role: Role.User,
-      };
-
-      regularUser2 = {
-        id: chance.guid(),
-        email: chance.email({ domain: "example.com" }),
-        password: chance.string({ length: 10 }),
-        role: Role.User,
-      };
+      managerUser = generateUser(Role.Manager);
+      regularUser1 = generateUser(Role.User);
+      regularUser2 = generateUser(Role.User);
 
       return Promise.all([
         QuizManagerBuilders.User(managerUser),
@@ -39,6 +21,7 @@ describe("QuizManager View Submissions", () => {
       ]);
     });
   });
+
   describe("Submissions view", () => {
     it("Views the submissions by quizId by admin", () => {
       QuizManagerBuilders.login(managerUser.email, managerUser.password).then((response) => {
@@ -48,7 +31,7 @@ describe("QuizManager View Submissions", () => {
         expect(response.status).to.eq(200);
         const currentUserId = response.body.id;
 
-        const fakeQuiz = QuizManagerGenerators.fakeQuiz;
+        const fakeQuiz = QuizManagerGenerators.randomQuiz;
 
         QuizManagerBuilders.createQuiz(fakeQuiz).then((response) => {
           expect(response.status).to.eq(200);

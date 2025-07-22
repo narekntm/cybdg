@@ -4,7 +4,7 @@ import { QuestionType, QuizCreationData } from "Models/anahit-tadevosyan/QuizMan
 const chance = new Chance();
 
 export class QuizManagerGenerators {
-  static fakeQuiz: QuizCreationData = {
+  static randomQuiz: QuizCreationData = {
     title: chance.sentence({ words: 3 }),
     description: chance.sentence({ words: 5 }),
     questions: [

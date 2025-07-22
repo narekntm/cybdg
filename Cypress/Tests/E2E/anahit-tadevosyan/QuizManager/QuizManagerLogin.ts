@@ -1,11 +1,8 @@
-import Chance from "chance";
 import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
 import { QuizManagerEndpoints } from "EndPoints/anahit-tadevosyan/QuizManager/QuizManagerEndPoints";
+import { generateUser, login, logout } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
 import { Role, User } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 import { QuizManagerLoginPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerLoginPage";
-import { QuizManagerManagerViewPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerManagerViewPage";
-
-const chance = new Chance();
 
 describe("Login Test Cases", () => {
   const baseUrl = "http://127.0.0.1:5151/login.html";
@@ -14,34 +11,12 @@ describe("Login Test Cases", () => {
   let regularUser2: User;
   const invalidEmail = "invalid@login.com";
   const invalidPassword = "invalid@login";
-  const login = function (email: string, password: string) {
-    QuizManagerLoginPage.emailInput().clear().type(email);
-    QuizManagerLoginPage.passwordInput().clear().type(password);
-    QuizManagerLoginPage.loginButton().click();
-  };
 
   before(() => {
     QuizManagerBuilders.Auth().then(() => {
-      managerUser = {
-        id: chance.guid(),
-        email: chance.email({ domain: "example.com" }),
-        password: chance.string({ length: 10 }),
-        role: Role.Manager,
-      };
-
-      regularUser1 = {
-        id: chance.guid(),
-        email: chance.email({ domain: "example.com" }),
-        password: chance.string({ length: 10 }),
-        role: Role.User,
-      };
-
-      regularUser2 = {
-        id: chance.guid(),
-        email: chance.email({ domain: "example.com" }),
-        password: chance.string({ length: 10 }),
-        role: Role.User,
-      };
+      managerUser = generateUser(Role.Manager);
+      regularUser1 = generateUser(Role.User);
+      regularUser2 = generateUser(Role.User);
 
       return Promise.all([
         QuizManagerBuilders.User(managerUser),
@@ -50,6 +25,7 @@ describe("Login Test Cases", () => {
       ]);
     });
   });
+
   beforeEach(() => {
     cy.intercept({ method: "Get", url: QuizManagerEndpoints.me() }).as("getCurrentUser");
     cy.visit(baseUrl);
@@ -58,10 +34,12 @@ describe("Login Test Cases", () => {
       expect(interception.response.body).to.deep.equal({ error: "Unauthorized" });
     });
   });
+
   describe("Login Positive Cases", () => {
     afterEach(() => {
-      QuizManagerManagerViewPage.logoutButton().click();
+      logout();
     });
+
     it("Login Positive Test Cases for Manager", () => {
       cy.intercept({ method: "POST", url: QuizManagerEndpoints.login() }).as("postLogin");
       cy.intercept({ method: "GET", url: QuizManagerEndpoints.me() }).as("getMe");
@@ -76,6 +54,7 @@ describe("Login Test Cases", () => {
         expect(interception.response.statusCode).to.eq(200);
       });
     });
+
     it("Login Positive Test Cases for User", () => {
       cy.intercept({ method: "POST", url: QuizManagerEndpoints.login() }).as("postLogin");
       cy.intercept({ method: "GET", url: QuizManagerEndpoints.me() }).as("getMe");
@@ -95,23 +74,25 @@ describe("Login Test Cases", () => {
   describe("Login Negative Cases", () => {
     it("Login Invalid Credentials", () => {
       cy.intercept({ method: "POST", url: QuizManagerEndpoints.login() }).as("postLogin");
-      login(invalidEmail, invalidPassword);
+      login(invalidEmail, invalidPassword, false);
       cy.wait("@postLogin").then((interception) => {
         expect(interception.response.statusCode).to.eq(401);
       });
       QuizManagerLoginPage.toastContainer().should("contain", "Login failed: Invalid credentials");
     });
+
     it("Login Invalid Emails", () => {
       cy.intercept({ method: "POST", url: QuizManagerEndpoints.login() }).as("postLogin");
-      login(invalidEmail, managerUser.password);
+      login(invalidEmail, managerUser.password, false);
       cy.wait("@postLogin").then((interception) => {
         expect(interception.response.statusCode).to.eq(401);
       });
       QuizManagerLoginPage.toastContainer().should("contain", "Login failed: Invalid credentials");
     });
+
     it("Login Invalid Password", () => {
       cy.intercept({ method: "POST", url: QuizManagerEndpoints.login() }).as("postLogin");
-      login(managerUser.email, invalidPassword);
+      login(managerUser.email, invalidPassword, false);
       cy.wait("@postLogin").then((interception) => {
         expect(interception.response.statusCode).to.eq(401);
       });

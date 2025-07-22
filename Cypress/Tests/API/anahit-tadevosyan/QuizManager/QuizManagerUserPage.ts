@@ -1,9 +1,7 @@
-import Chance from "chance";
 import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
 import { QuizManagerGenerators } from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
+import { generateUser } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
 import { Question, QuestionType, QuizData, QuizStatus, Role, User } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
-
-const chance = new Chance();
 
 describe("User View Submissions", () => {
   let quizId: string;
@@ -12,28 +10,12 @@ describe("User View Submissions", () => {
   let managerUser: User;
   let regularUser1: User;
   let regularUser2: User;
+
   before(() => {
     QuizManagerBuilders.Auth().then(() => {
-      managerUser = {
-        id: chance.guid(),
-        email: chance.email({ domain: "example.com" }),
-        password: chance.string({ length: 10 }),
-        role: Role.Manager,
-      };
-
-      regularUser1 = {
-        id: chance.guid(),
-        email: chance.email({ domain: "example.com" }),
-        password: chance.string({ length: 10 }),
-        role: Role.User,
-      };
-
-      regularUser2 = {
-        id: chance.guid(),
-        email: chance.email({ domain: "example.com" }),
-        password: chance.string({ length: 10 }),
-        role: Role.User,
-      };
+      managerUser = generateUser(Role.Manager);
+      regularUser1 = generateUser(Role.User);
+      regularUser2 = generateUser(Role.User);
 
       return Promise.all([
         QuizManagerBuilders.User(managerUser),
@@ -42,9 +24,10 @@ describe("User View Submissions", () => {
       ]);
     });
   });
+
   before("add a testing quiz", () => {
     QuizManagerBuilders.login(managerUser.email, managerUser.password).then(() => {
-      const fakeQuiz = QuizManagerGenerators.fakeQuiz;
+      const fakeQuiz = QuizManagerGenerators.randomQuiz;
 
       QuizManagerBuilders.getCurrentUser().then((response) => {
         const managerId = response.body.id;
@@ -66,6 +49,7 @@ describe("User View Submissions", () => {
       });
     });
   });
+
   after("try to delete the quiz", () => {
     QuizManagerBuilders.login(managerUser.email, managerUser.password).then(() => {
       QuizManagerBuilders.deleteQuiz(quizId, false).then((response) => {
@@ -74,6 +58,7 @@ describe("User View Submissions", () => {
       });
     });
   });
+
   it("should submit and edit a quiz submission", () => {
     QuizManagerBuilders.login(regularUser1.email, regularUser1.password).then(() => {
       QuizManagerBuilders.getSubmissionsMe(quizId).then((quizRes) => {

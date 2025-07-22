@@ -1,8 +1,6 @@
-import Chance from "chance";
 import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
+import { generateUser } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
 import { Role, User } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
-
-const chance = new Chance();
 
 describe("Login test cases", () => {
   const invalidEmail = "user3@example.com";
@@ -13,26 +11,9 @@ describe("Login test cases", () => {
 
   before(() => {
     QuizManagerBuilders.Auth().then(() => {
-      managerUser = {
-        id: chance.guid(),
-        email: chance.email({ domain: "example.com" }),
-        password: chance.string({ length: 10 }),
-        role: Role.Manager,
-      };
-
-      regularUser1 = {
-        id: chance.guid(),
-        email: chance.email({ domain: "example.com" }),
-        password: chance.string({ length: 10 }),
-        role: Role.User,
-      };
-
-      regularUser2 = {
-        id: chance.guid(),
-        email: chance.email({ domain: "example.com" }),
-        password: chance.string({ length: 10 }),
-        role: Role.User,
-      };
+      managerUser = generateUser(Role.Manager);
+      regularUser1 = generateUser(Role.User);
+      regularUser2 = generateUser(Role.User);
 
       return Promise.all([
         QuizManagerBuilders.User(managerUser),
@@ -41,6 +22,7 @@ describe("Login test cases", () => {
       ]);
     });
   });
+
   beforeEach(() => {
     QuizManagerBuilders.getCurrentUser(false).then((response) => {
       expect(response.status).to.eq(401);

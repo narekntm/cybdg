@@ -76,7 +76,7 @@ export enum ValidationErrorMessages {
   MustHaveALabel = "Question 1 must have a label.",
 }
 
-export type AssignedUsers = "all" | string[];
+export type AssignedUsers = ["all" | string[]];
 
 export interface Answers {
   [questionId: string]: string | string[];
