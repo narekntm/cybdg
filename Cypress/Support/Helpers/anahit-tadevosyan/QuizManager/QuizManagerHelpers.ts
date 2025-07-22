@@ -1,4 +1,5 @@
 import Chance from "chance";
+import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
 import { QuizManagerEndpoints } from "EndPoints/anahit-tadevosyan/QuizManager/QuizManagerEndPoints";
 import { Question, QuestionType, QuizCreationData, Role, User, Users } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 import { QuizManagerLoginPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerLoginPage";
@@ -26,18 +27,18 @@ export function logout() {
   cy.getCookie("authToken").should("not.exist");
 }
 
-export function createQuiz(fakeQuiz: QuizCreationData): void {
+export function createQuiz(randomQuiz: QuizCreationData): void {
   QuizManagerManagerViewPage.quizToggle().click();
 
-  if (fakeQuiz.title) {
-    QuizManagerManagerViewPage.quizTitleInput().type(fakeQuiz.title);
+  if (randomQuiz.title) {
+    QuizManagerManagerViewPage.quizTitleInput().type(randomQuiz.title);
   }
 
-  if (fakeQuiz.description) {
-    QuizManagerManagerViewPage.quizDescriptionTextarea().type(fakeQuiz.description);
+  if (randomQuiz.description) {
+    QuizManagerManagerViewPage.quizDescriptionTextarea().type(randomQuiz.description);
   }
 
-  fakeQuiz.questions?.forEach((question) => {
+  randomQuiz.questions?.forEach((question) => {
     QuizManagerManagerViewPage.addQuestionButton().click();
 
     const labelInput = QuizManagerManagerViewPage.questionTitleInput(question.id);
@@ -52,16 +53,16 @@ export function createQuiz(fakeQuiz: QuizCreationData): void {
     });
   });
 
-  if (fakeQuiz.assignedUsers?.length) {
-    if (fakeQuiz.assignedUsers[0] === "all") {
+  if (randomQuiz.assignedUsers?.length) {
+    if (randomQuiz.assignedUsers[0] === "all") {
       QuizManagerManagerViewPage.assignModeSelect().select("All Users");
     } else {
-      QuizManagerManagerViewPage.assignModeSelect().select("Select Users");
-      cy.intercept("GET", QuizManagerEndpoints.users).as("getUsers");
+      QuizManagerManagerViewPage.assignModeSelect().select("custom");
 
-      cy.wait("@getUsers").then((interception) => {
-        const allUsers = interception.response.body;
-        fakeQuiz.assignedUsers.forEach((userId) => {
+      QuizManagerBuilders.getUsers().then((response) => {
+        const allUsers = response.body;
+
+        randomQuiz.assignedUsers.forEach((userId) => {
           const user = allUsers.find((u: Users) => u.id === userId);
           if (user) {
             QuizManagerManagerViewPage.assignedUsersByEmail(user.email).click();

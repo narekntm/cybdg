@@ -37,6 +37,7 @@ describe("QuizManager Manager View", () => {
     cy.visit(baseUrl);
     cy.intercept({ method: "POST", url: QuizManagerEndpoints.login() }).as("postLogin");
     login(managerUser.email, managerUser.password);
+    cy.url().should("include", "/manager.html");
     cy.wait("@postLogin").then((interception) => {
       expect(interception.response.statusCode).to.eq(200);
     });
@@ -84,11 +85,8 @@ describe("QuizManager Manager View", () => {
 
     it("creates no label questions", () => {
       const noLabelQuestionQuiz = structuredClone(QuizManagerGenerators.randomQuiz);
-
       noLabelQuestionQuiz.questions[0].label = "";
-
       createQuiz(noLabelQuestionQuiz);
-
       QuizManagerManagerViewPage.toastContainer().should("contain", ValidationErrorMessages.MustHaveALabel);
     });
 
@@ -99,6 +97,14 @@ describe("QuizManager Manager View", () => {
       createQuiz(noOptionQuiz);
 
       QuizManagerManagerViewPage.toastContainer().should("contain", ValidationErrorMessages.AtLeastOneOption);
+    });
+    it("creates a quiz with  no selected custom users", () => {
+      const noSelectedUsers = structuredClone(QuizManagerGenerators.randomQuiz);
+      noSelectedUsers.assignedUsers = [[regularUser1.email]];
+
+      createQuiz(noSelectedUsers);
+
+      QuizManagerManagerViewPage.toastContainer().should("contain", ValidationErrorMessages.CustomAssignmentMissingUsers);
     });
   });
 

@@ -9,6 +9,7 @@ describe("Login Test Cases", () => {
   let managerUser: User;
   let regularUser1: User;
   let regularUser2: User;
+  let initialAuthToken: string;
   const invalidEmail = "invalid@login.com";
   const invalidPassword = "invalid@login";
 
@@ -29,6 +30,7 @@ describe("Login Test Cases", () => {
   beforeEach(() => {
     cy.intercept({ method: "Get", url: QuizManagerEndpoints.me() }).as("getCurrentUser");
     cy.visit(baseUrl);
+    cy.url().should("include", "/login.html");
     cy.wait("@getCurrentUser").then((interception) => {
       expect(interception.response.statusCode).to.eq(401);
       expect(interception.response.body).to.deep.equal({ error: "Unauthorized" });
@@ -38,6 +40,7 @@ describe("Login Test Cases", () => {
   describe("Login Positive Cases", () => {
     afterEach(() => {
       logout();
+      cy.url().should("include", "/login.html");
     });
 
     it("Login Positive Test Cases for Manager", () => {
@@ -45,7 +48,19 @@ describe("Login Test Cases", () => {
       cy.intercept({ method: "GET", url: QuizManagerEndpoints.me() }).as("getMe");
 
       login(managerUser.email, managerUser.password);
+      cy.getCookie("authToken").then((cookie) => {
+        expect(cookie).to.exist;
+        initialAuthToken = cookie.value;
+      });
 
+      cy.url().should("include", "/manager.html");
+
+      cy.getCookie("authToken").should((cookie) => {
+        expect(cookie).to.exist;
+        expect(cookie.value).to.equal(initialAuthToken);
+      });
+
+      cy.url().should("include", "/manager.html");
       cy.wait("@postLogin").then((interception) => {
         expect(interception.response.statusCode).to.eq(200);
       });
@@ -60,6 +75,17 @@ describe("Login Test Cases", () => {
       cy.intercept({ method: "GET", url: QuizManagerEndpoints.me() }).as("getMe");
 
       login(regularUser1.email, regularUser1.password);
+      cy.getCookie("authToken").then((cookie) => {
+        expect(cookie).to.exist;
+        initialAuthToken = cookie.value;
+      });
+
+      cy.url().should("include", "/user.html");
+
+      cy.getCookie("authToken").should((cookie) => {
+        expect(cookie).to.exist;
+        expect(cookie.value).to.equal(initialAuthToken);
+      });
 
       cy.wait("@postLogin").then((interception) => {
         expect(interception.response.statusCode).to.eq(200);
@@ -75,6 +101,7 @@ describe("Login Test Cases", () => {
     it("Login Invalid Credentials", () => {
       cy.intercept({ method: "POST", url: QuizManagerEndpoints.login() }).as("postLogin");
       login(invalidEmail, invalidPassword, false);
+      cy.url().should("include", "/login.html");
       cy.wait("@postLogin").then((interception) => {
         expect(interception.response.statusCode).to.eq(401);
       });
@@ -84,6 +111,7 @@ describe("Login Test Cases", () => {
     it("Login Invalid Emails", () => {
       cy.intercept({ method: "POST", url: QuizManagerEndpoints.login() }).as("postLogin");
       login(invalidEmail, managerUser.password, false);
+      cy.url().should("include", "/login.html");
       cy.wait("@postLogin").then((interception) => {
         expect(interception.response.statusCode).to.eq(401);
       });
@@ -93,6 +121,7 @@ describe("Login Test Cases", () => {
     it("Login Invalid Password", () => {
       cy.intercept({ method: "POST", url: QuizManagerEndpoints.login() }).as("postLogin");
       login(managerUser.email, invalidPassword, false);
+      cy.url().should("include", "/login.html");
       cy.wait("@postLogin").then((interception) => {
         expect(interception.response.statusCode).to.eq(401);
       });

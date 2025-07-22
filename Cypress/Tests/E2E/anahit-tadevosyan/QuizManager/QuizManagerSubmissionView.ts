@@ -29,6 +29,7 @@ describe("Manager views quiz submissions", () => {
     cy.visit(baseUrl);
     cy.intercept("POST", QuizManagerEndpoints.login()).as("login");
     login(managerUser.email, managerUser.password);
+    cy.url().should("include", "/manager.html");
     cy.wait("@login").its("response.statusCode").should("eq", 200);
 
     const fakeQuiz = QuizManagerGenerators.randomQuiz;
@@ -46,18 +47,18 @@ describe("Manager views quiz submissions", () => {
     });
 
     QuizManagerManagerViewPage.logoutButton().click();
+    cy.url().should("include", "/login.html");
   });
 
   it("User submits quiz", () => {
     cy.visit(baseUrl);
     cy.intercept("POST", QuizManagerEndpoints.login()).as("login");
     login(regularUser.email, regularUser.password);
+    cy.url().should("include", "/user.html");
     cy.wait("@login").its("response.statusCode").should("eq", 200);
 
-    cy.intercept("GET", QuizManagerEndpoints.quizzes()).as("getQuizzes");
-    cy.wait("@getQuizzes");
-
     QuizManagerUserViewPage.submitById(createdQuiz.id).click();
+    cy.url().should("include", `/quiz-view.html?quiz=${createdQuiz.id}`);
     submittedAnswers = {};
 
     createdQuiz.questions.forEach((q) => {
@@ -93,17 +94,21 @@ describe("Manager views quiz submissions", () => {
 
     cy.intercept("POST", QuizManagerEndpoints.quizSubmissions(createdQuiz.id)).as("postSubmission");
     QuizManagerUserViewPage.submitBtn().click();
+    cy.url().should("include", "/user.html");
     cy.wait("@postSubmission").its("response.statusCode").should("eq", 200);
     QuizManagerUserViewPage.logoutButton().click();
+    cy.url().should("include", "/login.html");
   });
 
   it("Manager views submissions and verifies answers", () => {
     cy.visit(baseUrl);
     cy.intercept("POST", QuizManagerEndpoints.login()).as("login");
     login(managerUser.email, managerUser.password);
+    cy.url().should("include", "/manager.html");
     cy.wait("@login").its("response.statusCode").should("eq", 200);
 
     QuizManagerSubmissionView.viewSubmissions(createdQuiz.id).click();
+    cy.url().should("include", `/view-submissions.html?quiz=${createdQuiz.id}`);
 
     cy.get(".submission")
       .first()
