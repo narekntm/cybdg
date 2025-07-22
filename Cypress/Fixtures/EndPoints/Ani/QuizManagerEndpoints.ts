@@ -1,3 +1,4 @@
 export class QuizManagerEndpoints {
-  static managerLogin = "/be/api/login";
+  static Auth = "http://127.0.0.1:5252/api/test/auth";
+  static Users = "http://127.0.0.1:5252/api/test/users";
 }

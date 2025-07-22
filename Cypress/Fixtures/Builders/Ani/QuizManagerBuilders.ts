@@ -1,37 +1,27 @@
-import { UserManagementEndpoints } from "EndPoints/UserManagementEndpoints";
 import { QuizManagerEndpoints } from "EndPoints/Ani/QuizManagerEndpoints";
+import { User } from "Models/Ani/QuizManagerModels";
 
 export class QuizManagerBuilders {
-  static CreateAndLoginTestUser(role = 'user') {
-    const id = crypto.randomUUID()
-    const email = `${id}@test.com`
-    const password = 'Test1234!'
-
-    // Replace this with your real user creation endpoint
-    return cy.request('POST', 'http://127.0.0.1:5353/be/api/test/users', {
-      id,
-      email,
-      password,
-      role
-    }).then(() => {
-      // Login using the UI
-      cy.visit('/login') // change this if your login page is different
-      cy.get('#email').type(email)
-      cy.get('#password').type(password)
-      cy.get('button[type=submit]').click()
-
-      return { email, password }
-    })
-  }
-  static ManagerLogin = (email: string, password: string) => {
+  static token: string;
+  static Auth = () => {
+    return cy
+      .request("POST", QuizManagerEndpoints.Auth, {
+        email: "testmanager@example.com",
+        password: "test123",
+      })
+      .then((res) => {
+        expect(res.status).to.eq(200);
+        QuizManagerBuilders.token = res.body.token;
+      });
+  };
+  static User = (newUser: User) => {
     return cy.request({
       method: "POST",
-      url: QuizManagerEndpoints.managerLogin,
-      body: {
-        email,
-        password,
+      url: QuizManagerEndpoints.Users,
+      headers: {
+        Authorization: `Bearer ${QuizManagerBuilders.token}`,
       },
-      failOnStatusCode: false,
+      body: newUser,
     });
   };
 }

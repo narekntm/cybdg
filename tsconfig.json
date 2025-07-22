@@ -35,6 +35,9 @@
       "Helpers/*": [
         "Cypress/Support/Helpers/*"
       ],
+      "Helper": [
+        "Cypress/Fixtures/Helper.ts"
+      ],
       "TestDataAni/*": [
         "Cypress/Fixtures/Static/Ani/*"
       ],

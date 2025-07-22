@@ -1,15 +1,15 @@
 export class QuizManagerUserQuizPage {
-  static pageTitle = () => cy.get('header h1');
+  static pageTitle = () => cy.get("header h1");
 
-  static logoutButton = () => cy.get('header #logout-btn');
+  static logoutButton = () => cy.get("header #logout-btn");
 
-  static quizTitle = () => cy.get('#quiz-container h2');
+  static quizTitle = () => cy.get("#quiz-container h2");
 
-  static quizDescription = () => cy.get('main #quiz-container #quiz-description');
+  static quizDescription = () => cy.get("main #quiz-container #quiz-description");
 
-  static quizForm = () => cy.get('#quiz-container #quiz-form');
+  static quizForm = () => cy.get("#quiz-container #quiz-form");
 
-  static submitButton = () => cy.get('#quiz-container #submit-btn');
+  static submitButton = () => cy.get("#quiz-container #submit-btn");
 
   static fMQNameInput = () => cy.get('#quiz-form input[name="q1"]');
 
