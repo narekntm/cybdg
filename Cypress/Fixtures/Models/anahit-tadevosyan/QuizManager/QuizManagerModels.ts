@@ -45,28 +45,6 @@ export enum QuizSuccessMessages {
   QuizPublished = "Quiz published",
 }
 
-export enum SubmissionTexts {
-  TotalSubmissions = "Total Submissions:",
-  CreatedAt = "Created At",
-}
-
-export enum UserViewTexts {
-  AvailableQuizzes = "Available Quizzes",
-  NoAvailableQuizzes = "No available quizzes.",
-  NoSubmissions = "No submissions found.",
-}
-
-export enum QuizErrorMessages {
-  QuizNotFound = "Quiz not found",
-  QuizHasSubmissions = "Quiz has submissions",
-  QuizNotEditable = "Quiz is not editable",
-}
-
-export enum SubmissionErrorMessages {
-  AlreadySubmitted = "Already submitted",
-  SubmissionNotFound = "Submission not found",
-}
-
 export enum ValidationErrorMessages {
   TitleRequired = "Quiz title cannot be empty.",
   DescriptionRequired = "Quiz description cannot be empty.",

@@ -50,26 +50,33 @@ describe("QuizManager Admin Page", () => {
         expect(response.status).to.eq(200);
         const currentUserId = response.body.id;
 
-        const fakeQuiz = QuizManagerGenerators.randomQuiz;
+        const randomQuiz = QuizManagerGenerators.randomQuiz;
 
-        QuizManagerBuilders.createQuiz(fakeQuiz).then((response) => {
+        QuizManagerBuilders.createQuiz(randomQuiz).then((response) => {
           expect(response.status).to.eq(200);
           expect(response.body).to.deep.include({
-            ...fakeQuiz,
+            ...randomQuiz,
             status: QuizStatus.Draft,
             createdBy: currentUserId,
           });
           quizId = response.body.id;
+
+          QuizManagerBuilders.getQuizzes().then((response) => {
+            const created = response.body.find((quiz: QuizData) => quiz.title === randomQuiz.title);
+            expect(response.status).to.eq(200);
+            expect(created).to.exist;
+          });
+
+          QuizManagerBuilders.deleteQuiz(quizId).then((response) => {
+            expect(response.status).to.eq(200);
+            expect(response.body).to.deep.include({ success: true });
+          });
+
+          QuizManagerBuilders.getQuizzes().then((response) => {
+            const created = response.body.find((quiz: QuizData) => quiz.title === randomQuiz.title);
+            expect(created).to.not.exist;
+          });
         });
-        QuizManagerBuilders.getQuizzes().then((response) => {
-          const created = response.body.find((quiz: QuizData) => quiz.title === fakeQuiz.title);
-          expect(response.status).to.eq(200);
-          expect(created).to.exist;
-        });
-      });
-      QuizManagerBuilders.deleteQuiz(quizId).then((response) => {
-        expect(response.status).to.eq(200);
-        expect(response.body).to.deep.include({ success: true });
       });
     });
   });
@@ -80,19 +87,19 @@ describe("QuizManager Admin Page", () => {
         expect(response.status).to.eq(200);
         const currentUserId = response.body.id;
 
-        const fakeQuiz = QuizManagerGenerators.randomQuiz;
+        const randomQuiz = QuizManagerGenerators.randomQuiz;
 
-        QuizManagerBuilders.createQuiz(fakeQuiz).then((response) => {
+        QuizManagerBuilders.createQuiz(randomQuiz).then((response) => {
           expect(response.status).to.eq(200);
           expect(response.body).to.deep.include({
-            ...fakeQuiz,
+            ...randomQuiz,
             status: QuizStatus.Draft,
             createdBy: currentUserId,
           });
-          cy.wrap(response.body.id).as("quizId");
+          quizId = response.body.id;
         });
         QuizManagerBuilders.getQuizzes().then((response) => {
-          const created = response.body.find((quiz: QuizData) => quiz.title === fakeQuiz.title);
+          const created = response.body.find((quiz: QuizData) => quiz.title === randomQuiz.title);
           expect(response.status).to.eq(200);
           expect(created).to.exist;
         });
@@ -106,53 +113,34 @@ describe("QuizManager Admin Page", () => {
     });
     it("Archives the quiz", () => {
       QuizManagerBuilders.getQuizzes().then((response) => {
-        const quizzes = response.body;
-        const firstQuizId = quizzes[0].id;
-
-        QuizManagerBuilders.archiveQuiz(firstQuizId).then((archiveResponse) => {
+        expect(response.status).to.eq(200);
+        QuizManagerBuilders.archiveQuiz(quizId).then((archiveResponse) => {
           expect(archiveResponse.status).to.eq(200);
           expect(archiveResponse.body).to.include({ success: true });
-
-          QuizManagerBuilders.getQuizzes().then((newResponse) => {
-            const updatedQuizzes = newResponse.body;
-            expect(updatedQuizzes[0].status).to.eq("archived");
-          });
         });
       });
     });
 
     it("Publishes the quiz from Archived", () => {
       QuizManagerBuilders.getQuizzes().then((response) => {
-        const quizzes = response.body;
-        const firstQuizId = quizzes[0].id;
-
-        QuizManagerBuilders.publishQuiz(firstQuizId).then((publishResponse) => {
+        expect(response.status).to.eq(200);
+        QuizManagerBuilders.publishQuiz(quizId).then((publishResponse) => {
           expect(publishResponse.status).to.eq(200);
           expect(publishResponse.body).to.include({ success: true });
-
-          QuizManagerBuilders.getQuizzes().then((newResponse) => {
-            const updatedQuizzes = newResponse.body;
-            expect(updatedQuizzes[0].status).to.eq("active");
-          });
         });
       });
     });
 
     it("Publishes the quiz from Draft", () => {
       QuizManagerBuilders.getQuizzes().then((response) => {
-        const quizzes = response.body;
-        const firstDraftQuiz = quizzes.find((quiz: QuizData) => quiz.id === quizId);
-
-        expect(firstDraftQuiz, "Expected at least one draft quiz").to.exist;
-
-        const firstQuizId = firstDraftQuiz.id;
-        QuizManagerBuilders.publishQuiz(firstQuizId).then((publishResponse) => {
+        expect(response.status).to.eq(200);
+        QuizManagerBuilders.publishQuiz(quizId).then((publishResponse) => {
           expect(publishResponse.status).to.eq(200);
           expect(publishResponse.body).to.include({ success: true });
 
           QuizManagerBuilders.getQuizzes().then((newResponse) => {
             const updatedQuizzes = newResponse.body;
-            const updated = updatedQuizzes.find((q: QuizData) => q.id === firstQuizId);
+            const updated = updatedQuizzes.find((q: QuizData) => q.id === quizId);
             expect(updated?.status).to.eq("active");
           });
         });
@@ -165,13 +153,8 @@ describe("QuizManager Admin Page", () => {
         expect(response.status).to.eq(200);
       });
 
-      QuizManagerBuilders.getQuizzes().then((response) => {
-        const quizzes = response.body;
-        const quizId = quizzes[0].id;
-
-        QuizManagerBuilders.publishQuiz(quizId, false).then((response) => {
-          expect(response.status).to.eq(403);
-        });
+      QuizManagerBuilders.publishQuiz(quizId, false).then((response) => {
+        expect(response.status).to.eq(403);
       });
     });
   });

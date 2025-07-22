@@ -7,7 +7,7 @@ describe("QuizManager View Submissions", () => {
   let managerUser: User;
   let regularUser1: User;
   let regularUser2: User;
-
+  let quizId: string;
   before(() => {
     QuizManagerBuilders.Auth().then(() => {
       managerUser = generateUser(Role.Manager);
@@ -31,35 +31,32 @@ describe("QuizManager View Submissions", () => {
         expect(response.status).to.eq(200);
         const currentUserId = response.body.id;
 
-        const fakeQuiz = QuizManagerGenerators.randomQuiz;
+        const randomQuiz = QuizManagerGenerators.randomQuiz;
 
-        QuizManagerBuilders.createQuiz(fakeQuiz).then((response) => {
+        QuizManagerBuilders.createQuiz(randomQuiz).then((response) => {
           expect(response.status).to.eq(200);
           expect(response.body).to.deep.include({
-            ...fakeQuiz,
+            ...randomQuiz,
             status: QuizStatus.Draft,
             createdBy: currentUserId,
           });
-          cy.wrap(response.body.id).as("quizId");
+          quizId = response.body.id;
         });
         QuizManagerBuilders.getQuizzes().then((response) => {
-          const created = response.body.find((quiz: QuizData) => quiz.title === fakeQuiz.title);
+          const created = response.body.find((quiz: QuizData) => quiz.title === randomQuiz.title);
           expect(response.status).to.eq(200);
           expect(created).to.exist;
         });
       });
 
       QuizManagerBuilders.getQuizzes().then((response) => {
-        const quizzes = response.body;
-
-        const firstQuiz = quizzes[0];
-        console.log("first quiz:", firstQuiz, "quizies:", quizzes, "username:", managerUser.email, "password:", managerUser.password);
-        QuizManagerBuilders.getQuizSubmissions(firstQuiz.id).then((newResponse) => {
+        expect(response.status).to.eq(200);
+        QuizManagerBuilders.getQuizSubmissions(quizId).then((newResponse) => {
           expect(newResponse.status).to.eq(200);
 
           newResponse.body.forEach((submission: Submission) => {
             expect(submission).to.include.keys("id", "quizId", "userId", "answers", "createdAt");
-            expect(submission.quizId).to.eq(firstQuiz.id);
+            expect(submission.quizId).to.eq(quizId);
           });
         });
       });
@@ -69,12 +66,9 @@ describe("QuizManager View Submissions", () => {
       QuizManagerBuilders.login(regularUser1.email, regularUser1.password).then((response) => {
         expect(response.status).to.eq(200);
       });
-
       QuizManagerBuilders.getQuizzes().then((response) => {
-        const quizzes = response.body;
-        const firstQuiz = quizzes[0];
-
-        QuizManagerBuilders.getQuizSubmissions(firstQuiz.id, false).then((newResponse) => {
+        expect(response.status).to.eq(200);
+        QuizManagerBuilders.getQuizSubmissions(quizId, false).then((newResponse) => {
           expect(newResponse.status).to.eq(403);
         });
       });

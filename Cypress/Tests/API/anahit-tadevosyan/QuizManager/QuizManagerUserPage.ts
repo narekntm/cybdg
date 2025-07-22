@@ -11,7 +11,7 @@ describe("User View Submissions", () => {
   let regularUser1: User;
   let regularUser2: User;
 
-  before(() => {
+  before("create users", () => {
     QuizManagerBuilders.Auth().then(() => {
       managerUser = generateUser(Role.Manager);
       regularUser1 = generateUser(Role.User);
