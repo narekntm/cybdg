@@ -1,34 +1,54 @@
 import { QuizzManagementBuilders } from "Builders/Larisa/QuizzManagementBuilders";
 import { QuizzManagementGenerators } from "Generators/Larisa/QuizzManagementGenerators";
-import { QuizzManagementModels } from "Models/Larisa/QuizzManagementModels";
+import { UserManagementModels } from "Models/Larisa/UserManagementModels";
 
 describe("QuizzManagement Suite", () => {
-  const baseURL = "/login";
+  let manager: UserManagementModels.User;
+  let user: UserManagementModels.User;
 
-  const loginAdminPositiveCase: QuizzManagementModels.Login = {
-    email: Cypress.env("ADMIN_EMAIL"),
-    password: Cypress.env("ADMIN_PASSWORD"),
-  };
+  let adminLogin: UserManagementModels.Login;
+  let userLogin: UserManagementModels.Login;
 
-  const loginUser1PositiveCase: QuizzManagementModels.Login = {
-    email: Cypress.env("USER1_EMAIL"),
-    password: Cypress.env("USER1_PASSWORD"),
-  };
+  function authenticate() {
+    QuizzManagementBuilders.auth().then((responce) => {
+      cy.setCookie("authToken", responce.body.token);
+    });
+  }
 
-  beforeEach(() => {
-    cy.visit(baseURL);
+  before(() => {
+    authenticate();
+
+    manager = QuizzManagementGenerators.user(UserManagementModels.UserRole.Manager);
+    QuizzManagementBuilders.postUser(manager).then((responce) => {
+      expect(responce.status).to.be.oneOf([200, 201]);
+      expect(responce.statusText).to.eq("Created");
+      Cypress.env("manager", manager);
+      adminLogin = { email: manager.email, password: manager.password };
+    });
+
+    user = QuizzManagementGenerators.user(UserManagementModels.UserRole.User);
+    QuizzManagementBuilders.postUser(user).then((responce) => {
+      expect(responce.status).to.be.oneOf([200, 201]);
+      expect(responce.statusText).to.eq("Created");
+      Cypress.env("user", user);
+      userLogin = { email: user.email, password: user.password };
+    });
   });
 
-  context("Login to Quizz Management Suite", () => {
+  beforeEach(() => {
+    authenticate();
+  });
+
+  context("Login to Quizz Suite", () => {
     it("Login as Admin, Positive case", () => {
-      QuizzManagementBuilders.adminLogin(loginAdminPositiveCase).then((responce) => {
+      QuizzManagementBuilders.adminLogin(adminLogin).then((responce) => {
         expect(responce.status).to.eq(200);
         expect(responce.statusText).to.eq("OK");
       });
     });
 
     it("Login as User, Positive case", () => {
-      QuizzManagementBuilders.adminLogin(loginUser1PositiveCase).then((responce) => {
+      QuizzManagementBuilders.adminLogin(userLogin).then((responce) => {
         expect(responce.status).to.eq(200);
         expect(responce.statusText).to.eq("OK");
       });
@@ -36,44 +56,70 @@ describe("QuizzManagement Suite", () => {
   });
 
   context("Add New Quizz Suite", () => {
+    beforeEach(() => {
+      QuizzManagementBuilders.adminLogin(adminLogin).then((responce) => {
+        expect(responce.status).to.eq(200);
+        expect(responce.statusText).to.eq("OK");
+      });
+    });
+
     it("Add a quizz, Positive case, submit", () => {
-      QuizzManagementBuilders.adminLogin(loginAdminPositiveCase).then(() => {
-        QuizzManagementBuilders.postQuizz(QuizzManagementGenerators.quizz).then((responce) => {
+      QuizzManagementBuilders.postQuizz(QuizzManagementGenerators.quizz).then((responce) => {
+        expect(responce.status).to.eq(200);
+        expect(responce.statusText).to.eq("OK");
+      });
+    });
+
+    it("Add and Publish a Quiz", () => {
+      QuizzManagementBuilders.postQuizz(QuizzManagementGenerators.quizz)
+        .then((response) => {
+          const quizId = response.body.id;
+          return QuizzManagementBuilders.publishQuizz(quizId);
+        })
+        .then((response) => {
+          expect(response.status).to.eq(200);
+          expect(response.statusText).to.eq("OK");
+        });
+    });
+
+    it("Add and Archive a Quiz", () => {
+      QuizzManagementBuilders.postQuizz(QuizzManagementGenerators.quizz)
+        .then((response) => {
+          const quizId = response.body.id;
+          return QuizzManagementBuilders.archiveQuizz(quizId);
+        })
+        .then((response) => {
+          expect(response.status).to.eq(200);
+          expect(response.statusText).to.eq("OK");
+        });
+    });
+
+    it("Add and Delete a Quiz", () => {
+      QuizzManagementBuilders.postQuizz(QuizzManagementGenerators.quizz)
+        .then((response) => {
+          const quizId = response.body.id;
+          return QuizzManagementBuilders.deleteQuizz(quizId);
+        })
+        .then((response) => {
+          expect(response.status).to.eq(200);
+          expect(response.statusText).to.eq("OK");
+        });
+    });
+
+    it("Logout user", () => {
+      QuizzManagementBuilders.logout().then((responce) => {
+        expect(responce.status).to.eq(200);
+        expect(responce.statusText).to.eq("OK");
+      });
+    });
+
+    it("Submit Quizz", () => {
+      const answers = QuizzManagementGenerators.generateAnswers(QuizzManagementGenerators.quizz);
+      QuizzManagementBuilders.postQuizz(QuizzManagementGenerators.quizz).then((response) => {
+        QuizzManagementBuilders.submitQuizz(response.body.id, { answers }).then((responce) => {
+          console.log("response: ", response);
           expect(responce.status).to.eq(200);
           expect(responce.statusText).to.eq("OK");
-        });
-      });
-    });
-
-    it("Add a quizz and Publish Test", () => {
-      QuizzManagementBuilders.adminLogin(loginAdminPositiveCase).then(() => {
-        QuizzManagementBuilders.postQuizz(QuizzManagementGenerators.quizz).then((responce) => {
-          QuizzManagementBuilders.publishQuizz(responce.body.id).then((responce) => {
-            expect(responce.status).to.eq(200);
-            expect(responce.statusText).to.eq("OK");
-          });
-        });
-      });
-    });
-
-    it("Archive Quizz Test", () => {
-      QuizzManagementBuilders.adminLogin(loginAdminPositiveCase).then(() => {
-        QuizzManagementBuilders.postQuizz(QuizzManagementGenerators.quizz).then((responce) => {
-          QuizzManagementBuilders.archiveQuizz(responce.body.id).then((responce) => {
-            expect(responce.status).to.eq(200);
-            expect(responce.statusText).to.eq("OK");
-          });
-        });
-      });
-    });
-
-    it("Delete Quizz Test", () => {
-      QuizzManagementBuilders.adminLogin(loginAdminPositiveCase).then(() => {
-        QuizzManagementBuilders.postQuizz(QuizzManagementGenerators.quizz).then((responce) => {
-          QuizzManagementBuilders.deleteQuizz(responce.body.id).then((responce) => {
-            expect(responce.status).to.eq(200);
-            expect(responce.statusText).to.eq("OK");
-          });
         });
       });
     });

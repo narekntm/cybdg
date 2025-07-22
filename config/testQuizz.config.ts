@@ -23,12 +23,8 @@ export default defineConfig({
   },
   env: {
     API_URL: "http://127.0.0.1:5353/be/", // API base URL
-    ADMIN_EMAIL: "manager@quizz.com",
-    ADMIN_PASSWORD: "manager123",
-    USER1_EMAIL: "user1@quizz.com",
-    USER1_PASSWORD: "user123",
-    USER2_EMAIL: "user2@quizz.com",
-    USER2_PASSWORD: "user123",
+    TEST_USER_EMAIL: "testmanager@example.com",
+    TEST_USER_PASSWORD: "test123"
   },
   e2e: {
     baseUrl: "http://127.0.0.1:5353/fe/", // UI base URL

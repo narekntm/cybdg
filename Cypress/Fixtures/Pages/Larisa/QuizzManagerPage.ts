@@ -34,25 +34,27 @@ export class QuizzManagerPage {
 
   static userCheckboxes = () => cy.get(".user-checkboxes");
   static quizzListSection = () => cy.get("#quiz-list");
-  static quizzListTitle = () => cy.get("#quiz-list h2");
+  static quizzListTitle = () => cy.get("#quiz-list #quiz-list-header");
+  static quizzListCount = () => cy.get("#quiz-list #quiz-count");
   static quizzList = () => cy.get("#manager-quiz-list");
   static quizzListItems = () => cy.get("#manager-quiz-list li");
 
-  static quizzListItem = (dataID: number) => cy.get(`.quiz-item[data-id="${dataID}"]`);
+  static quizzListItem = (dataID: string) => cy.get(`.quiz-item[data-id="${dataID}"]`);
 
-  static quizzTitle = (dataID: number) => QuizzManagerPage.quizzListItem(dataID).find(".quiz-title");
-  static statusBadgeSpan = (dataID: number) => QuizzManagerPage.quizzTitle(dataID).find(".status-badge");
+  static quizzTitle = (dataID: string) => QuizzManagerPage.quizzListItem(dataID).find(".quiz-title");
+  static statusBadgeSpan = (dataID: string) => QuizzManagerPage.quizzTitle(dataID).find(".status-badge");
+  static quizzDesc = (dataID: string) => QuizzManagerPage.quizzListItem(dataID).find(".quiz-description");
 
-  static quizzActions = (dataID: number) => QuizzManagerPage.quizzListItem(dataID).find(".quizz-actions");
-  static quizzPublishBtn = (dataID: number) => cy.get(`.publish-btn[data-id="${dataID}"]`);
-  static quizzArchiveBtn = (dataID: number) => cy.get(`.archive-btn[data-id="${dataID}"]`);
-  static quizzDeleteBtn = (dataID: number) => cy.get(`.delete-btn[data-id="${dataID}"]`);
+  static quizzActions = (dataID: string) => QuizzManagerPage.quizzListItem(dataID).find(".quizz-actions");
+  static quizzPublishBtn = (dataID: string) => cy.get(`.publish-btn[data-id="${dataID}"]`);
+  static quizzArchiveBtn = (dataID: string) => cy.get(`.archive-btn[data-id="${dataID}"]`);
+  static quizzDeleteBtn = (dataID: string) => cy.get(`.delete-btn[data-id="${dataID}"]`);
 
-  static quizzInfo = (dataID: number) => QuizzManagerPage.quizzListItem(dataID).find(".quiz-info");
-  static quizzDescription = (dataID: number) => QuizzManagerPage.quizzInfo(dataID).find(".quiz-description");
-  static quizzAssignees = (dataID: number) => QuizzManagerPage.quizzInfo(dataID).find(".quiz-assignees");
+  static quizzInfo = () => cy.get(".quiz-info");
+  static quizzInfoTitle = () => cy.get(".quiz-header h2");
+  static quizzDescription = () => cy.get(".quiz-header p");
 
-  static viewSubmission = (dataID: number) => QuizzManagerPage.quizzListItem(dataID).find(".view-submissions");
+  static viewSubmission = (dataID: string) => QuizzManagerPage.quizzListItem(dataID).find(".view-submissions");
 
   static logoutBtn = () => cy.get("#logout-btn");
 }

@@ -5,5 +5,4 @@ export class QuizzLoginPage {
   static passwordLbl = () => cy.get('label[for="password"]');
   static passwordInput = () => cy.get("#password");
   static submitBtn = () => cy.get('button[type="submit"]');
-  static toast = () => cy.get(".toast");
 }

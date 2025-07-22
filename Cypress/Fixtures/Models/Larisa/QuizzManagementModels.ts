@@ -18,6 +18,7 @@ export namespace QuizzManagementModels {
   }
 
   export interface Quizz {
+    id: string;
     title: string;
     description: string;
     question: Question[];
@@ -26,5 +27,17 @@ export namespace QuizzManagementModels {
   export enum Role {
     Admin = "Admin",
     User = "User",
+  }
+
+  export interface Answer {
+    questionId: string;
+    answer: string | string[];
+  }
+  export interface Submission {
+    id: string;
+    quizId: string;
+    userId: string;
+    answers: Answer[];
+    createdAt: string;
   }
 }
