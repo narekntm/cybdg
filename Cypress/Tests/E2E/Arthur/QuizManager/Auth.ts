@@ -24,6 +24,7 @@ describe("E2E Authentication & Access", () => {
     cy.intercept("POST", QuizManagerEndpoints.login).as("loginRequest");
     cy.intercept("GET", QuizManagerEndpoints.authMe).as("authMeRequest");
     cy.visit(frontendRoutes.Login);
+    cy.wait("@authMeRequest").its("response.statusCode").should("eq", 401);
   });
 
   context("Login flow", () => {
@@ -34,7 +35,6 @@ describe("E2E Authentication & Access", () => {
 
       cy.wait("@loginRequest").its("response.statusCode").should("eq", 200);
 
-      cy.wait("@authMeRequest");
       cy.wait("@authMeRequest").then((interception) => {
         expect(interception.response?.statusCode).to.eq(200);
         expect(interception.response?.body).to.include({
@@ -55,7 +55,6 @@ describe("E2E Authentication & Access", () => {
 
       cy.wait("@loginRequest").its("response.statusCode").should("eq", 200);
 
-      cy.wait("@authMeRequest");
       cy.wait("@authMeRequest").then((interception) => {
         expect(interception.response?.statusCode).to.eq(200);
         expect(interception.response?.body).to.include({
