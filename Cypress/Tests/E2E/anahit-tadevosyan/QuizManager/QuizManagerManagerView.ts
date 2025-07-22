@@ -98,9 +98,18 @@ describe("QuizManager Manager View", () => {
 
       QuizManagerManagerViewPage.toastContainer().should("contain", ValidationErrorMessages.AtLeastOneOption);
     });
+
+    it("creates a quiz with selected custom users", () => {
+      const selectedUsers = structuredClone(QuizManagerGenerators.randomQuiz);
+      selectedUsers.assignedUsers = [regularUser1.email, regularUser2.email];
+
+      createQuiz(selectedUsers);
+
+      QuizManagerManagerViewPage.toastContainer().should("contain", QuizSuccessMessages.QuizSaved);
+    });
     it("creates a quiz with  no selected custom users", () => {
       const noSelectedUsers = structuredClone(QuizManagerGenerators.randomQuiz);
-      noSelectedUsers.assignedUsers = [[regularUser1.email]];
+      noSelectedUsers.assignedUsers = [];
 
       createQuiz(noSelectedUsers);
 

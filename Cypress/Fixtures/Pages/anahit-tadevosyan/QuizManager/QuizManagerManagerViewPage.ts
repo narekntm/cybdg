@@ -13,7 +13,7 @@ export class QuizManagerManagerViewPage {
 
   static questionOption = (quId: string) => cy.get(`input[data-qid="${quId}"]`).parent().find(".option-input");
 
-  static assignedUsersByEmail = (userEmail: string) => cy.get(`.user-checkbox input[value = ${userEmail}]`);
+  static assignedUsersByEmail = (userEmail: string) => cy.get(`.user-checkbox input[value="${userEmail}"]`);
 
   static assignModeSelect = () => cy.get("#assign-mode");
 

@@ -1,7 +1,6 @@
 import Chance from "chance";
-import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
 import { QuizManagerEndpoints } from "EndPoints/anahit-tadevosyan/QuizManager/QuizManagerEndPoints";
-import { Question, QuestionType, QuizCreationData, Role, User, Users } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import { Question, QuestionType, QuizCreationData, Role, User } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 import { QuizManagerLoginPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerLoginPage";
 import { QuizManagerManagerViewPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerManagerViewPage";
 
@@ -53,25 +52,15 @@ export function createQuiz(randomQuiz: QuizCreationData): void {
     });
   });
 
-  if (randomQuiz.assignedUsers?.length) {
-    if (randomQuiz.assignedUsers[0] === "all") {
-      QuizManagerManagerViewPage.assignModeSelect().select("All Users");
-    } else {
-      QuizManagerManagerViewPage.assignModeSelect().select("custom");
+  if (randomQuiz.assignedUsers?.[0] === "all") {
+    QuizManagerManagerViewPage.assignModeSelect().select("All Users");
+  } else {
+    QuizManagerManagerViewPage.assignModeSelect().select("custom");
 
-      QuizManagerBuilders.getUsers().then((response) => {
-        const allUsers = response.body;
-
-        randomQuiz.assignedUsers.forEach((userId) => {
-          const user = allUsers.find((u: Users) => u.id === userId);
-          if (user) {
-            QuizManagerManagerViewPage.assignedUsersByEmail(user.email).click();
-          }
-        });
-      });
-    }
+    (randomQuiz.assignedUsers as string[]).forEach((userEmail) => {
+      QuizManagerManagerViewPage.assignedUsersByEmail(userEmail).click();
+    });
   }
-
   QuizManagerManagerViewPage.saveQuizButton().click();
 }
 
