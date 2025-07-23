@@ -1,121 +1,160 @@
-# QuizManager API Tests
+# ✅ Quiz Manager – Test Coverage
 
-This document describes the API test coverage for the `QuizManager` system.
-
----
-
-## Auth.ts
-
-### ✅ Positive Cases
-
-- **Login as Admin** and access `/auth/me`
-- **Login as User** and access `/auth/me`
-- **Logout** and confirm access to `/auth/me` is blocked
-- **Admin can access** `/api/users` and see all non-admin users
-
-### ❌ Negative Cases
-
-- Invalid email → `401 Invalid credentials`
-- Wrong password → `401 Invalid credentials`
-- Access `/auth/me` without login → `401 Unauthorized`
-- User access to `/api/users` → `403 Forbidden`
-- Invalid `authToken` cookie → `401 Unauthorized`
-- Unauthenticated access to protected endpoints (quizzes, users, submissions) → `401 Unauthorized`
+This document outlines all automated test cases for the Quiz Manager system, split by API, UI, and E2E levels.
 
 ---
 
-## QuizAssignment.ts
+## ✅ API Test Cases
 
-### 🔹 Assignment Logic
+**Test Files:**
 
-- `assignedUsers = 'all'` → all users see the quiz
-- `assignedUsers = [email1]` → only specified users see the quiz
-- Unassigned users do **not** see quiz
+* `Auth.ts`
+* `QuizCreation.ts`
+* `QuizAssignment.ts`
+* `Submissions.ts`
 
-### ⚡️ Edge Cases
+### 🔐 Auth API
 
-- `assignedUsers = []` → quiz not visible to anyone
-- `status != active` → quiz not visible, even if assigned
-- Admin sees **all created quizzes**, regardless of assignment or status
+* ✅ Login as manager/user (`POST /api/login`)
+* ✅ Logout, clear session (`POST /api/logout`)
+* ✅ Auth check (`GET /api/auth/me`)
+* ✅ Manager-only access to `/api/users`
+* ✅ Deny access if:
 
----
+  * Email/password invalid
+  * Token missing/invalid
+  * User accessing manager endpoints
+  * Token syntactically valid but not in session
 
-## QuizCreation.ts
+### 📚 Quiz Creation
 
-### ✅ Positive Cases
+* ✅ Create quiz as manager (`POST /api/quizzes`)
+* ✅ Supports all question types (input, radio, checkbox, dropdown)
+* ✅ Default status: `draft`, `assignedUsers: ['all']`
+* ✅ Publish → `PATCH /api/quizzes/:id/publish` → `active`
+* ✅ Archive → `PATCH /api/quizzes/:id/archive` → `archived`
+* ✅ Prevent actions by regular users
+* ✅ Prevent publishing/archive of non-existent quiz (404)
+* ✅ Prevent deleting quizzes with submissions (400)
 
-- Admin can create quiz
-- Quiz includes all question types (input, radio, checkbox, dropdown)
-- Created quiz appears in `/api/quizzes`
-- Admin can **publish** quiz (→ `active`)
-- Admin can **archive** quiz (→ `archived`)
+### 👥 Quiz Assignment
 
-### ❌ Negative Cases
+* ✅ Quizzes with `assignedUsers: 'all'` visible to all
+* ✅ Quizzes with targeted users visible only to them
+* ✅ Empty `assignedUsers: []` → not visible
+* ✅ Draft/inactive quizzes not visible
+* ✅ Managers see all of their created quizzes
 
-- User cannot:
-  - Create quiz → `403`
-  - Publish quiz → `403`
-  - Archive quiz → `403`
-  - Delete quiz → `403`
+### 📝 Submissions
 
-- Publishing or archiving non-existent quiz → `404 Quiz not found`
-- Deleting quiz with submissions → `400 Quiz has submissions`
-
----
-
-## Submissions.ts
-
-### 📉 Submit
-
-- ✅ User can submit quiz
-- ❌ Re-submitting same quiz → `409 Already submitted`
-- ❌ Submitting to non-existent quiz → `404 Quiz not found`
-
-### ✍️ Edit
-
-- ✅ User can edit own submission if quiz is still `active`
-- ❌ Editing after quiz archived → `400 Quiz is not editable`
-- ❌ Editing someone else's submission → `403 Forbidden`
-
-### 📃 Access
-
-- ✅ `/submissions/me` → user sees their own submissions
-- ✅ `/quizzes/:id/submissions` → admin sees all quiz submissions
-- ✅ `/submissions/:id` →
-  - Admin can view any submission
-  - User can view **only their own**
-
-- ❌ User trying to access another user's submission → `403 Forbidden`
+* ✅ Submit quiz (`POST /api/quizzes/:id/submissions`)
+* ✅ Prevent duplicate submission (409)
+* ✅ Edit submission (`PUT /api/submissions/:id`)
+* ✅ Block edit after archive (400)
+* ✅ Prevent editing/viewing others' submission (403)
+* ✅ Get own submissions (`GET /api/submissions/me`)
+* ✅ Manager sees all quiz submissions (`GET /api/quizzes/:id/submissions`)
+* ✅ View individual submission (`GET /api/submissions/:id`)
 
 ---
 
-## Validations.ts
+## ✅ UI Test Cases
 
-### ⚠️ All scenarios are expected to return `400 Bad Request`. Success (`200`) is a **BUG**.
+**Test Files:**
 
-### Quiz Creation Validation
+* `Login.ts`
+* `ManagerDashboard.ts`
+* `User.ts`
+* `QuizView.ts`
+* `ViewSubmissions.ts`
 
-- ❌ Quiz with **no questions** → should fail
-- ❌ `radio`, `checkbox`, `dropdown` with empty `options[]` → should fail
-- ❌ Invalid question structure:
-  - Missing `label`
-  - Invalid `type`
-  - Missing `options[]`
+### 🔑 Login Flow
 
-### Submission Validation
+* ✅ Login redirects (manager → manager.html, user → user.html)
+* ✅ Error shown on invalid credentials
+* ✅ Auto-redirect if already logged in
+* ✅ Logout + restrict access to protected pages
 
-- ❌ Submitting with `answers: []` → should fail
-- ❌ Missing `questionId` or `answer` → should fail
-- ❌ Invalid `answer` type (e.g., number) → should fail
+### 📋 Manager Dashboard
+
+* ✅ Create quiz through form (4 types)
+* ✅ Assign to "all" and "custom"
+* ✅ Validations for empty fields, options, assignment
+* ✅ Publish, archive, delete quizzes
+* ✅ Prevent deletion with submissions (error toast)
+* ✅ Quiz list UI: title, description, status, actions
+
+### 👤 User View Page
+
+* ✅ Header shows username (user ID)
+* ✅ List of available quizzes
+* ✅ Submission list with dates
+* ✅ Button: Edit if active, View if archived
+* ✅ “Submit” navigates to quiz view page
+* ✅ Messages for: no quizzes, no submissions
+* ✅ Toast on error fetching quizzes
+
+### 📄 Quiz View Page
+
+* ✅ Render quiz title and description
+* ✅ Show all question types
+* ✅ Pre-fill answers when editing
+* ✅ Hide submit for archived quiz
+* ✅ Submit new or edit existing quiz
+* ✅ Redirect after success
+
+### 📊 View Submissions Page
+
+* ✅ Quiz info: title, description
+* ✅ Submission list: user ID + timestamp
+* ✅ Show answers per question
+* ✅ Expand/collapse all answers
+* ✅ Invalid quiz ID → error message
+* ✅ Prevent non-managers from accessing
 
 ---
 
-## Summary
+## ✅ E2E Test Cases
 
-| Functional Area  | Positive Cases | Negative Cases | Edge/Validation |
-| ---------------- | -------------- | -------------- | --------------- |
-| Auth             | ✅ Yes         | ✅ Yes         | -               |
-| Quiz Creation    | ✅ Yes         | ✅ Yes         | ✅ Yes          |
-| Assignment Rules | ✅ Yes         | ✅ Yes         | ✅ Yes          |
-| Submissions      | ✅ Yes         | ✅ Yes         | ✅ Yes          |
-| Validation Rules | -              | ✅ Yes         | ✅ Yes          |
+**Test Files:**
+
+* `E2E/Auth.ts`
+* `E2E/ManagerDashboard.ts`
+* `E2E/User.ts`
+
+### 🔐 E2E Authentication & Session
+
+* ✅ Login as manager/user, redirect, dashboard visible
+* ✅ Invalid login shows correct error
+* ✅ Already logged-in user is redirected
+* ✅ Logout clears session and restricts access
+* ✅ Invalid token → redirects to login
+
+### 🧩 E2E Manager Dashboard
+
+* ✅ Sees only own created quizzes
+* ✅ Create quiz with 4 types
+* ✅ UI validation for title/desc/questions/options
+* ✅ Create quizzes with assignedUsers = all/custom
+* ✅ Verifies saved payload matches UI
+* ✅ Verifies UI quiz listing after creation
+
+### 🧪 E2E Full Flow (Manager → User → Manager)
+
+* ✅ Manager creates and assigns quiz to specific user
+* ✅ User logs in, submits quiz
+* ✅ Manager views submissions, validates answer content
+* ✅ Assertions on IDs, response body, and rendered data
+
+---
+
+> For running tests, use:
+
+```bash
+npm run test:runArthur          # All tests
+npm run test:runArthur:api      # API tests
+npm run test:runArthur:ui       # UI tests
+npm run test:runArthur:e2e      # E2E tests
+```
+
+---

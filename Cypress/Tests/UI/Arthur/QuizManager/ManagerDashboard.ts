@@ -109,7 +109,7 @@ describe("Manager Dashboard UI", () => {
       const quiz = QuizGenerator.generateQuizWithOnly(QuestionType.Input);
 
       fillQuizFormUI(quiz);
-      ManagerPage.selectAssignMode().select(AssignedUsers.Custom); // no user checked
+      ManagerPage.selectAssignMode().select(AssignedUsers.Custom);
       ManagerPage.saveQuizButton().click();
 
       ManagerPage.toastError().should("contain", ValidationErrorMessages.CustomAssignmentMissingUsers);

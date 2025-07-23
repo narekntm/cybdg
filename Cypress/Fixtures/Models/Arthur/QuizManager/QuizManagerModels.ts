@@ -143,3 +143,7 @@ export enum QuizButtonTexts {
   Edit = "Edit",
   View = "View",
 }
+
+export enum TestAssertionMessages {
+  QuizShouldExistInGetResponse = "Quiz should exist in GET response",
+}
