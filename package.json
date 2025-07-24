@@ -6,6 +6,7 @@
   "scripts": {
     "test": "npx cypress open --config-file config/test.config.ts --e2e -b electron",
     "quizManagertest": "npx cypress open --config-file config/quizManager.config.ts --e2e -b electron",
+    "quizManagertest:run": "npx cypress run --config-file config/quizManager.config.ts --e2e -b electron --spec Cypress/Tests/{E2E,API}/**/QuizManager/*.ts",
     "test:run": "npx cypress run --config-file config/test.config.ts --e2e -b electron --spec Cypress/Tests/API/DemoApi.ts",
     
     "serve:UI": "http-server -p 8080",

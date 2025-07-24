@@ -1,16 +1,9 @@
-export class QuizSubmissionsPage {
-  // Header
-  static pageTitle = () => cy.get("header h1");
+export class QuizManagerSubmissionView {
+  static viewSubmissions = (quizId: string) => cy.get(`.view-submissions[href="view-submissions.html?quiz=${quizId}"]`);
 
-  static logoutButton = () => cy.get("#logout-btn");
+  static toggleSubmission = (submissionId: string) => cy.get(`.submission-toggle[data-id="${submissionId}"]`);
 
-  // Main Sections
-  static quizInfoSection = () => cy.get("#quiz-info");
-
-  static submissionListSection = () => cy.get("#submission-list");
-
-  // Template Elements (for testing logic that uses templates)
-  static submissionTemplate = () => cy.get("#quiz-submission-template");
+  static answerByQuestionLabel = (questionLabel: string) => cy.get(`dt:contains("${questionLabel}") + dd`);
 
   static viewSubmissionsLink = () => cy.get(".view-submissions-btn");
 }

@@ -3,6 +3,10 @@ const root = "/be/api";
 export class QuizManagerEndpoints {
   static login = (): string => `${root}/login`;
 
+  static Auth: string = `${root}/test/auth`;
+
+  static Users: string = `${root}/test/users`;
+
   static logout = (): string => `${root}/logout`;
 
   static me = (): string => `${root}/auth/me`;

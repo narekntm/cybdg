@@ -1,5 +1,5 @@
 import { QuizManagerEndpoints } from "EndPoints/anahit-tadevosyan/QuizManager/QuizManagerEndPoints";
-import { QuizCreationData } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import { QuizCreationData, User } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 
 export class QuizManagerBuilders {
   static login(email: string, password: string, failOnStatusCode: boolean = true) {
@@ -10,6 +10,30 @@ export class QuizManagerBuilders {
       failOnStatusCode,
     });
   }
+
+  static token: string;
+  static Auth = () => {
+    return cy
+      .request("POST", QuizManagerEndpoints.Auth, {
+        email: Cypress.env("TESTING_USER_EMAIL"),
+        password: Cypress.env("TESTING_USER_PASSWORD"),
+      })
+      .then((res) => {
+        expect(res.status).to.eq(200);
+        QuizManagerBuilders.token = res.body.token;
+      });
+  };
+
+  static User = (newUser: User) => {
+    return cy.request({
+      method: "POST",
+      url: QuizManagerEndpoints.Users,
+      headers: {
+        Authorization: `Bearer ${QuizManagerBuilders.token}`,
+      },
+      body: newUser,
+    });
+  };
 
   static logout(failOnStatusCode: boolean = true) {
     return cy.request({
@@ -76,7 +100,7 @@ export class QuizManagerBuilders {
     });
   }
 
-  static getQuizById(quizId: string, failOnStatusCode: boolean = true) {
+  static getSubmissionsMe(quizId: string, failOnStatusCode: boolean = true) {
     return cy.request({
       method: "GET",
       url: QuizManagerEndpoints.quizzes(quizId),
