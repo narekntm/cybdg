@@ -3,6 +3,14 @@ import { QuizzManagementModels } from "Models/Larisa/QuizzManagementModels";
 import { UserManagementModels } from "Models/Larisa/UserManagementModels";
 
 export class QuizzManagementBuilders {
+  static authMe = () => {
+    return cy.request({
+      method: "Get",
+      url: QuizzManagementEndPoints.authMe,
+      failOnStatusCode: false,
+    });
+  };
+
   static auth = () => {
     return cy.request({
       method: "POST",
@@ -11,32 +19,32 @@ export class QuizzManagementBuilders {
         email: Cypress.env("TEST_USER_EMAIL"),
         password: Cypress.env("TEST_USER_PASSWORD"),
       },
-      failOnStatusCode: false,
     });
   };
 
   static postUser = (login: UserManagementModels.Login) => {
-    return cy.request({
-      method: "POST",
-      url: QuizzManagementEndPoints.testUsers,
-      body: login,
-      headers: { Authorization: `Bearer ${cy.getCookie("authToken")}` },
-      failOnStatusCode: false,
+    return cy.getCookie("authToken").then((cookie) => {
+      const token = cookie ? cookie.value : "";
+
+      return cy.request({
+        method: "POST",
+        url: QuizzManagementEndPoints.testUsers,
+        body: login,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
     });
   };
 
   static adminLogin = (login: UserManagementModels.Login) => {
-    return cy.getCookie("authToken").then((cookie) => {
-      expect(cookie).to.not.be.null;
-      cy.request({
-        method: "POST",
-        url: QuizzManagementEndPoints.login,
-        body: {
-          email: login.email,
-          password: login.password,
-        },
-        failOnStatusCode: false,
-      });
+    return cy.request({
+      method: "POST",
+      url: QuizzManagementEndPoints.login,
+      body: {
+        email: login.email,
+        password: login.password,
+      },
     });
   };
 
@@ -44,7 +52,6 @@ export class QuizzManagementBuilders {
     return cy.request({
       method: "POST",
       url: QuizzManagementEndPoints.logout,
-      failOnStatusCode: false,
     });
   };
 
@@ -53,21 +60,20 @@ export class QuizzManagementBuilders {
       method: "POST",
       url: QuizzManagementEndPoints.quizzes,
       body: quizz,
-      failOnStatusCode: false,
     });
   };
 
   static publishQuizz = (dataID: string) => {
     return cy.request({
       method: "PATCH",
-      url: QuizzManagementEndPoints.publishQuizz(dataID),
+      url: QuizzManagementEndPoints.quizzAction(dataID, QuizzManagementModels.QuizzActions.Publish),
     });
   };
 
   static archiveQuizz = (dataID: string) => {
     return cy.request({
       method: "PATCH",
-      url: QuizzManagementEndPoints.archiveQuizz(dataID),
+      url: QuizzManagementEndPoints.quizzAction(dataID, QuizzManagementModels.QuizzActions.Archive),
     });
   };
 
@@ -97,6 +103,13 @@ export class QuizzManagementBuilders {
       method: "POST",
       url: QuizzManagementEndPoints.postSubmissions(quizId),
       body: answers,
+    });
+  };
+
+  static getQuizz = (quizId: string) => {
+    return cy.request({
+      method: "GET",
+      url: QuizzManagementEndPoints.getQuizz(quizId),
     });
   };
 }

@@ -12,6 +12,6 @@ export class QuizzViewSubmissionsPage {
 
   static submissionCard = (dataID: string) => cy.get(`.submission-card[data-id="${dataID}"]`);
   static submissionCardName = (dataID: string) => QuizzViewSubmissionsPage.submissionCard(dataID).find("h3 span");
-  static submissionCardUser = (dataID: string) => QuizzViewSubmissionsPage.submissionCard(dataID).find("span");
+  static submissionCardUser = (dataID: string) => QuizzViewSubmissionsPage.submissionCard(dataID).find("span").eq(1);
   static submissionCardCreated = (dataID: string) => QuizzViewSubmissionsPage.submissionCard(dataID).find(".submission-timestamp");
 }

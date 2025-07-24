@@ -26,6 +26,8 @@ export class QuizzManagerPage {
   static questionOptionList = (index: number) => QuizzManagerPage.questionListItem(index).find(".q-options-container .q-options-list");
   static questionOptionListItems = (index: number) => QuizzManagerPage.questionOptionList(index).find(".q-option-item");
   static questionOptionSpan = (index1: number, index2: number) => QuizzManagerPage.questionOptionListItems(index1).find("span").eq(index2);
+  static questionOptionRemove = (index1: number, index2: number) =>
+    QuizzManagerPage.questionOptionListItems(index1).find(".remove-option").eq(index2);
 
   static questionOptions = (index: number) => QuizzManagerPage.questionListItem(index).find(".option-input");
   static addOptionInputBtn = (index: number) => QuizzManagerPage.questionListItem(index).find(".add-option");
@@ -38,8 +40,7 @@ export class QuizzManagerPage {
   static quizzListCount = () => cy.get("#quiz-list #quiz-count");
   static quizzList = () => cy.get("#manager-quiz-list");
   static quizzListItems = () => cy.get("#manager-quiz-list li");
-
-  static quizzListItem = (dataID: string) => cy.get(`.quiz-item[data-id="${dataID}"]`);
+  static quizzListItem = (dataID: string) => cy.get(`#manager-quiz-list li[data-id="${dataID}"]`);
 
   static quizzTitle = (dataID: string) => QuizzManagerPage.quizzListItem(dataID).find(".quiz-title");
   static statusBadgeSpan = (dataID: string) => QuizzManagerPage.quizzTitle(dataID).find(".status-badge");

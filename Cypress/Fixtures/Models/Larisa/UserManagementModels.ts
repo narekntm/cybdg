@@ -1,8 +1,7 @@
 export namespace UserManagementModels {
-
   export enum UserRole {
     Manager = "manager",
-    User = "user"
+    User = "user",
   }
 
   export interface User {

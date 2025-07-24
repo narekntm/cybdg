@@ -24,7 +24,7 @@ export default defineConfig({
   env: {
     API_URL: "http://127.0.0.1:5353/be/", // API base URL
     TEST_USER_EMAIL: "testmanager@example.com",
-    TEST_USER_PASSWORD: "test123"
+    TEST_USER_PASSWORD: "test123",
   },
   e2e: {
     baseUrl: "http://127.0.0.1:5353/fe/", // UI base URL

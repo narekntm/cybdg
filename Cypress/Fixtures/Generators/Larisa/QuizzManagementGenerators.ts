@@ -20,51 +20,55 @@ export class QuizzManagementGenerators {
   }
 
   static inputTypeQuestion: QuizzManagementModels.Question = {
-    text: chance.name(),
+    id: "q0",
+    label: chance.name(),
     type: QuizzManagementModels.QuestionType.Input,
-    options: "",
+    options: [],
   };
 
   static radioTypeQuestion: QuizzManagementModels.Question = {
-    text: generateQuestion().text,
+    id: "q1",
+    label: generateQuestion().text,
     type: QuizzManagementModels.QuestionType.Radio,
-    options: generateQuestion().options.join(", "),
+    options: generateQuestion().options,
   };
 
   static checkBoxTypeQuestion: QuizzManagementModels.Question = {
-    text: generateQuestion().text,
+    id: "q2",
+    label: generateQuestion().text,
     type: QuizzManagementModels.QuestionType.Checkbox,
-    options: generateQuestion().options.join(", "),
+    options: generateQuestion().options,
   };
 
   static dropDownTypeQuestion: QuizzManagementModels.Question = {
-    text: generateQuestion().text,
+    id: "q3",
+    label: generateQuestion().text,
     type: QuizzManagementModels.QuestionType.Dropdown,
-    options: generateQuestion().options.join(", "),
+    options: generateQuestion().options,
   };
 
   static quizz: QuizzManagementModels.Quizz = {
     id: chance.guid(),
     title: chance.name(),
     description: chance.sentence(),
-    question: [
+    questions: [
       QuizzManagementGenerators.inputTypeQuestion,
       QuizzManagementGenerators.radioTypeQuestion,
       QuizzManagementGenerators.checkBoxTypeQuestion,
       QuizzManagementGenerators.dropDownTypeQuestion,
     ],
+    assignedUsers: ["all"],
   };
 
   static generateAnswers(quizz: QuizzManagementModels.Quizz): { [key: string]: string } {
     const answers: { [key: string]: string } = {};
 
-    quizz.question.forEach((question, index) => {
+    quizz.questions.forEach((question, index) => {
       const key = `q${index}`;
       if (question.type === QuizzManagementModels.QuestionType.Input) {
         answers[key] = chance.name();
       } else {
-        const radioOptions = question.options?.split(",").map((o) => o.trim()) || [];
-        answers[key] = chance.pickone(radioOptions);
+        answers[key] = chance.pickone(question.options);
       }
     });
     return answers;

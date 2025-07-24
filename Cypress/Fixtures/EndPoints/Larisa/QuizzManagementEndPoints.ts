@@ -1,4 +1,6 @@
-const root = "http://127.0.0.1:5353/be/api";
+import { QuizzManagementModels } from "Models/Larisa/QuizzManagementModels";
+
+const root = `${Cypress.env("API_URL")}api`;
 
 export class QuizzManagementEndPoints {
   static login = `${root}/login`;
@@ -6,8 +8,7 @@ export class QuizzManagementEndPoints {
   static authMe = `${root}/auth/me`;
   static users = `${root}/users`;
   static postQuizzes = `${root}/quizzes`;
-  static publishQuizz = (id: string) => `${root}/quizzes/${id}/publish`;
-  static archiveQuizz = (id: string) => `${root}/quizzes/${id}/archive`;
+  static quizzAction = (id: string, action: QuizzManagementModels.QuizzActions) => `${root}/quizzes/${id}/${action}`;
   static deleteQuizz = (id: string) => `${root}/quizzes/${id}`;
   static quizzes = `${root}/quizzes`;
   static getQuizz = (id: string) => `${root}/quizzes/${id}`;

@@ -9,14 +9,10 @@ describe("QuizzManagement Suite", () => {
   let adminLogin: UserManagementModels.Login;
   let userLogin: UserManagementModels.Login;
 
-  function authenticate() {
+  before(() => {
     QuizzManagementBuilders.auth().then((responce) => {
       cy.setCookie("authToken", responce.body.token);
     });
-  }
-
-  before(() => {
-    authenticate();
 
     manager = QuizzManagementGenerators.user(UserManagementModels.UserRole.Manager);
     QuizzManagementBuilders.postUser(manager).then((responce) => {
@@ -33,10 +29,6 @@ describe("QuizzManagement Suite", () => {
       Cypress.env("user", user);
       userLogin = { email: user.email, password: user.password };
     });
-  });
-
-  beforeEach(() => {
-    authenticate();
   });
 
   context("Login to Quizz Suite", () => {
@@ -117,7 +109,6 @@ describe("QuizzManagement Suite", () => {
       const answers = QuizzManagementGenerators.generateAnswers(QuizzManagementGenerators.quizz);
       QuizzManagementBuilders.postQuizz(QuizzManagementGenerators.quizz).then((response) => {
         QuizzManagementBuilders.submitQuizz(response.body.id, { answers }).then((responce) => {
-          console.log("response: ", response);
           expect(responce.status).to.eq(200);
           expect(responce.statusText).to.eq("OK");
         });
