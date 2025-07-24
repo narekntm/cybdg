@@ -1,5 +1,4 @@
-
-const root = '/be/api';
+const root = "/be/api";
 
 export class QuizManagerEndpoints {
   static login = (): string => `${root}/login`;
