@@ -10,7 +10,7 @@ import { QuizManagerUserViewPage } from "Pages/anahit-tadevosyan/QuizManager/Qui
 const chance = new Chance();
 
 describe("Quiz Submission Flow", () => {
-  const baseUrl = "http://127.0.0.1:5151//manager.html";
+  const baseUrl = "/manager.html";
   let managerUser: User;
   let regularUser1: User;
   let regularUser2: User;

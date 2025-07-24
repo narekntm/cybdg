@@ -1,4 +1,5 @@
-const root = "/be/api";
+const baseUrlLink = Cypress.env("API_URL");
+const root = `${baseUrlLink}/api`;
 
 export class QuizManagerEndpoints {
   static login = (): string => `${root}/login`;

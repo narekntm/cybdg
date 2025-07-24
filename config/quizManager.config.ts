@@ -28,7 +28,7 @@ export default defineConfig({
     TESTING_USER_PASSWORD: "test123",
   },
   e2e: {
-    baseUrl: "http://127.0.0.1:5353", // UI base URL
+    baseUrl: "http://127.0.0.1:5353/fe", // UI base URL
     experimentalRunAllSpecs: true,
     setupNodeEvents(on, config) {
       return plugin(on, config);
