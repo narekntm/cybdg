@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npx cypress open --config-file config/testQuizz.config.ts --e2e -b electron",
-    "test:run": "npx cypress run --config-file config/test.config.ts --e2e -b electron --spec Cypress/Tests/API/DemoApi.ts",
+    "test:run": "npx cypress run --config-file config/testQuizz.config.ts --e2e -b electron --headed --spec Cypress/Tests/{E2E,API,UI}/Larisa/*.ts",
     
     "serve:UI": "http-server -p 8080",
     "serve:UserManagement": "node ./Resources/htmls/user_management/server.js",

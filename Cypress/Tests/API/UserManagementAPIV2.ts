@@ -33,7 +33,6 @@ describe("User Management Suite", () => {
 
   context("Add New User Suite", () => {
     it("Add a user, Positive case, submit", () => {
-      console.log("userFormPositiveCase: ", UserManagementGenerators.userFormPositiveCase());
       UserManagementBuildersV2.postUser(UserManagementGenerators.userFormPositiveCase()).then((responce) => {
         console.log("responce: ", responce);
         expect(responce.status).to.eq(200);

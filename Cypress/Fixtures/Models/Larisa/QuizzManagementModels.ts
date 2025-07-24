@@ -5,21 +5,55 @@ export namespace QuizzManagementModels {
   }
 
   export enum QuestionType {
-    Input = "Input",
-    Radio = "Radio",
-    Checkbox = "Checkbox",
-    Dropdown = "Dropdown",
+    Input = "input",
+    Radio = "radio",
+    Checkbox = "checkbox",
+    Dropdown = "dropdown",
   }
 
   export interface Question {
-    text: string;
+    id: string;
+    label: string;
     type: QuestionType;
-    options: string;
+    options: string[];
+  }
+
+  export interface ResponceQuestion {
+    id: string;
+    label: string;
+    type: QuestionType;
+    options: string[];
   }
 
   export interface Quizz {
+    id: string;
     title: string;
     description: string;
-    question: Question[];
+    questions: Question[];
+    assignedUsers: string[];
+  }
+
+  export enum Role {
+    Admin = "Admin",
+    User = "User",
+  }
+
+  export interface Answer {
+    questionId: string;
+    answer: string | string[];
+  }
+
+  export interface Submission {
+    id: string;
+    quizId: string;
+    userId: string;
+    answers: Answer[];
+    createdAt: string;
+  }
+
+  export enum QuizzActions {
+    Publish = "publish",
+    Archive = "archive",
+    Delete = "delete",
   }
 }

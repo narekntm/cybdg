@@ -67,11 +67,12 @@ if (!process.env.SEED) {
       status: 'draft',
       createdBy: 'manager1'
     }]
-  users = [
-    { id: 'manager1', email: 'manager@quizz.com', password: 'manager123', role: 'manager' },
-    { id: 'user1', email: 'user1@quizz.com', password: 'user123', role: 'user' },
-    { id: 'user2', email: 'user2@quizz.com', password: 'user123', role: 'user' },
-  ]
+  // users = [
+  //   { id: 'manager1', email: 'manager@quizz.com', password: 'manager123', role: 'manager' },
+  //   { id: 'user1', email: 'user1@quizz.com', password: 'user123', role: 'user' },
+  //   { id: 'user2', email: 'user2@quizz.com', password: 'user123', role: 'user' },
+  // ]
+  submissions = []
 }
 
 const app = express()
