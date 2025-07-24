@@ -11,7 +11,7 @@ import { QuizManagerUserViewPage } from "Pages/anahit-tadevosyan/QuizManager/Qui
 const chance = new Chance();
 
 describe("Manager views quiz submissions", () => {
-  const baseUrl = "http://127.0.0.1:5151/manager.html";
+  const baseUrl = "/manager.html";
   let managerUser: User;
   let regularUser: User;
   let createdQuiz: QuizData;

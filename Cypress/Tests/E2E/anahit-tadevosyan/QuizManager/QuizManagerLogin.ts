@@ -5,7 +5,7 @@ import { Role, User } from "Models/anahit-tadevosyan/QuizManager/QuizManagerMode
 import { QuizManagerLoginPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerLoginPage";
 
 describe("Login Test Cases", () => {
-  const baseUrl = "http://127.0.0.1:5151/login.html";
+  const baseUrl = "/login.html";
   let managerUser: User;
   let regularUser1: User;
   let regularUser2: User;

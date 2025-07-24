@@ -13,7 +13,7 @@ import {
 import { QuizManagerManagerViewPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerManagerViewPage";
 
 describe("QuizManager Manager View", () => {
-  const baseUrl = "http://127.0.0.1:5151/manager.html";
+  const baseUrl = "/manager.html";
   let managerUser: User;
   let regularUser1: User;
   let regularUser2: User;
