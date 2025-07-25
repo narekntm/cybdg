@@ -11,12 +11,13 @@ export interface User {
   password: string;
   role: Role;
 }
+export enum WrongCredentials {
+  email = "wrongEmail@test.com",
+  password = "wrongPassword",
+}
 export enum Role {
   Manager = "manager",
   User = "user",
-}
-export enum HeaderTitles {
-  managerDashboardHeaderTitle = "Manager Dashboard: manager1",
 }
 export enum OptionType {
   input = "Input",

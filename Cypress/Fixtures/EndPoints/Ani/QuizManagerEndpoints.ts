@@ -1,4 +1,7 @@
 export class QuizManagerEndpoints {
-  static Auth = "http://127.0.0.1:5252/api/test/auth";
-  static Users = "http://127.0.0.1:5252/api/test/users";
+  static Auth = "/be/api/test/auth";
+  static Users = "/be/api/test/users";
+  static publishQuiz = (id: string) => `/be/api/quizzes/${id}/publish`;
+  static quizzes = () => "/be/api/quizzes";
+  static login = () => "/be/api/login";
 }

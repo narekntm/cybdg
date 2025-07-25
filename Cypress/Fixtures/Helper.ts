@@ -1,5 +1,6 @@
 import { QuizManagerBuilders } from "Builders/Ani/QuizManagerBuilders";
 import { AssignTo, OptionType, QuizCreation, Role, User } from "Models/Ani/QuizManagerModels";
+import { QuizManagerAdminDashboardPage } from "Pages/Ani/QuizManagerAdminDashboardPage";
 import { QuizManagerLoginPage } from "Pages/Ani/QuizManagerLoginPage";
 import { QuizManagerUserDashboardPage } from "Pages/Ani/QuizManagerUserDashboardPage";
 
@@ -31,4 +32,14 @@ export function login(email: string, password: string) {
 }
 export function quizCreate(title: string, description: string, question: string, type: OptionType, assignTo: AssignTo): QuizCreation {
   return { title, description, question, type, assignTo };
+}
+export function createQuiz() {
+  QuizManagerAdminDashboardPage.createNewQuizBtn().click();
+  QuizManagerAdminDashboardPage.quizTitleInput().type("Quiz Creation");
+  QuizManagerAdminDashboardPage.quizDescriptionInput().type("Quiz Description");
+  QuizManagerAdminDashboardPage.addQuestionBtn().click();
+  QuizManagerAdminDashboardPage.questionTextInput().type("What is your name?");
+  QuizManagerAdminDashboardPage.questionTypeInput().type("Input");
+  QuizManagerAdminDashboardPage.assignToDropdown().type("All Users");
+  QuizManagerAdminDashboardPage.saveQuizBtn().click();
 }
