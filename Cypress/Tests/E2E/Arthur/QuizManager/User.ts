@@ -1,6 +1,6 @@
 import Chance from "chance";
 import { TestUserBuilder } from "Builders/Arthur/QuizManager/TestUserBuilder";
-import { frontendRoutes } from "EndPoints/Arthur/QuizManager/FrontendRoutes";
+import { FrontendRoutes } from "EndPoints/Arthur/QuizManager/FrontendRoutes";
 import { QuizManagerEndpoints } from "EndPoints/Arthur/QuizManager/QuizManagerEndpoints";
 import { QuizGenerator } from "Generators/Arthur/QuizManager/QuizGenerator";
 import { fillQuizFormUI, loginViaApi, logoutViaApi } from "Helpers/Arthur/QuizManager/QuizManagerHelpers";
@@ -30,7 +30,7 @@ describe("E2E - Full Quiz Assignment, Submission and Verification Flow", () => {
 
   it("Should allow manager to assign quiz to a user, user to submit, and manager to verify submission", () => {
     loginViaApi(manager);
-    cy.visit(frontendRoutes.Manager);
+    cy.visit(FrontendRoutes.Manager);
 
     cy.intercept("POST", QuizManagerEndpoints.quizzes).as("createQuiz");
 
@@ -64,7 +64,7 @@ describe("E2E - Full Quiz Assignment, Submission and Verification Flow", () => {
 
       logoutViaApi();
       loginViaApi(user);
-      cy.visit(frontendRoutes.User);
+      cy.visit(FrontendRoutes.User);
 
       UserViewPage.availableQuizTitleByText(quizTitle).should("exist");
       UserViewPage.openQuizButtonByTitle(quizTitle).click();
@@ -80,12 +80,12 @@ describe("E2E - Full Quiz Assignment, Submission and Verification Flow", () => {
         expect(response?.body.answers[quiz.questions[0].id]).to.eq(answerText);
       });
 
-      cy.visit(frontendRoutes.User);
+      cy.visit(FrontendRoutes.User);
       UserViewPage.submittedQuizList().should("contain", quizTitle);
 
       logoutViaApi();
       loginViaApi(manager);
-      cy.visit(frontendRoutes.Manager);
+      cy.visit(FrontendRoutes.Manager);
 
       cy.intercept("GET", QuizManagerEndpoints.quizSubmissions(quizId)).as("getSubmissions");
 

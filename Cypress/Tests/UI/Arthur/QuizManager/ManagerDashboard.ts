@@ -1,7 +1,7 @@
 import { Chance } from "chance";
 import { TestUserBuilder } from "Builders/Arthur/QuizManager/TestUserBuilder";
 import { fillQuizFormUI, loginViaApi, logoutViaApi } from "Cypress/Support/Helpers/Arthur/QuizManager/QuizManagerHelpers";
-import { frontendRoutes } from "EndPoints/Arthur/QuizManager/FrontendRoutes";
+import { FrontendRoutes } from "EndPoints/Arthur/QuizManager/FrontendRoutes";
 import { QuizGenerator } from "Generators/Arthur/QuizManager/QuizGenerator";
 import { QuizErrorMessages, ValidationErrorMessages } from "Models/Arthur/QuizManager/QuizManagerErrorMessages";
 import {
@@ -12,6 +12,7 @@ import {
   UserCredentials,
   UserRole,
 } from "Models/Arthur/QuizManager/QuizManagerModels";
+import { CommonPage } from "Pages/Arthur/QuizManager/CommonPage";
 import { ManagerPage } from "Pages/Arthur/QuizManager/ManagerPage";
 import { QuizViewPage } from "Pages/Arthur/QuizManager/QuizView";
 
@@ -27,7 +28,7 @@ describe("Manager Dashboard UI", () => {
 
   beforeEach(() => {
     loginViaApi(manager);
-    cy.visit(frontendRoutes.Manager);
+    cy.visit(FrontendRoutes.Manager);
     ManagerPage.quizCreatorDropdown().click();
   });
 
@@ -42,7 +43,7 @@ describe("Manager Dashboard UI", () => {
       fillQuizFormUI(quiz);
       ManagerPage.saveQuizButton().click();
 
-      ManagerPage.toastSuccess().should("contain", QuizSuccessMessages.QuizSaved);
+      CommonPage.toastSuccess().should("contain", QuizSuccessMessages.QuizSaved);
       ManagerPage.quizTitles().should("contain", quiz.title);
       ManagerPage.quizItemByTitle(quiz.title).within(() => {
         ManagerPage.statusBadgeWithinItem().should("contain", QuizStatus.Draft);
@@ -54,7 +55,7 @@ describe("Manager Dashboard UI", () => {
 
       fillQuizFormUI(quiz);
       ManagerPage.saveQuizButton().click();
-      ManagerPage.toastSuccess().should("contain", QuizSuccessMessages.QuizSaved);
+      CommonPage.toastSuccess().should("contain", QuizSuccessMessages.QuizSaved);
 
       ManagerPage.quizItemByTitle(quiz.title).within(() => {
         ManagerPage.publishButtonWithin().click();
@@ -67,7 +68,7 @@ describe("Manager Dashboard UI", () => {
 
       fillQuizFormUI(quiz);
       ManagerPage.saveQuizButton().click();
-      ManagerPage.toastSuccess().should("contain", QuizSuccessMessages.QuizSaved);
+      CommonPage.toastSuccess().should("contain", QuizSuccessMessages.QuizSaved);
 
       ManagerPage.quizItemByTitle(quiz.title).within(() => {
         ManagerPage.publishButtonWithin().click();
@@ -81,7 +82,7 @@ describe("Manager Dashboard UI", () => {
 
       fillQuizFormUI(quiz);
       ManagerPage.saveQuizButton().click();
-      ManagerPage.toastSuccess().should("contain", QuizSuccessMessages.QuizSaved);
+      CommonPage.toastSuccess().should("contain", QuizSuccessMessages.QuizSaved);
 
       ManagerPage.quizItemByTitle(quiz.title).within(() => {
         ManagerPage.deleteButtonWithin().click();
@@ -92,9 +93,9 @@ describe("Manager Dashboard UI", () => {
   context("Negative Cases", () => {
     it("Should show validation toasts for missing title, description, and questions", () => {
       ManagerPage.saveQuizButton().click();
-      ManagerPage.toastError().should("contain", ValidationErrorMessages.TitleRequired);
-      ManagerPage.toastError().should("contain", ValidationErrorMessages.DescriptionRequired);
-      ManagerPage.toastError().should("contain", ValidationErrorMessages.AtLeastOneQuestion);
+      CommonPage.toastError().should("contain", ValidationErrorMessages.TitleRequired);
+      CommonPage.toastError().should("contain", ValidationErrorMessages.DescriptionRequired);
+      CommonPage.toastError().should("contain", ValidationErrorMessages.AtLeastOneQuestion);
     });
 
     it("Should show error if multiple selection-type question created without options", () => {
@@ -102,7 +103,7 @@ describe("Manager Dashboard UI", () => {
 
       fillQuizFormUI(quiz);
       ManagerPage.saveQuizButton().click();
-      ManagerPage.toastError().should("contain", ValidationErrorMessages.AtLeastOneOption);
+      CommonPage.toastError().should("contain", ValidationErrorMessages.AtLeastOneOption);
     });
 
     it("Should show error if 'custom' assignment has no selected users", () => {
@@ -112,7 +113,7 @@ describe("Manager Dashboard UI", () => {
       ManagerPage.selectAssignMode().select(AssignedUsers.Custom);
       ManagerPage.saveQuizButton().click();
 
-      ManagerPage.toastError().should("contain", ValidationErrorMessages.CustomAssignmentMissingUsers);
+      CommonPage.toastError().should("contain", ValidationErrorMessages.CustomAssignmentMissingUsers);
     });
 
     it("Should show error when deleting a quiz with submissions", () => {
@@ -122,7 +123,7 @@ describe("Manager Dashboard UI", () => {
       ManagerPage.selectAssignMode().select(AssignedUsers.Custom);
       ManagerPage.userCheckboxByEmail(user.email).check();
       ManagerPage.saveQuizButton().click();
-      ManagerPage.toastSuccess().should("contain", QuizSuccessMessages.QuizSaved);
+      CommonPage.toastSuccess().should("contain", QuizSuccessMessages.QuizSaved);
 
       ManagerPage.quizItemByTitle(quiz.title).within(() => {
         ManagerPage.publishButtonWithin().click();
@@ -131,7 +132,7 @@ describe("Manager Dashboard UI", () => {
       ManagerPage.getQuizIdByTitle(quiz.title).then((quizId) => {
         logoutViaApi();
         loginViaApi(user);
-        cy.visit(frontendRoutes.QuizView(quizId));
+        cy.visit(FrontendRoutes.QuizView(quizId));
 
         QuizViewPage.inputByName(quiz.questions[0].id)
           .clear()
@@ -140,13 +141,13 @@ describe("Manager Dashboard UI", () => {
 
         logoutViaApi();
         loginViaApi(manager);
-        cy.visit(frontendRoutes.Manager);
+        cy.visit(FrontendRoutes.Manager);
 
         ManagerPage.quizItemByTitle(quiz.title).within(() => {
           ManagerPage.deleteButtonWithin().click();
         });
 
-        ManagerPage.toastError().should("contain", QuizErrorMessages.QuizHasSubmissions);
+        CommonPage.toastError().should("contain", QuizErrorMessages.QuizHasSubmissions);
       });
     });
   });

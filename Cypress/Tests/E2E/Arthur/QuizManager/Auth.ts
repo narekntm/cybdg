@@ -1,14 +1,13 @@
 import { TestUserBuilder } from "Builders/Arthur/QuizManager/TestUserBuilder";
-import { frontendRoutes } from "EndPoints/Arthur/QuizManager/FrontendRoutes";
+import { FrontendRoutes } from "EndPoints/Arthur/QuizManager/FrontendRoutes";
 import { QuizManagerEndpoints } from "EndPoints/Arthur/QuizManager/QuizManagerEndpoints";
 import { TokenGenerator } from "Generators/Arthur/QuizManager/TokenGenerator";
 import { UserGenerator } from "Generators/Arthur/QuizManager/UserGenerator";
 import { clearAuth, loginViaApi, logoutViaApi } from "Helpers/Arthur/QuizManager/QuizManagerHelpers";
 import { AuthErrorMessages } from "Models/Arthur/QuizManager/QuizManagerErrorMessages";
 import { UserCredentials, UserRole } from "Models/Arthur/QuizManager/QuizManagerModels";
+import { CommonPage } from "Pages/Arthur/QuizManager/CommonPage";
 import { LoginPage } from "Pages/Arthur/QuizManager/LoginPage";
-import { ManagerPage } from "Pages/Arthur/QuizManager/ManagerPage";
-import { UserViewPage } from "Pages/Arthur/QuizManager/UserPage";
 
 describe("E2E Authentication & Access", () => {
   let manager: UserCredentials;
@@ -23,7 +22,7 @@ describe("E2E Authentication & Access", () => {
     clearAuth();
     cy.intercept("POST", QuizManagerEndpoints.login).as("loginRequest");
     cy.intercept("GET", QuizManagerEndpoints.authMe).as("authMeRequest");
-    cy.visit(frontendRoutes.Login);
+    cy.visit(FrontendRoutes.Login);
     cy.wait("@authMeRequest").its("response.statusCode").should("eq", 401);
   });
 
@@ -43,9 +42,8 @@ describe("E2E Authentication & Access", () => {
         });
       });
 
-      cy.url().should("include", frontendRoutes.Manager);
-
-      ManagerPage.managerUsername().should("be.visible").and("contain", manager.id);
+      cy.url().should("include", FrontendRoutes.Manager);
+      CommonPage.managerUsername().should("be.visible").and("contain", manager.id);
     });
 
     it("Should login as user, redirect, and show user dashboard UI", () => {
@@ -63,8 +61,8 @@ describe("E2E Authentication & Access", () => {
         });
       });
 
-      cy.url().should("include", frontendRoutes.User);
-      UserViewPage.usernameLabel().should("be.visible").and("contain", user.id);
+      cy.url().should("include", FrontendRoutes.User);
+      CommonPage.username().should("be.visible").and("contain", user.id);
     });
   });
 
@@ -74,16 +72,16 @@ describe("E2E Authentication & Access", () => {
       LoginPage.getEmailInput().type(invalidUser.email);
       LoginPage.getPasswordInput().type(invalidUser.password);
       LoginPage.getSubmitButton().click();
-      LoginPage.getLoginError().should("contain", AuthErrorMessages.InvalidCredentials);
-      cy.url().should("include", frontendRoutes.Login);
+      CommonPage.toastError().should("contain", AuthErrorMessages.InvalidCredentials);
+      cy.url().should("include", FrontendRoutes.Login);
     });
   });
 
   context("Session management", () => {
     it("Should redirect authenticated user from login to dashboard", () => {
       loginViaApi(manager).then(() => {
-        cy.visit(frontendRoutes.Login);
-        cy.url().should("include", frontendRoutes.Manager);
+        cy.visit(FrontendRoutes.Login);
+        cy.url().should("include", FrontendRoutes.Manager);
       });
     });
 
@@ -91,10 +89,11 @@ describe("E2E Authentication & Access", () => {
       LoginPage.getEmailInput().type(user.email);
       LoginPage.getPasswordInput().type(user.password);
       LoginPage.getSubmitButton().click();
-      cy.url().should("include", frontendRoutes.User);
+      cy.url().should("include", FrontendRoutes.User);
+
       logoutViaApi().then(() => {
-        cy.visit(frontendRoutes.User);
-        cy.url().should("include", frontendRoutes.Login);
+        cy.visit(FrontendRoutes.User);
+        cy.url().should("include", FrontendRoutes.Login);
 
         cy.request({
           method: "GET",
@@ -109,11 +108,13 @@ describe("E2E Authentication & Access", () => {
     it("Should block access with invalid session", () => {
       clearAuth();
       cy.setCookie("authToken", TokenGenerator.invalidToken());
-      cy.visit(frontendRoutes.User);
+      cy.visit(FrontendRoutes.User);
+
       cy.wait("@authMeRequest").then((interception) => {
         expect(interception.response?.statusCode).to.eq(401);
       });
-      cy.url().should("include", frontendRoutes.Login);
+
+      cy.url().should("include", FrontendRoutes.Login);
     });
   });
 });

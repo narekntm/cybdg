@@ -1,7 +1,7 @@
 import { Chance } from "chance";
 import { TestUserBuilder } from "Builders/Arthur/QuizManager/TestUserBuilder";
 import { loginViaApi, logoutViaApi } from "Cypress/Support/Helpers/Arthur/QuizManager/QuizManagerHelpers";
-import { frontendRoutes } from "EndPoints/Arthur/QuizManager/FrontendRoutes";
+import { FrontendRoutes } from "EndPoints/Arthur/QuizManager/FrontendRoutes";
 import { QuizManagerEndpoints } from "EndPoints/Arthur/QuizManager/QuizManagerEndpoints";
 import { QuizGenerator } from "Generators/Arthur/QuizManager/QuizGenerator";
 import { QuizStatus, UserCredentials, UserRole } from "Models/Arthur/QuizManager/QuizManagerModels";
@@ -30,7 +30,7 @@ describe("Quiz View Page", () => {
       body: mockQuiz,
     }).as("mockQuiz");
 
-    cy.visit(frontendRoutes.QuizView(mockQuizId));
+    cy.visit(FrontendRoutes.QuizView(mockQuizId));
     cy.wait("@mockQuiz");
 
     QuizViewPage.quizTitle().should("have.text", mockQuiz.title);
@@ -48,7 +48,7 @@ describe("Quiz View Page", () => {
       body: mockQuiz,
     }).as("mockQuiz");
 
-    cy.visit(frontendRoutes.QuizView(mockQuizId));
+    cy.visit(FrontendRoutes.QuizView(mockQuizId));
     cy.wait("@mockQuiz");
 
     QuizViewPage.inputByLabel(mockQuiz.questions[0].label).should("exist");
@@ -79,7 +79,7 @@ describe("Quiz View Page", () => {
       body: { success: true },
     }).as("submitQuiz");
 
-    cy.visit(frontendRoutes.QuizView(mockQuizId));
+    cy.visit(FrontendRoutes.QuizView(mockQuizId));
     cy.wait("@mockQuiz");
 
     QuizViewPage.inputByLabel(mockQuiz.questions[0].label).type(chance.sentence());
@@ -96,6 +96,6 @@ describe("Quiz View Page", () => {
     QuizViewPage.submitButton().click();
 
     cy.wait("@submitQuiz");
-    cy.url().should("include", frontendRoutes.User);
+    cy.url().should("include", FrontendRoutes.User);
   });
 });

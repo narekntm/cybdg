@@ -1,10 +1,4 @@
 export class UserViewPage {
-  static pageTitle = () => cy.get("h1");
-
-  static usernameLabel = () => cy.get("#username");
-
-  static logoutButton = () => cy.get("#logout-btn");
-
   static availableQuizzesSection = () => cy.get("#available-quizzes");
 
   static availableQuizzesHeader = () => cy.get("#available-quizzes h2");
@@ -40,6 +34,4 @@ export class UserViewPage {
   static availableQuizItemByTitle = (title: string) => UserViewPage.availableQuizTitleByText(title).parents("li");
 
   static openQuizButtonByTitle = (title: string) => UserViewPage.availableQuizItemByTitle(title).find("button");
-
-  static toastError = () => cy.get(".toast.error");
 }

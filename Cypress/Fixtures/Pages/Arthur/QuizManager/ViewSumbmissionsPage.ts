@@ -1,8 +1,4 @@
 export class QuizSubmissionsPage {
-  static pageTitle = () => cy.get("h1").contains("Quiz Submissions");
-
-  static logoutButton = () => cy.get("#logout-btn");
-
   static quizTitle = () => cy.get("#quiz-info h2");
 
   static quizDescription = () => cy.get("#quiz-info p");

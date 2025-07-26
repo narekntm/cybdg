@@ -1,6 +1,4 @@
 export class ManagerPage {
-  static logoutButton = () => cy.get("#logout-btn");
-
   static quizCreatorDropdown = () => cy.get("#quiz-creator");
 
   static quizTitleInput = () => cy.get("#quiz-title");
@@ -47,12 +45,6 @@ export class ManagerPage {
 
   static statusBadgeWithinItem = () => cy.get(".status-badge");
 
-  static toastPopup = () => cy.get(".toast");
-
-  static toastSuccess = () => cy.get(".toast.success");
-
-  static toastError = () => cy.get(".toast.error");
-
   static getQuizIdByTitle = (title: string): Cypress.Chainable<string> => ManagerPage.quizItemByTitle(title).invoke("attr", "data-id");
 
   static publishButtonWithin = () => cy.get(".publish-btn");
@@ -60,8 +52,6 @@ export class ManagerPage {
   static archiveButtonWithin = () => cy.get(".archive-btn");
 
   static deleteButtonWithin = () => cy.get(".delete-btn");
-
-  static managerUsername = () => cy.get("#manager-username");
 
   static quizItemById = (id: string) => cy.get(`#manager-quiz-list li[data-id="${id}"]`);
 
