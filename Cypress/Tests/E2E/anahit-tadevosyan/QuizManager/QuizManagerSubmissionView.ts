@@ -2,10 +2,9 @@ import Chance from "chance";
 import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
 import { QuizManagerEndpoints } from "EndPoints/anahit-tadevosyan/QuizManager/QuizManagerEndPoints";
 import { QuizManagerGenerators } from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
-import { createQuiz, generateUser, login } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
+import { generateUser, login } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
 import { QuestionType, QuizData, QuizStatus, Role, User } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 import { QuizManagerCommonPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerCommonPage";
-import { QuizManagerManagerViewPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerManagerViewPage";
 import { QuizManagerSubmissionViewPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerSubmissionViewPage";
 import { QuizManagerUserViewPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerUserViewPage";
 

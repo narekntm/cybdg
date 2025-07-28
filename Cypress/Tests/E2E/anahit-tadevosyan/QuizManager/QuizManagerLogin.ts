@@ -3,7 +3,6 @@ import { QuizManagerEndpoints } from "EndPoints/anahit-tadevosyan/QuizManager/Qu
 import { generateUser, login, logout } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
 import { Role, User } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 import { QuizManagerCommonPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerCommonPage";
-import { QuizManagerLoginPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerLoginPage";
 
 describe("Login Test Cases", () => {
   const baseUrl = "/login.html";
