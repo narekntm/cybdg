@@ -64,6 +64,7 @@
 
 import "@testing-library/cypress/add-commands";
 import "cypress-file-upload";
+import { setupTestUsers } from "Helpers/QuizManagerSetup";
 
 Cypress.Commands.add("safeFixture", (fixturePath, options) => {
   cy.task("checkFixtureExists", fixturePath).then((exists) => {
@@ -79,7 +80,7 @@ Cypress.Commands.add("safeFixture", (fixturePath, options) => {
 Cypress.Commands.add("clickOutside", () => {
   return cy.get("body").click("top");
 });
-//
-// Cypress.Commands.add("setupTestUsers", () => {
-//   return setupTestUsers();
-// });
+
+Cypress.Commands.add("setupTestUsers", () => {
+  return setupTestUsers();
+});

@@ -1,20 +1,12 @@
 import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
-import { generateUser } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
-import { Role, User } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import { managerUser, regularUser1, setupTestUsers } from "Helpers/QuizManagerSetup";
 
 describe("Login test cases", () => {
   const invalidEmail = "user3@example.com";
   const invalidPassword = "user12345";
-  let managerUser: User;
-  let regularUser1: User;
 
   before(() => {
-    QuizManagerBuilders.Auth().then(() => {
-      managerUser = generateUser(Role.Manager);
-      regularUser1 = generateUser(Role.User);
-
-      return Promise.all([QuizManagerBuilders.User(managerUser), QuizManagerBuilders.User(regularUser1)]);
-    });
+    setupTestUsers();
   });
 
   describe("positive login test cases", () => {

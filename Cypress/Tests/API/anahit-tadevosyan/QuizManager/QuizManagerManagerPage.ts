@@ -1,28 +1,13 @@
 import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
 import { QuizManagerGenerators } from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
-import { generateUser } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
-import { QuizData, QuizStatus, Role, User } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import { managerUser, regularUser1, setupTestUsers } from "Helpers/QuizManagerSetup";
+import { QuizData, QuizStatus } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 
 describe("QuizManager Admin Page", () => {
-  let managerUser: User;
-  let regularUser1: User;
-  let regularUser2: User;
   let quizId: string;
-
   before(() => {
-    QuizManagerBuilders.Auth().then(() => {
-      managerUser = generateUser(Role.Manager);
-      regularUser1 = generateUser(Role.User);
-      regularUser2 = generateUser(Role.User);
-
-      return Promise.all([
-        QuizManagerBuilders.User(managerUser),
-        QuizManagerBuilders.User(regularUser1),
-        QuizManagerBuilders.User(regularUser2),
-      ]);
-    });
+    setupTestUsers();
   });
-
   beforeEach(() => {
     QuizManagerBuilders.login(managerUser.email, managerUser.password);
   });

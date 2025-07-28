@@ -1,36 +1,17 @@
 import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
 import { QuizManagerEndpoints } from "EndPoints/anahit-tadevosyan/QuizManager/QuizManagerEndPoints";
 import { QuizManagerGenerators } from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
-import { createQuiz, generateUser, login } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
-import {
-  QuizData,
-  QuizStatus,
-  QuizSuccessMessages,
-  Role,
-  User,
-  ValidationErrorMessages,
-} from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import { createQuiz, login } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
+import { managerUser, regularUser1, regularUser2, setupTestUsers } from "Helpers/QuizManagerSetup";
+import { QuizData, QuizStatus, QuizSuccessMessages, ValidationErrorMessages } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 import { QuizManagerCommonPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerCommonPage";
 import { QuizManagerManagerViewPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerManagerViewPage";
 
 describe("QuizManager Manager View", () => {
   const baseUrl = "/manager.html";
-  let managerUser: User;
-  let regularUser1: User;
-  let regularUser2: User;
 
-  before("create a user and login", () => {
-    QuizManagerBuilders.Auth().then(() => {
-      managerUser = generateUser(Role.Manager);
-      regularUser1 = generateUser(Role.User);
-      regularUser2 = generateUser(Role.User);
-
-      return Promise.all([
-        QuizManagerBuilders.User(managerUser),
-        QuizManagerBuilders.User(regularUser1),
-        QuizManagerBuilders.User(regularUser2),
-      ]);
-    });
+  before(() => {
+    setupTestUsers();
   });
 
   beforeEach("login by a created user", () => {

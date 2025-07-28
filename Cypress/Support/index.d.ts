@@ -6,8 +6,8 @@ declare namespace Cypress {
   }
 }
 
-// declare namespace Cypress {
-//   interface Chainable {
-//     setupTestUsers(): Chainable<void>;
-//   }
-// }
+declare namespace Cypress {
+  interface Chainable {
+    setupTestUsers(): Chainable<void>;
+  }
+}

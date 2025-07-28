@@ -35,6 +35,9 @@
       "Helpers/*": [
         "Cypress/Support/Helpers/*"
       ],
+      "Support/*": [
+        "Cypress/Support/*"
+      ],
       "Plugins/*": [
         "Cypress/Support/Plugins/*"
       ],

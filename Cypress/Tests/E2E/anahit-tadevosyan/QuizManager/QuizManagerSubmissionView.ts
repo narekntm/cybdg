@@ -2,8 +2,9 @@ import Chance from "chance";
 import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
 import { QuizManagerEndpoints } from "EndPoints/anahit-tadevosyan/QuizManager/QuizManagerEndPoints";
 import { QuizManagerGenerators } from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
-import { generateUser, login } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
-import { QuestionType, QuizData, QuizStatus, Role, User } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import { login } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
+import { managerUser, regularUser1, setupTestUsers } from "Helpers/QuizManagerSetup";
+import { QuestionType, QuizData, QuizStatus } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 import { QuizManagerCommonPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerCommonPage";
 import { QuizManagerSubmissionViewPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerSubmissionViewPage";
 import { QuizManagerUserViewPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerUserViewPage";
@@ -12,20 +13,14 @@ const chance = new Chance();
 
 describe("Manager views quiz submissions", () => {
   const baseUrl = "/manager.html";
-  let managerUser: User;
-  let regularUser: User;
+
   let createdQuiz: QuizData;
   let submittedAnswers: Record<string, string | string[]>;
   let quizId: string;
 
-  before("Authenticate and create users", () => {
-    QuizManagerBuilders.Auth().then(() => {
-      managerUser = generateUser(Role.Manager);
-      regularUser = generateUser(Role.User);
-      return Promise.all([QuizManagerBuilders.User(managerUser), QuizManagerBuilders.User(regularUser)]);
-    });
+  before(() => {
+    setupTestUsers();
   });
-
   it("Manager creates and publishes a quiz", () => {
     QuizManagerBuilders.login(managerUser.email, managerUser.password);
     const randomQuiz = QuizManagerGenerators.generateQuiz();
@@ -49,7 +44,7 @@ describe("Manager views quiz submissions", () => {
   it("User submits quiz", () => {
     cy.visit(baseUrl);
     cy.intercept("POST", QuizManagerEndpoints.login()).as("login");
-    login(regularUser.email, regularUser.password);
+    login(regularUser1.email, regularUser1.password);
     cy.url().should("include", "/user.html");
 
     QuizManagerUserViewPage.submitById(createdQuiz.id).click();

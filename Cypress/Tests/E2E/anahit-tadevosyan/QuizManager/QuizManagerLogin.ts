@@ -1,30 +1,17 @@
-import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
 import { QuizManagerEndpoints } from "EndPoints/anahit-tadevosyan/QuizManager/QuizManagerEndPoints";
-import { generateUser, login, logout } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
-import { Role, User } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import { login, logout } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
+import { managerUser, regularUser1, setupTestUsers } from "Helpers/QuizManagerSetup";
 import { QuizManagerCommonPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerCommonPage";
 
 describe("Login Test Cases", () => {
   const baseUrl = "/login.html";
-  let managerUser: User;
-  let regularUser1: User;
-  let regularUser2: User;
+
   let initialAuthToken: string;
   const invalidEmail = "invalid@login.com";
   const invalidPassword = "invalid@login";
 
   before(() => {
-    QuizManagerBuilders.Auth().then(() => {
-      managerUser = generateUser(Role.Manager);
-      regularUser1 = generateUser(Role.User);
-      regularUser2 = generateUser(Role.User);
-
-      return Promise.all([
-        QuizManagerBuilders.User(managerUser),
-        QuizManagerBuilders.User(regularUser1),
-        QuizManagerBuilders.User(regularUser2),
-      ]);
-    });
+    setupTestUsers();
   });
 
   beforeEach(() => {
