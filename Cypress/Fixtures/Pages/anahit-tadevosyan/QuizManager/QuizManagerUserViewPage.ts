@@ -2,8 +2,6 @@ export class QuizManagerUserViewPage {
   // Header
   static pageTitle = () => cy.get("header h1");
 
-  static logoutButton = () => cy.get("#logout-btn");
-
   // Available Quizzes Section
   static availableQuizzesSection = () => cy.get("#available-quizzes");
 
@@ -56,8 +54,6 @@ export class QuizManagerUserViewPage {
   static publishButton = (index: number) => cy.get("#admin-quiz-list li").eq(index).find(".publish-btn");
 
   static submitById = (quizId: string) => cy.get(`button[onclick="window.location.href='quiz-view.html?quiz=${quizId}'"]`);
-
-  static submitBtn = () => cy.get("#submit-btn");
 
   static editSubmission = (quizId: string) => cy.get(`#submission-list li[data-id='${quizId}'] button`);
 

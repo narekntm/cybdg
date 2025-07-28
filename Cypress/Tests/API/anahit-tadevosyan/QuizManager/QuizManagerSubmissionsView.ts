@@ -27,26 +27,22 @@ describe("QuizManager View Submissions", () => {
       QuizManagerBuilders.login(managerUser.email, managerUser.password).then((response) => {
         expect(response.status).to.eq(200);
       });
-      QuizManagerBuilders.getCurrentUser().then((response) => {
+
+      const randomQuiz = QuizManagerGenerators.generateQuiz();
+
+      QuizManagerBuilders.createQuiz(randomQuiz).then((response) => {
         expect(response.status).to.eq(200);
-        const currentUserId = response.body.id;
-
-        const randomQuiz = QuizManagerGenerators.randomQuiz;
-
-        QuizManagerBuilders.createQuiz(randomQuiz).then((response) => {
-          expect(response.status).to.eq(200);
-          expect(response.body).to.deep.include({
-            ...randomQuiz,
-            status: QuizStatus.Draft,
-            createdBy: currentUserId,
-          });
-          quizId = response.body.id;
+        expect(response.body).to.deep.include({
+          ...randomQuiz,
+          status: QuizStatus.Draft,
+          createdBy: managerUser.id,
         });
-        QuizManagerBuilders.getQuizzes().then((response) => {
-          const created = response.body.find((quiz: QuizData) => quiz.title === randomQuiz.title);
-          expect(response.status).to.eq(200);
-          expect(created).to.exist;
-        });
+        quizId = response.body.id;
+      });
+      QuizManagerBuilders.getQuizzes().then((response) => {
+        const created = response.body.find((quiz: QuizData) => quiz.title === randomQuiz.title);
+        expect(response.status).to.eq(200);
+        expect(created).to.exist;
       });
 
       QuizManagerBuilders.getQuizzes().then((response) => {

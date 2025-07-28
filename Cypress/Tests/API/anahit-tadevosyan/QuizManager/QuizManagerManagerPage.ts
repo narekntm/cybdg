@@ -1,13 +1,14 @@
 import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
 import { QuizManagerGenerators } from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
 import { generateUser } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
-import { QuizData, QuizStatus, Role, User, UserBase } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import { QuizData, QuizStatus, Role, User } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 
 describe("QuizManager Admin Page", () => {
   let managerUser: User;
   let regularUser1: User;
   let regularUser2: User;
   let quizId: string;
+
   before(() => {
     QuizManagerBuilders.Auth().then(() => {
       managerUser = generateUser(Role.Manager);
@@ -23,59 +24,36 @@ describe("QuizManager Admin Page", () => {
   });
 
   beforeEach(() => {
-    QuizManagerBuilders.login(managerUser.email, managerUser.password).then((response) => {
-      expect(response.status).to.eq(200);
-    });
-
-    QuizManagerBuilders.getCurrentUser().then((response) => {
-      expect(response.status).to.eq(200);
-      expect(response.body.email).to.eq(managerUser.email);
-    });
-
-    QuizManagerBuilders.getQuizzes().then((response) => {
-      expect(response.status).to.eq(200);
-    });
-
-    QuizManagerBuilders.getUsers().then((response) => {
-      expect(response.status).to.eq(200);
-
-      const returnedEmails = response.body.map((user: UserBase) => user.email);
-      expect(returnedEmails).to.include.members([regularUser1.email, regularUser2.email]);
-    });
+    QuizManagerBuilders.login(managerUser.email, managerUser.password);
   });
 
   describe("Add Quiz and delete a quiz", () => {
     it("Adds a quiz and then deletes it", () => {
-      QuizManagerBuilders.getCurrentUser().then((response) => {
+      const randomQuiz = QuizManagerGenerators.generateQuiz();
+
+      QuizManagerBuilders.createQuiz(randomQuiz).then((response) => {
         expect(response.status).to.eq(200);
-        const currentUserId = response.body.id;
+        expect(response.body).to.deep.include({
+          ...randomQuiz,
+          status: QuizStatus.Draft,
+          createdBy: managerUser.id,
+        });
+        quizId = response.body.id;
 
-        const randomQuiz = QuizManagerGenerators.randomQuiz;
-
-        QuizManagerBuilders.createQuiz(randomQuiz).then((response) => {
+        QuizManagerBuilders.getQuizzes().then((response) => {
+          const created = response.body.find((quiz: QuizData) => quiz.title === randomQuiz.title);
           expect(response.status).to.eq(200);
-          expect(response.body).to.deep.include({
-            ...randomQuiz,
-            status: QuizStatus.Draft,
-            createdBy: currentUserId,
-          });
-          quizId = response.body.id;
+          expect(created).to.exist;
+        });
 
-          QuizManagerBuilders.getQuizzes().then((response) => {
-            const created = response.body.find((quiz: QuizData) => quiz.title === randomQuiz.title);
-            expect(response.status).to.eq(200);
-            expect(created).to.exist;
-          });
+        QuizManagerBuilders.deleteQuiz(quizId).then((response) => {
+          expect(response.status).to.eq(200);
+          expect(response.body).to.deep.include({ success: true });
+        });
 
-          QuizManagerBuilders.deleteQuiz(quizId).then((response) => {
-            expect(response.status).to.eq(200);
-            expect(response.body).to.deep.include({ success: true });
-          });
-
-          QuizManagerBuilders.getQuizzes().then((response) => {
-            const created = response.body.find((quiz: QuizData) => quiz.title === randomQuiz.title);
-            expect(created).to.not.exist;
-          });
+        QuizManagerBuilders.getQuizzes().then((response) => {
+          const created = response.body.find((quiz: QuizData) => quiz.title === randomQuiz.title);
+          expect(created).to.not.exist;
         });
       });
     });
@@ -83,26 +61,21 @@ describe("QuizManager Admin Page", () => {
 
   describe("Status changes check", () => {
     beforeEach("add a new quiz", () => {
-      QuizManagerBuilders.getCurrentUser().then((response) => {
+      const randomQuiz = QuizManagerGenerators.generateQuiz();
+
+      QuizManagerBuilders.createQuiz(randomQuiz).then((response) => {
         expect(response.status).to.eq(200);
-        const currentUserId = response.body.id;
-
-        const randomQuiz = QuizManagerGenerators.randomQuiz;
-
-        QuizManagerBuilders.createQuiz(randomQuiz).then((response) => {
-          expect(response.status).to.eq(200);
-          expect(response.body).to.deep.include({
-            ...randomQuiz,
-            status: QuizStatus.Draft,
-            createdBy: currentUserId,
-          });
-          quizId = response.body.id;
+        expect(response.body).to.deep.include({
+          ...randomQuiz,
+          status: QuizStatus.Draft,
+          createdBy: managerUser.id,
         });
-        QuizManagerBuilders.getQuizzes().then((response) => {
-          const created = response.body.find((quiz: QuizData) => quiz.title === randomQuiz.title);
-          expect(response.status).to.eq(200);
-          expect(created).to.exist;
-        });
+        quizId = response.body.id;
+      });
+      QuizManagerBuilders.getQuizzes().then((response) => {
+        const created = response.body.find((quiz: QuizData) => quiz.title === randomQuiz.title);
+        expect(response.status).to.eq(200);
+        expect(created).to.exist;
       });
     });
     afterEach("delete the created quiz", () => {

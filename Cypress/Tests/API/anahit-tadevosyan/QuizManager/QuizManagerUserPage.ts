@@ -27,24 +27,20 @@ describe("User View Submissions", () => {
 
   before("add a testing quiz", () => {
     QuizManagerBuilders.login(managerUser.email, managerUser.password).then(() => {
-      const fakeQuiz = QuizManagerGenerators.randomQuiz;
+      const fakeQuiz = QuizManagerGenerators.generateQuiz();
 
-      QuizManagerBuilders.getCurrentUser().then((response) => {
-        const managerId = response.body.id;
+      QuizManagerBuilders.createQuiz(fakeQuiz).then((response) => {
+        expect(response.status).to.eq(200);
+        expect(response.body).to.deep.include({
+          ...fakeQuiz,
+          status: QuizStatus.Draft,
+          createdBy: managerUser.id,
+        });
 
-        QuizManagerBuilders.createQuiz(fakeQuiz).then((response) => {
-          expect(response.status).to.eq(200);
-          expect(response.body).to.deep.include({
-            ...fakeQuiz,
-            status: QuizStatus.Draft,
-            createdBy: managerId,
-          });
+        quizId = response.body.id;
 
-          quizId = response.body.id;
-
-          QuizManagerBuilders.publishQuiz(quizId).then((publishRes) => {
-            expect(publishRes.status).to.eq(200);
-          });
+        QuizManagerBuilders.publishQuiz(quizId).then((publishRes) => {
+          expect(publishRes.status).to.eq(200);
         });
       });
     });

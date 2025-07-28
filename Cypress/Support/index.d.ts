@@ -5,3 +5,9 @@ declare namespace Cypress {
     clickOutside(): Chainable<Subject>;
   }
 }
+
+declare namespace Cypress {
+  interface Chainable {
+    setupTestUsers(): Chainable<void>;
+  }
+}

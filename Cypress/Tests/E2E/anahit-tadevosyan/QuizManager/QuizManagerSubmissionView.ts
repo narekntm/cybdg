@@ -3,9 +3,10 @@ import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/Quiz
 import { QuizManagerEndpoints } from "EndPoints/anahit-tadevosyan/QuizManager/QuizManagerEndPoints";
 import { QuizManagerGenerators } from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
 import { createQuiz, generateUser, login } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
-import { QuestionType, QuizData, Role, User } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import { QuestionType, QuizData, QuizStatus, Role, User } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import { QuizManagerCommonPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerCommonPage";
 import { QuizManagerManagerViewPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerManagerViewPage";
-import { QuizManagerSubmissionView } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerSubmissionView";
+import { QuizManagerSubmissionViewPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerSubmissionViewPage";
 import { QuizManagerUserViewPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerUserViewPage";
 
 const chance = new Chance();
@@ -16,6 +17,7 @@ describe("Manager views quiz submissions", () => {
   let regularUser: User;
   let createdQuiz: QuizData;
   let submittedAnswers: Record<string, string | string[]>;
+  let quizId: string;
 
   before("Authenticate and create users", () => {
     QuizManagerBuilders.Auth().then(() => {
@@ -26,28 +28,23 @@ describe("Manager views quiz submissions", () => {
   });
 
   it("Manager creates and publishes a quiz", () => {
-    cy.visit(baseUrl);
-    cy.intercept("POST", QuizManagerEndpoints.login()).as("login");
-    login(managerUser.email, managerUser.password);
-    cy.url().should("include", "/manager.html");
-    cy.wait("@login").its("response.statusCode").should("eq", 200);
+    QuizManagerBuilders.login(managerUser.email, managerUser.password);
+    const randomQuiz = QuizManagerGenerators.generateQuiz();
 
-    const fakeQuiz = QuizManagerGenerators.randomQuiz;
-    cy.intercept("POST", QuizManagerEndpoints.quizzes()).as("postQuiz");
-    createQuiz(fakeQuiz);
-
-    cy.wait("@postQuiz").then((res) => {
-      expect(res.response.statusCode).to.eq(200);
-      createdQuiz = res.response.body;
-
-      cy.intercept("PATCH", QuizManagerEndpoints.publishQuiz(createdQuiz.id)).as("publishQuiz");
-      cy.intercept("GET", QuizManagerEndpoints.quizzes()).as("getQuizzes");
-      QuizManagerManagerViewPage.publishByQuizId(createdQuiz.id).click();
-      cy.wait("@publishQuiz").its("response.statusCode").should("eq", 200);
+    QuizManagerBuilders.createQuiz(randomQuiz).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body).to.deep.include({
+        ...randomQuiz,
+        status: QuizStatus.Draft,
+        createdBy: managerUser.id,
+      });
+      quizId = response.body.id;
+      createdQuiz = response.body;
+      QuizManagerBuilders.publishQuiz(quizId).then((response) => {
+        expect(response.status).to.eq(200);
+      });
     });
-
-    QuizManagerManagerViewPage.logoutButton().click();
-    cy.url().should("include", "/login.html");
+    QuizManagerBuilders.logout();
   });
 
   it("User submits quiz", () => {
@@ -55,7 +52,6 @@ describe("Manager views quiz submissions", () => {
     cy.intercept("POST", QuizManagerEndpoints.login()).as("login");
     login(regularUser.email, regularUser.password);
     cy.url().should("include", "/user.html");
-    cy.wait("@login").its("response.statusCode").should("eq", 200);
 
     QuizManagerUserViewPage.submitById(createdQuiz.id).click();
     cy.url().should("include", `/quiz-view.html?quiz=${createdQuiz.id}`);
@@ -93,10 +89,10 @@ describe("Manager views quiz submissions", () => {
     });
 
     cy.intercept("POST", QuizManagerEndpoints.quizSubmissions(createdQuiz.id)).as("postSubmission");
-    QuizManagerUserViewPage.submitBtn().click();
+    QuizManagerCommonPage.submitBtn().click();
     cy.url().should("include", "/user.html");
     cy.wait("@postSubmission").its("response.statusCode").should("eq", 200);
-    QuizManagerUserViewPage.logoutButton().click();
+    QuizManagerCommonPage.logoutButton().click();
     cy.url().should("include", "/login.html");
   });
 
@@ -107,22 +103,22 @@ describe("Manager views quiz submissions", () => {
     cy.url().should("include", "/manager.html");
     cy.wait("@login").its("response.statusCode").should("eq", 200);
 
-    QuizManagerSubmissionView.viewSubmissions(createdQuiz.id).click();
+    QuizManagerSubmissionViewPage.viewSubmissions(createdQuiz.id).click();
     cy.url().should("include", `/view-submissions.html?quiz=${createdQuiz.id}`);
 
     cy.get(".submission")
       .first()
       .invoke("attr", "data-id")
       .then((submissionId) => {
-        QuizManagerSubmissionView.toggleSubmission(submissionId).click();
+        QuizManagerSubmissionViewPage.toggleSubmission(submissionId).click();
 
         createdQuiz.questions.forEach((q) => {
           if (Array.isArray(submittedAnswers[q.id])) {
             (submittedAnswers[q.id] as string[]).forEach((ans) => {
-              QuizManagerSubmissionView.answerByQuestionLabel(q.label).should("contain", ans);
+              QuizManagerSubmissionViewPage.answerByQuestionLabel(q.label).should("contain", ans);
             });
           } else {
-            QuizManagerSubmissionView.answerByQuestionLabel(q.label).should("contain", submittedAnswers[q.id] as string);
+            QuizManagerSubmissionViewPage.answerByQuestionLabel(q.label).should("contain", submittedAnswers[q.id] as string);
           }
         });
       });

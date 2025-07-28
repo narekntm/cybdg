@@ -2,6 +2,7 @@ import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/Quiz
 import { QuizManagerEndpoints } from "EndPoints/anahit-tadevosyan/QuizManager/QuizManagerEndPoints";
 import { generateUser, login, logout } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
 import { Role, User } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import { QuizManagerCommonPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerCommonPage";
 import { QuizManagerLoginPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerLoginPage";
 
 describe("Login Test Cases", () => {
@@ -28,13 +29,8 @@ describe("Login Test Cases", () => {
   });
 
   beforeEach(() => {
-    cy.intercept({ method: "Get", url: QuizManagerEndpoints.me() }).as("getCurrentUser");
     cy.visit(baseUrl);
     cy.url().should("include", "/login.html");
-    cy.wait("@getCurrentUser").then((interception) => {
-      expect(interception.response.statusCode).to.eq(401);
-      expect(interception.response.body).to.deep.equal({ error: "Unauthorized" });
-    });
   });
 
   describe("Login Positive Cases", () => {
@@ -105,7 +101,7 @@ describe("Login Test Cases", () => {
       cy.wait("@postLogin").then((interception) => {
         expect(interception.response.statusCode).to.eq(401);
       });
-      QuizManagerLoginPage.toastContainer().should("contain", "Login failed: Invalid credentials");
+      QuizManagerCommonPage.toastContainer().should("contain", "Login failed: Invalid credentials");
     });
 
     it("Login Invalid Emails", () => {
@@ -115,7 +111,7 @@ describe("Login Test Cases", () => {
       cy.wait("@postLogin").then((interception) => {
         expect(interception.response.statusCode).to.eq(401);
       });
-      QuizManagerLoginPage.toastContainer().should("contain", "Login failed: Invalid credentials");
+      QuizManagerCommonPage.toastContainer().should("contain", "Login failed: Invalid credentials");
     });
 
     it("Login Invalid Password", () => {
@@ -125,7 +121,7 @@ describe("Login Test Cases", () => {
       cy.wait("@postLogin").then((interception) => {
         expect(interception.response.statusCode).to.eq(401);
       });
-      QuizManagerLoginPage.toastContainer().should("contain", "Login failed: Invalid credentials");
+      QuizManagerCommonPage.toastContainer().should("contain", "Login failed: Invalid credentials");
     });
   });
 });

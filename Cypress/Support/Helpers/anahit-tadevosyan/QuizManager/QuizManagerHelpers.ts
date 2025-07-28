@@ -1,6 +1,7 @@
 import Chance from "chance";
 import { QuizManagerEndpoints } from "EndPoints/anahit-tadevosyan/QuizManager/QuizManagerEndPoints";
 import { Question, QuestionType, QuizCreationData, Role, User } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import { QuizManagerCommonPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerCommonPage";
 import { QuizManagerLoginPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerLoginPage";
 import { QuizManagerManagerViewPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerManagerViewPage";
 
@@ -22,7 +23,7 @@ export function login(email: string, password: string, checkCookies = true) {
 }
 
 export function logout() {
-  QuizManagerManagerViewPage.logoutButton().click();
+  QuizManagerCommonPage.logoutButton().click();
   cy.getCookie("authToken").should("not.exist");
 }
 
