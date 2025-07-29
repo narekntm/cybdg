@@ -6,9 +6,9 @@
 
 ### 📦 Storing Values
 
-* ❌ `cy.wrap(response.body.id).as("quizId")`
+- ❌ `cy.wrap(response.body.id).as("quizId")`
   This makes accessing values harder and async-dependent.
-* ✅ Instead:
+- ✅ Instead:
   Declare a `let quizId` in higher scope and assign directly:
 
   ```ts
@@ -22,7 +22,7 @@
 
 ### 🔄 Loops & Conditions
 
-* `forEach()` won't run on empty arrays.
+- `forEach()` won't run on empty arrays.
   `[1,2,3] → 3 loops`, `[] → 0 loops`
   ☝️ Useful when testing dynamic behavior.
 
@@ -30,12 +30,13 @@
 
 ### 🧱 Interface Structure
 
-* ❌ Avoid nested inline types:
+- ❌ Avoid nested inline types:
 
   ```ts
   answers: { [questionId: string]: string | string[] }
   ```
-* ✅ Extract them:
+
+- ✅ Extract them:
 
   ```ts
   export interface Submission {
@@ -53,27 +54,27 @@
 
 ### 🧼 Code Hygiene
 
-* ❌ Never commit unused variables, imports, or code blocks.
-* ✅ Variable/class/function names should be **descriptive and typo-free**.
-* ❌ Don't write empty test hooks like `before(() => {})`.
-* ❌ Avoid bloated files:
+- ❌ Never commit unused variables, imports, or code blocks.
+- ✅ Variable/class/function names should be **descriptive and typo-free**.
+- ❌ Don't write empty test hooks like `before(() => {})`.
+- ❌ Avoid bloated files:
   🔁 Split test files that grow beyond **\~100 lines**.
 
 ---
 
 ### 🧵 Template Literals
 
-* ❌ `"Hello " + name`
-* ✅ Use backticks instead: `` `Hello ${name}` ``
+- ❌ `"Hello " + name`
+- ✅ Use backticks instead: `` `Hello ${name}` ``
   Cleaner and easier to read/maintain.
 
 ## 📌 Cypress.Promise Example
 
 ### 🔁 `.then()` Usage
 
-* ❌ If you have: `.then(() => {})` → **Don't use `.then` at all.**
+- ❌ If you have: `.then(() => {})` → **Don't use `.then` at all.**
   It's unnecessary and adds async complexity. If test doesn't work without it, then is not working correctly.
-* ✅ If you have: `.then(res => { ... })` → **Valid use case.**
+- ✅ If you have: `.then(res => { ... })` → **Valid use case.**
   You're working with response data or chained logic.
 
 ---
@@ -108,8 +109,8 @@ function getSpecificUserDetails() {
 
 **Why this is useful:**
 
-* You can now `getSpecificUserDetails().then((resp) => {...})` inside Cypress.
-* Keeps nested Cypress commands inside a resolved promise for better composability.
+- You can now `getSpecificUserDetails().then((resp) => {...})` inside Cypress.
+- Keeps nested Cypress commands inside a resolved promise for better composability.
 
 ---
 
@@ -121,11 +122,11 @@ Avoid repeating chained `.then()` calls with the **same structure**. Keep indent
 
 ```ts
 TestUserBuilder.createUser(UserRole.Manager)
-    .then((m) => (manager = m))
-    .then(() => TestUserBuilder.createUser(UserRole.User))
-    .then((u1) => (user1 = u1))
-    .then(() => TestUserBuilder.createUser(UserRole.User))
-    .then((u2) => (user2 = u2));
+  .then((m) => (manager = m))
+  .then(() => TestUserBuilder.createUser(UserRole.User))
+  .then((u1) => (user1 = u1))
+  .then(() => TestUserBuilder.createUser(UserRole.User))
+  .then((u2) => (user2 = u2));
 ```
 
 ### ✅ Cleaned-up version:

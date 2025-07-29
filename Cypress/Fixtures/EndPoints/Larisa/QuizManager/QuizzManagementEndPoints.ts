@@ -1,4 +1,4 @@
-import { QuizzManagementModels } from "Models/Larisa/QuizzManagementModels";
+import { QuizzManagementModels } from "Models/Larisa/QuizManager/QuizzManagementModels";
 
 const root = `${Cypress.env("API_URL")}api`;
 
@@ -19,4 +19,7 @@ export class QuizzManagementEndPoints {
   static submissions = (id?: string) => `${root}/quizzes${id ? `/${id}` : ""}/submissions`;
   static testAuth = `${root}/test/auth`;
   static testUsers = `${root}/test/users`;
+
+  static manager = "/fe/manager.html";
+  static user = "/fe/user.html";
 }

@@ -1,43 +1,45 @@
-import { QuizzManagementEndPoints } from "EndPoints/Larisa/QuizzManagementEndPoints";
-import { QuizzManagementModels } from "Models/Larisa/QuizzManagementModels";
-import { UserManagementModels } from "Models/Larisa/UserManagementModels";
+import { QuizzManagementEndPoints } from "EndPoints/Larisa/QuizManager/QuizzManagementEndPoints";
+import { QuizzManagementModels } from "Models/Larisa/QuizManager/QuizzManagementModels";
+import { UserManagementModels } from "Models/Larisa/QuizManager/UserManagementModels";
 
 export class QuizzManagementBuilders {
-  static authMe = () => {
+  static token: string;
+
+  static authMe = (failOnStatusCode: boolean = true) => {
     return cy.request({
       method: "Get",
       url: QuizzManagementEndPoints.authMe,
-      failOnStatusCode: false,
+      failOnStatusCode: failOnStatusCode,
     });
   };
 
   static auth = () => {
+    return cy
+      .request({
+        method: "POST",
+        url: QuizzManagementEndPoints.testAuth,
+        body: {
+          email: Cypress.env("TEST_USER_EMAIL"),
+          password: Cypress.env("TEST_USER_PASSWORD"),
+        },
+      })
+      .then((response) => {
+        QuizzManagementBuilders.token = response.body.token;
+      });
+  };
+
+  static postUser = (login: UserManagementModels.Login) => {
     return cy.request({
       method: "POST",
-      url: QuizzManagementEndPoints.testAuth,
-      body: {
-        email: Cypress.env("TEST_USER_EMAIL"),
-        password: Cypress.env("TEST_USER_PASSWORD"),
+      url: QuizzManagementEndPoints.testUsers,
+      body: login,
+      headers: {
+        authorization: `Bearer ${QuizzManagementBuilders.token}`,
       },
     });
   };
 
-  static postUser = (login: UserManagementModels.Login) => {
-    return cy.getCookie("authToken").then((cookie) => {
-      const token = cookie ? cookie.value : "";
-
-      return cy.request({
-        method: "POST",
-        url: QuizzManagementEndPoints.testUsers,
-        body: login,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-    });
-  };
-
-  static adminLogin = (login: UserManagementModels.Login) => {
+  static loginUser = (login: UserManagementModels.Login) => {
     return cy.request({
       method: "POST",
       url: QuizzManagementEndPoints.login,

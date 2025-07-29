@@ -1,38 +1,33 @@
+import { QuizzManagementBuilders } from "Builders/Larisa/QuizManager/QuizzManagementBuilders";
 import { addQuizz, adminLogin, baseURL, createUsers, login, userLogin } from "Cypress/Support/Larisa/QuizzHelper";
-import { QuizzManagementEndPoints } from "EndPoints/Larisa/QuizzManagementEndPoints";
-import { QuizzManagementGenerators } from "Generators/Larisa/QuizzManagementGenerators";
-import { QuizzManagementModels } from "Models/Larisa/QuizzManagementModels";
-import { QuizzManagerPage } from "Pages/Larisa/QuizzManagerPage";
-import { UserPage } from "Pages/Larisa/UserPage";
+import { QuizzManagementEndPoints } from "EndPoints/Larisa/QuizManager/QuizzManagementEndPoints";
+import { QuizzManagementGenerators } from "Generators/Larisa/QuizManager/QuizzManagementGenerators";
+import { QuizzManagementModels } from "Models/Larisa/QuizManager/QuizzManagementModels";
+import { CommonPage } from "Pages/Larisa/QuizManager/CommonPage";
+import { QuizzManagerPage } from "Pages/Larisa/QuizManager/QuizzManagerPage";
+import { UserPage } from "Pages/Larisa/QuizManager/UserPage";
 
 describe("Quizz Action Suite", () => {
   let quizzDataID: string;
 
   before(() => {
-    createUsers();
+    QuizzManagementBuilders.auth().then(createUsers);
   });
 
   beforeEach(() => {
-    cy.clearCookies();
-    cy.clearLocalStorage();
-
     cy.visit(baseURL);
-
     cy.intercept({ method: "POST", url: QuizzManagementEndPoints.quizzes }).as("postQuizz");
-    cy.intercept({ method: "PATCH", url: QuizzManagementEndPoints.quizzAction("*", QuizzManagementModels.QuizzActions.Publish) }).as(
-      "publishQuizz"
-    );
-    cy.intercept({ method: "PATCH", url: QuizzManagementEndPoints.quizzAction("*", QuizzManagementModels.QuizzActions.Archive) }).as(
-      "archiveQuizz"
-    );
-    cy.intercept({ method: "DELETE", url: QuizzManagementEndPoints.deleteQuizz("*") }).as("deleteQuizz");
 
     login(adminLogin);
     addQuizz(QuizzManagementGenerators.quizz);
+    QuizzManagerPage.saveQuizzBtn().click();
   });
 
-  it("Publish Quizz Test", () => {
-    QuizzManagerPage.saveQuizzBtn().click();
+  it("Publish Quizz", () => {
+    cy.intercept({ method: "PATCH", url: QuizzManagementEndPoints.quizzAction("*", QuizzManagementModels.QuizzActions.Publish) }).as(
+      "publishQuizz"
+    );
+
     cy.wait("@postQuizz").then((xhr) => {
       quizzDataID = xhr.response.body.id;
       QuizzManagerPage.quizzPublishBtn(quizzDataID).click();
@@ -45,19 +40,21 @@ describe("Quizz Action Suite", () => {
     });
   });
 
-  it("Publish Quizz Test And Validate User has permission to this Quizz", () => {
-    QuizzManagerPage.saveQuizzBtn().click();
+  it("Validate User access to assigned Quizz", () => {
     cy.wait("@postQuizz").then((xhr) => {
       quizzDataID = xhr.response.body.id;
       QuizzManagerPage.quizzPublishBtn(quizzDataID).click();
-      QuizzManagerPage.logoutBtn().click();
+      CommonPage.logoutBtn().click();
       login(userLogin);
       UserPage.quizzListItem(quizzDataID).should("be.visible");
     });
   });
 
-  it("Archive Quizz Test", () => {
-    QuizzManagerPage.saveQuizzBtn().click();
+  it("Archive Quizz", () => {
+    cy.intercept({ method: "PATCH", url: QuizzManagementEndPoints.quizzAction("*", QuizzManagementModels.QuizzActions.Archive) }).as(
+      "archiveQuizz"
+    );
+
     cy.wait("@postQuizz").then((xhr) => {
       quizzDataID = xhr.response.body.id;
       QuizzManagerPage.quizzArchiveBtn(quizzDataID).click();
@@ -71,19 +68,19 @@ describe("Quizz Action Suite", () => {
     });
   });
 
-  it("Archive Quizz Test And Validate User has no permission to this Quizz", () => {
-    QuizzManagerPage.saveQuizzBtn().click();
+  it("Validate User restricted access to archived Quizz", () => {
     cy.wait("@postQuizz").then((xhr) => {
       quizzDataID = xhr.response.body.id;
       QuizzManagerPage.quizzArchiveBtn(quizzDataID).click();
-      QuizzManagerPage.logoutBtn().click();
+      CommonPage.logoutBtn().click();
       login(userLogin);
       UserPage.quizzListItem(quizzDataID).should("not.exist");
     });
   });
 
-  it("Delete Quizz Test", () => {
-    QuizzManagerPage.saveQuizzBtn().click();
+  it("Delete Quizz", () => {
+    cy.intercept({ method: "DELETE", url: QuizzManagementEndPoints.deleteQuizz("*") }).as("deleteQuizz");
+
     cy.wait("@postQuizz").then((xhr) => {
       quizzDataID = xhr.response.body.id;
       QuizzManagerPage.quizzDeleteBtn(quizzDataID).click();
@@ -95,31 +92,13 @@ describe("Quizz Action Suite", () => {
     });
   });
 
-  it("Delete Quizz Test And Validate User has no permission to this Quizz", () => {
-    QuizzManagerPage.saveQuizzBtn().click();
+  it("Validate User restricted access to deleted Quizz", () => {
     cy.wait("@postQuizz").then((xhr) => {
       quizzDataID = xhr.response.body.id;
       QuizzManagerPage.quizzDeleteBtn(quizzDataID).click();
-      QuizzManagerPage.logoutBtn().click();
+      CommonPage.logoutBtn().click();
       login(userLogin);
       UserPage.quizzListItem(quizzDataID).should("not.exist");
-    });
-  });
-
-  it("Remove question Test", () => {
-    QuizzManagerPage.questionListItems()
-      .its("length")
-      .then((count: number) => {
-        QuizzManagerPage.questionRemoveBtn(0).click();
-        QuizzManagerPage.questionListItems().its("length").should("be.lt", count);
-      });
-  });
-
-  it("Remove question option Test", () => {
-    QuizzManagerPage.questionOptionListItems(1).then((items) => {
-      const initialCount = items.length;
-      QuizzManagerPage.questionOptionRemove(1, 1).click();
-      QuizzManagerPage.questionOptionListItems(1).should("have.length", initialCount - 1);
     });
   });
 });

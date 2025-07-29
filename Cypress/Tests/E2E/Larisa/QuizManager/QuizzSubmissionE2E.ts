@@ -1,31 +1,28 @@
-import { QuizzManagementBuilders } from "Builders/Larisa/QuizzManagementBuilders";
+import { QuizzManagementBuilders } from "Builders/Larisa/QuizManager/QuizzManagementBuilders";
 import { adminLogin, baseURL, createUsers, login, manager, userLogin } from "Cypress/Support/Larisa/QuizzHelper";
-import { QuizzManagementEndPoints } from "EndPoints/Larisa/QuizzManagementEndPoints";
-import { QuizzManagementGenerators } from "Generators/Larisa/QuizzManagementGenerators";
-import { QuizzManagementModels } from "Models/Larisa/QuizzManagementModels";
-import { QuizzManagerPage } from "Pages/Larisa/QuizzManagerPage";
-import { QuizzViewPage } from "Pages/Larisa/QuizzViewPage";
-import { QuizzViewSubmissionsPage } from "Pages/Larisa/QuizzViewSubmissionsPage";
-import { UserPage } from "Pages/Larisa/UserPage";
+import { QuizzManagementEndPoints } from "EndPoints/Larisa/QuizManager/QuizzManagementEndPoints";
+import { QuizzManagementGenerators } from "Generators/Larisa/QuizManager/QuizzManagementGenerators";
+import { QuizzManagementModels } from "Models/Larisa/QuizManager/QuizzManagementModels";
+import { QuizzManagerPage } from "Pages/Larisa/QuizManager/QuizzManagerPage";
+import { QuizzViewPage } from "Pages/Larisa/QuizManager/QuizzViewPage";
+import { QuizzViewSubmissionsPage } from "Pages/Larisa/QuizManager/QuizzViewSubmissionsPage";
+import { UserPage } from "Pages/Larisa/QuizManager/UserPage";
 
 describe("Quizz Submission Suite", () => {
   let quizzDataID: string;
 
   before(() => {
-    createUsers();
+    QuizzManagementBuilders.auth().then(createUsers);
   });
 
   beforeEach(() => {
-    cy.clearCookies();
-    cy.clearLocalStorage();
-
     cy.visit(baseURL);
 
     cy.intercept({ method: "POST", url: QuizzManagementEndPoints.postSubmissions("*") }).as("submitQuizz");
   });
 
-  it("User Submits Quizz, validate form", () => {
-    QuizzManagementBuilders.adminLogin(adminLogin).then(() => {
+  it("User Quizz Submition Visibility", () => {
+    QuizzManagementBuilders.loginUser(adminLogin).then(() => {
       QuizzManagementBuilders.postQuizz(QuizzManagementGenerators.quizz).then((responce) => {
         quizzDataID = responce.body.id;
         QuizzManagementBuilders.publishQuizz(quizzDataID).then(() => {
@@ -58,8 +55,8 @@ describe("Quizz Submission Suite", () => {
     });
   });
 
-  it("User Submits Quizz", () => {
-    QuizzManagementBuilders.adminLogin(adminLogin).then(() => {
+  it("User Quizz Submition", () => {
+    QuizzManagementBuilders.loginUser(adminLogin).then(() => {
       QuizzManagementBuilders.postQuizz(QuizzManagementGenerators.quizz).then((responce) => {
         quizzDataID = responce.body.id;
         QuizzManagementBuilders.publishQuizz(quizzDataID).then(() => {
@@ -80,9 +77,9 @@ describe("Quizz Submission Suite", () => {
     });
   });
 
-  it("User Submits Quizz, validate form", () => {
+  it("Manager Quizz Submition Validation", () => {
     let submissionID: string;
-    QuizzManagementBuilders.adminLogin(adminLogin).then(() => {
+    QuizzManagementBuilders.loginUser(adminLogin).then(() => {
       QuizzManagementBuilders.postQuizz(QuizzManagementGenerators.quizz).then((responce) => {
         quizzDataID = responce.body.id;
         QuizzManagementBuilders.publishQuizz(quizzDataID).then(() => {
@@ -129,7 +126,7 @@ describe("Quizz Submission Suite", () => {
   });
 
   it("User Edit Submission Quizz", () => {
-    QuizzManagementBuilders.adminLogin(adminLogin).then(() => {
+    QuizzManagementBuilders.loginUser(adminLogin).then(() => {
       QuizzManagementBuilders.postQuizz(QuizzManagementGenerators.quizz).then((responce) => {
         quizzDataID = responce.body.id;
         QuizzManagementBuilders.publishQuizz(quizzDataID).then(() => {

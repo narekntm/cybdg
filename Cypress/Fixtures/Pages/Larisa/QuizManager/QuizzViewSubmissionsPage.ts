@@ -1,9 +1,6 @@
 export class QuizzViewSubmissionsPage {
   static quizzTitle = () => cy.get(".quiz-header h2");
   static quizzDesc = () => cy.get(".quiz-header p");
-  static submissionList = () => cy.get("#submission-list");
-  static submissionListItems = () => cy.get("#submission-list li");
-  static submissionListItem = (dataID: string) => cy.get(`#submission-list li[data-id="${dataID}"]`);
   static submissionListInfo = () => cy.get("#submission-list p");
   static submissionItem = (dataID: string) => cy.get(`.submission[data-id="${dataID}"]`);
   static answers = (dataID: string) => QuizzViewSubmissionsPage.submissionItem(dataID).find("dl");

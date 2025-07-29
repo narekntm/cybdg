@@ -1,9 +1,9 @@
-import { QuizzManagementBuilders } from "Builders/Larisa/QuizzManagementBuilders";
-import { QuizzManagementGenerators } from "Generators/Larisa/QuizzManagementGenerators";
-import { QuizzManagementModels } from "Models/Larisa/QuizzManagementModels";
-import { UserManagementModels } from "Models/Larisa/UserManagementModels";
-import { QuizzLoginPage } from "Pages/Larisa/QuizzLoginPage";
-import { QuizzManagerPage } from "Pages/Larisa/QuizzManagerPage";
+import { QuizzManagementBuilders } from "Builders/Larisa/QuizManager/QuizzManagementBuilders";
+import { QuizzManagementGenerators } from "Generators/Larisa/QuizManager/QuizzManagementGenerators";
+import { QuizzManagementModels } from "Models/Larisa/QuizManager/QuizzManagementModels";
+import { UserManagementModels } from "Models/Larisa/QuizManager/UserManagementModels";
+import { QuizzLoginPage } from "Pages/Larisa/QuizManager/QuizzLoginPage";
+import { QuizzManagerPage } from "Pages/Larisa/QuizManager/QuizzManagerPage";
 
 export const baseURL = "/login";
 
@@ -21,10 +21,6 @@ export const userLogin: UserManagementModels.Login = {
 };
 
 export function createUsers() {
-  QuizzManagementBuilders.auth().then((responce) => {
-    cy.setCookie("authToken", responce.body.token);
-  });
-
   QuizzManagementBuilders.postUser(manager);
   QuizzManagementBuilders.postUser(user);
 }
