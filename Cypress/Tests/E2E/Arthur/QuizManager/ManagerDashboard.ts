@@ -1,5 +1,5 @@
 import { TestUserBuilder } from "Builders/Arthur/QuizManager/TestUserBuilder";
-import { frontendRoutes } from "EndPoints/Arthur/QuizManager/FrontendRoutes";
+import { FrontendRoutes } from "EndPoints/Arthur/QuizManager/FrontendRoutes";
 import { QuizManagerEndpoints } from "EndPoints/Arthur/QuizManager/QuizManagerEndpoints";
 import { QuizGenerator } from "Generators/Arthur/QuizManager/QuizGenerator";
 import { createAndPublishQuiz, fillQuizFormUI, loginViaApi } from "Helpers/Arthur/QuizManager/QuizManagerHelpers";
@@ -14,6 +14,7 @@ import {
   UserCredentials,
   UserRole,
 } from "Models/Arthur/QuizManager/QuizManagerModels";
+import { CommonPage } from "Pages/Arthur/QuizManager/CommonPage";
 import { ManagerPage } from "Pages/Arthur/QuizManager/ManagerPage";
 
 describe("Manager Dashboard", () => {
@@ -29,7 +30,7 @@ describe("Manager Dashboard", () => {
 
   beforeEach(() => {
     loginViaApi(manager);
-    cy.visit(frontendRoutes.Manager);
+    cy.visit(FrontendRoutes.Manager);
   });
 
   context("Manager sees only their own quizzes", () => {
@@ -44,7 +45,7 @@ describe("Manager Dashboard", () => {
         createAndPublishQuiz(quiz);
       });
 
-      cy.visit(frontendRoutes.Manager);
+      cy.visit(FrontendRoutes.Manager);
     });
 
     it("Shows only quizzes created by this manager (API and UI)", () => {
@@ -61,7 +62,7 @@ describe("Manager Dashboard", () => {
       quizTitles.forEach((title) => {
         ManagerPage.quizItemByTitle(title).should("exist");
       });
-      ManagerPage.managerUsername().should("contain", manager.id);
+      CommonPage.managerUsername().should("contain", manager.id);
     });
   });
 
@@ -69,9 +70,9 @@ describe("Manager Dashboard", () => {
     it("Shows validation errors for missing required fields", () => {
       ManagerPage.quizCreatorDropdown().click();
       ManagerPage.saveQuizButton().click();
-      ManagerPage.toastError().should("contain", ValidationErrorMessages.TitleRequired);
-      ManagerPage.toastError().should("contain", ValidationErrorMessages.DescriptionRequired);
-      ManagerPage.toastError().should("contain", ValidationErrorMessages.AtLeastOneQuestion);
+      CommonPage.toastError().should("contain", ValidationErrorMessages.TitleRequired);
+      CommonPage.toastError().should("contain", ValidationErrorMessages.DescriptionRequired);
+      CommonPage.toastError().should("contain", ValidationErrorMessages.AtLeastOneQuestion);
     });
 
     it("Should show error if radio question created without options", () => {
@@ -79,7 +80,7 @@ describe("Manager Dashboard", () => {
       const quiz = QuizGenerator.generateQuizWithOnly(QuestionType.SingleChoice, false);
       fillQuizFormUI(quiz);
       ManagerPage.saveQuizButton().click();
-      ManagerPage.toastError().should("contain", ValidationErrorMessages.AtLeastOneOption);
+      CommonPage.toastError().should("contain", ValidationErrorMessages.AtLeastOneOption);
     });
 
     it("Should show error if checkbox question created without options", () => {
@@ -87,7 +88,7 @@ describe("Manager Dashboard", () => {
       const quiz = QuizGenerator.generateQuizWithOnly(QuestionType.MultipleChoice, false);
       fillQuizFormUI(quiz);
       ManagerPage.saveQuizButton().click();
-      ManagerPage.toastError().should("contain", ValidationErrorMessages.AtLeastOneOption);
+      CommonPage.toastError().should("contain", ValidationErrorMessages.AtLeastOneOption);
     });
 
     it("Should show error if dropdown question created without options", () => {
@@ -95,7 +96,7 @@ describe("Manager Dashboard", () => {
       const quiz = QuizGenerator.generateQuizWithOnly(QuestionType.Dropdown, false);
       fillQuizFormUI(quiz);
       ManagerPage.saveQuizButton().click();
-      ManagerPage.toastError().should("contain", ValidationErrorMessages.AtLeastOneOption);
+      CommonPage.toastError().should("contain", ValidationErrorMessages.AtLeastOneOption);
     });
 
     it("Creates a quiz with all supported question types and options, verifies POST, GET, and UI by ID", () => {
@@ -106,7 +107,7 @@ describe("Manager Dashboard", () => {
       ManagerPage.quizCreatorDropdown().click();
       fillQuizFormUI(quiz);
       ManagerPage.saveQuizButton().click();
-      ManagerPage.toastPopup().should("contain", QuizSuccessMessages.QuizSaved);
+      CommonPage.toastPopup().should("contain", QuizSuccessMessages.QuizSaved);
 
       cy.wait("@createQuiz").then((interception) => {
         const created: QuizResponse = interception.response?.body;
@@ -152,7 +153,7 @@ describe("Manager Dashboard", () => {
         expect(response?.statusCode).to.eq(200);
         expect(response?.body.assignedUsers).to.deep.equal([AssignedUsers.All]);
       });
-      ManagerPage.toastSuccess().should("contain", QuizSuccessMessages.QuizSaved);
+      CommonPage.toastSuccess().should("contain", QuizSuccessMessages.QuizSaved);
 
       cy.intercept("POST", QuizManagerEndpoints.quizzes).as("createQuizCustom");
 
@@ -170,7 +171,7 @@ describe("Manager Dashboard", () => {
         expect(response?.statusCode).to.eq(200);
         expect(response?.body.assignedUsers).to.include.members([user1.email, user2.email]);
       });
-      ManagerPage.toastSuccess().should("contain", QuizSuccessMessages.QuizSaved);
+      CommonPage.toastSuccess().should("contain", QuizSuccessMessages.QuizSaved);
     });
   });
 });

@@ -1,7 +1,7 @@
 import Chance from "chance";
 import { TestUserBuilder } from "Builders/Arthur/QuizManager/TestUserBuilder";
 import { createAndPublishQuiz, loginViaApi, logoutViaApi } from "Cypress/Support/Helpers/Arthur/QuizManager/QuizManagerHelpers";
-import { frontendRoutes } from "EndPoints/Arthur/QuizManager/FrontendRoutes";
+import { FrontendRoutes } from "EndPoints/Arthur/QuizManager/FrontendRoutes";
 import { QuizManagerEndpoints } from "EndPoints/Arthur/QuizManager/QuizManagerEndpoints";
 import { QuizGenerator } from "Generators/Arthur/QuizManager/QuizGenerator";
 import { GeneralErrorMessages } from "Models/Arthur/QuizManager/QuizManagerErrorMessages";
@@ -33,7 +33,7 @@ describe("Quiz Submissions Page", () => {
         quizId = id;
 
         loginViaApi(user);
-        cy.visit(frontendRoutes.QuizView(quizId));
+        cy.visit(FrontendRoutes.QuizView(quizId));
 
         userName = chance.name();
         QuizViewPage.inputByLabel(quiz.questions[0].label).type(userName);
@@ -50,7 +50,7 @@ describe("Quiz Submissions Page", () => {
           expect(submissionId).to.exist;
         });
 
-        cy.url().should("include", frontendRoutes.User);
+        cy.url().should("include", FrontendRoutes.User);
       });
     });
   });
@@ -58,7 +58,7 @@ describe("Quiz Submissions Page", () => {
   context("Positive Scenarios", () => {
     beforeEach(() => {
       loginViaApi(manager);
-      cy.visit(frontendRoutes.ViewSubmissions(quizId));
+      cy.visit(FrontendRoutes.ViewSubmissions(quizId));
     });
 
     it("Should show quiz title, description and total submission count", () => {
@@ -95,14 +95,14 @@ describe("Quiz Submissions Page", () => {
     it("Should show error for invalid quiz ID", () => {
       loginViaApi(manager);
       const invalidQuizId = chance.guid();
-      cy.visit(frontendRoutes.ViewSubmissions(invalidQuizId));
+      cy.visit(FrontendRoutes.ViewSubmissions(invalidQuizId));
       QuizSubmissionsPage.errorText().should("exist");
       QuizSubmissionsPage.errorText().invoke("text").should("include", GeneralErrorMessages.NotFound);
     });
 
     it("Should redirect user (non-manager) to login", () => {
       loginViaApi(user);
-      cy.visit(frontendRoutes.ViewSubmissions(quizId));
+      cy.visit(FrontendRoutes.ViewSubmissions(quizId));
       QuizSubmissionsPage.errorText().should("contain", GeneralErrorMessages.Forbidden);
     });
   });

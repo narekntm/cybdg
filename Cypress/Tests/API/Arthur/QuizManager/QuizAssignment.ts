@@ -1,8 +1,8 @@
+import { QuizBuilder } from "Builders/Arthur/QuizManager/QuizBuilder";
 import { TestUserBuilder } from "Builders/Arthur/QuizManager/TestUserBuilder";
-import { QuizManagerEndpoints } from "EndPoints/Arthur/QuizManager/QuizManagerEndpoints";
 import { QuizGenerator } from "Generators/Arthur/QuizManager/QuizGenerator";
 import { createAndPublishQuiz, createDraftQuiz, loginViaApi } from "Helpers/Arthur/QuizManager/QuizManagerHelpers";
-import { QuizRequest, QuizResponse, UserCredentials, UserRole } from "Models/Arthur/QuizManager/QuizManagerModels";
+import { QuizRequest, UserCredentials, UserRole } from "Models/Arthur/QuizManager/QuizManagerModels";
 
 describe("Quiz Assignment Rules", () => {
   let manager: UserCredentials;
@@ -34,30 +34,18 @@ describe("Quiz Assignment Rules", () => {
   context("Assignment logic for quiz", () => {
     it("Should show quiz for all users", () => {
       loginViaApi(user1);
-      cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
-        const quizIds = res.body.map((q) => q.id);
-        expect(quizIds).to.include(quizAllId);
-      });
+      QuizBuilder.checkQuizVisible(quizAllId);
 
       loginViaApi(user2);
-      cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
-        const quizIds = res.body.map((q) => q.id);
-        expect(quizIds).to.include(quizAllId);
-      });
+      QuizBuilder.checkQuizVisible(quizAllId);
     });
 
     it("Should show quiz only to specified users", () => {
       loginViaApi(user1);
-      cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
-        const quizIds = res.body.map((q) => q.id);
-        expect(quizIds).to.include(quizTargetedId);
-      });
+      QuizBuilder.checkQuizVisible(quizTargetedId);
 
       loginViaApi(user2);
-      cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
-        const quizIds = res.body.map((q) => q.id);
-        expect(quizIds).not.to.include(quizTargetedId);
-      });
+      QuizBuilder.checkQuizHidden(quizTargetedId, false);
     });
   });
 
@@ -71,16 +59,10 @@ describe("Quiz Assignment Rules", () => {
       loginViaApi(manager);
       createAndPublishQuiz(quizEmpty).then((quizId) => {
         loginViaApi(user1);
-        cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
-          const ids = res.body.map((q) => q.id);
-          expect(ids).not.to.include(quizId);
-        });
+        QuizBuilder.checkQuizHidden(quizId, false);
 
         loginViaApi(user2);
-        cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
-          const ids = res.body.map((q) => q.id);
-          expect(ids).not.to.include(quizId);
-        });
+        QuizBuilder.checkQuizHidden(quizId, false);
       });
     });
 
@@ -93,10 +75,7 @@ describe("Quiz Assignment Rules", () => {
       loginViaApi(manager);
       createDraftQuiz(draftQuiz).then((quizId) => {
         loginViaApi(user1);
-        cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
-          const ids = res.body.map((q) => q.id);
-          expect(ids).not.to.include(quizId);
-        });
+        QuizBuilder.checkQuizHidden(quizId, false);
       });
     });
 
@@ -108,10 +87,7 @@ describe("Quiz Assignment Rules", () => {
 
       loginViaApi(manager);
       createDraftQuiz(quizCustom).then((quizId) => {
-        cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
-          const ids = res.body.map((q) => q.id);
-          expect(ids).to.include(quizId);
-        });
+        QuizBuilder.checkQuizVisible(quizId);
       });
     });
 
@@ -124,10 +100,7 @@ describe("Quiz Assignment Rules", () => {
       loginViaApi(manager);
       createDraftQuiz(quizNotActive).then((quizId) => {
         loginViaApi(user1);
-        cy.request<QuizResponse[]>(QuizManagerEndpoints.quizzes).then((res) => {
-          const ids = res.body.map((q) => q.id);
-          expect(ids).not.to.include(quizId);
-        });
+        QuizBuilder.checkQuizHidden(quizId, false);
       });
     });
   });

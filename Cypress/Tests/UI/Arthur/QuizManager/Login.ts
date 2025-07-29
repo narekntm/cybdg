@@ -1,11 +1,11 @@
 import Chance from "chance";
 import { TestUserBuilder } from "Builders/Arthur/QuizManager/TestUserBuilder";
 import { loginViaApi, logoutViaApi } from "Cypress/Support/Helpers/Arthur/QuizManager/QuizManagerHelpers";
-import { frontendRoutes } from "EndPoints/Arthur/QuizManager/FrontendRoutes";
+import { FrontendRoutes } from "EndPoints/Arthur/QuizManager/FrontendRoutes";
 import { AuthErrorMessages } from "Models/Arthur/QuizManager/QuizManagerErrorMessages";
 import { UserCredentials, UserRole } from "Models/Arthur/QuizManager/QuizManagerModels";
+import { CommonPage } from "Pages/Arthur/QuizManager/CommonPage";
 import { LoginPage } from "Pages/Arthur/QuizManager/LoginPage";
-import { UserViewPage as UserPage } from "Pages/Arthur/QuizManager/UserPage";
 
 const chance = new Chance();
 
@@ -19,21 +19,21 @@ describe("UI Login Flow", () => {
   });
 
   beforeEach(() => {
-    cy.visit(frontendRoutes.Login);
+    cy.visit(FrontendRoutes.Login);
   });
 
   it("Should login as manager and redirect to manager.html", () => {
     LoginPage.getEmailInput().clear().type(manager.email);
     LoginPage.getPasswordInput().clear().type(manager.password);
     LoginPage.getSubmitButton().click();
-    cy.url().should("include", frontendRoutes.Manager);
+    cy.url().should("include", FrontendRoutes.Manager);
   });
 
   it("Should login as user and redirect to user.html", () => {
     LoginPage.getEmailInput().clear().type(user.email);
     LoginPage.getPasswordInput().clear().type(user.password);
     LoginPage.getSubmitButton().click();
-    cy.url().should("include", frontendRoutes.User);
+    cy.url().should("include", FrontendRoutes.User);
   });
 
   it("Should show error on invalid user", () => {
@@ -44,7 +44,7 @@ describe("UI Login Flow", () => {
     LoginPage.getPasswordInput().clear().type(fakePassword);
     LoginPage.getSubmitButton().click();
 
-    LoginPage.getLoginError().should("contain", AuthErrorMessages.InvalidCredentials);
+    CommonPage.toastError().should("contain", AuthErrorMessages.InvalidCredentials);
   });
 
   it("Should show error on valid email + wrong password", () => {
@@ -54,29 +54,29 @@ describe("UI Login Flow", () => {
     LoginPage.getPasswordInput().clear().type(wrongPassword);
     LoginPage.getSubmitButton().click();
 
-    LoginPage.getLoginError().should("contain", AuthErrorMessages.InvalidCredentials);
+    CommonPage.toastError().should("contain", AuthErrorMessages.InvalidCredentials);
   });
 
   it("Should redirect if already logged in (manager)", () => {
     loginViaApi(manager);
-    cy.visit(frontendRoutes.Login);
-    cy.url().should("include", frontendRoutes.Manager);
+    cy.visit(FrontendRoutes.Login);
+    cy.url().should("include", FrontendRoutes.Manager);
   });
 
   it("Should redirect if already logged in (user)", () => {
     loginViaApi(user);
-    cy.visit(frontendRoutes.Login);
-    cy.url().should("include", frontendRoutes.User);
+    cy.visit(FrontendRoutes.Login);
+    cy.url().should("include", FrontendRoutes.User);
   });
 
   it("Should logout and restrict access", () => {
     loginViaApi(user);
-    cy.visit(frontendRoutes.User);
-    UserPage.logoutButton().click();
-    cy.url().should("include", frontendRoutes.Login);
+    cy.visit(FrontendRoutes.User);
+    CommonPage.logoutButton().click();
+    cy.url().should("include", FrontendRoutes.Login);
 
-    cy.visit(frontendRoutes.User);
-    cy.url().should("include", frontendRoutes.Login);
+    cy.visit(FrontendRoutes.User);
+    cy.url().should("include", FrontendRoutes.Login);
   });
 });
 

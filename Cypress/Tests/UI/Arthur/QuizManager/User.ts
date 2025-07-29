@@ -1,6 +1,6 @@
 import { TestUserBuilder } from "Builders/Arthur/QuizManager/TestUserBuilder";
 import { fillQuizFormUI, loginViaApi, logoutViaApi } from "Cypress/Support/Helpers/Arthur/QuizManager/QuizManagerHelpers";
-import { frontendRoutes } from "EndPoints/Arthur/QuizManager/FrontendRoutes";
+import { FrontendRoutes } from "EndPoints/Arthur/QuizManager/FrontendRoutes";
 import { QuizManagerEndpoints } from "EndPoints/Arthur/QuizManager/QuizManagerEndpoints";
 import { QuizGenerator } from "Generators/Arthur/QuizManager/QuizGenerator";
 import { GeneralErrorMessages } from "Models/Arthur/QuizManager/QuizManagerErrorMessages";
@@ -13,6 +13,7 @@ import {
   UserRole,
   UserViewTexts,
 } from "Models/Arthur/QuizManager/QuizManagerModels";
+import { CommonPage } from "Pages/Arthur/QuizManager/CommonPage";
 import { ManagerPage } from "Pages/Arthur/QuizManager/ManagerPage";
 import { UserViewPage } from "Pages/Arthur/QuizManager/UserPage";
 
@@ -31,9 +32,9 @@ describe("User View Page", () => {
 
   it("Should display the logged-in user's id in the header", () => {
     loginViaApi(user);
-    cy.visit(frontendRoutes.User);
-    UserViewPage.pageTitle().should("be.visible");
-    UserViewPage.usernameLabel().should("have.text", user.id);
+    cy.visit(FrontendRoutes.User);
+    CommonPage.pageTitle().should("be.visible");
+    CommonPage.username().should("have.text", user.id);
   });
 
   it("Should list available quizzes assigned to the user", () => {
@@ -43,7 +44,7 @@ describe("User View Page", () => {
       statusCode: 200,
       body: mockQuizzes,
     });
-    cy.visit(frontendRoutes.User);
+    cy.visit(FrontendRoutes.User);
 
     UserViewPage.availableQuizList().should("be.visible");
     mockQuizzes.forEach((quiz) => {
@@ -58,7 +59,7 @@ describe("User View Page", () => {
       statusCode: 200,
       body: mockQuizzes,
     });
-    cy.visit(frontendRoutes.User);
+    cy.visit(FrontendRoutes.User);
 
     UserViewPage.availableQuizList().find("li").should("have.length", mockQuizzes.length);
     UserViewPage.availableQuizCount()
@@ -72,13 +73,13 @@ describe("User View Page", () => {
 
   it('Should open quiz view page when clicking "Submit" on available quiz', () => {
     loginViaApi(manager);
-    cy.visit(frontendRoutes.Manager);
+    cy.visit(FrontendRoutes.Manager);
     ManagerPage.quizCreatorDropdown().click();
 
     const quiz = QuizGenerator.generateQuizWithOnly(QuestionType.Input);
     fillQuizFormUI(quiz);
     ManagerPage.saveQuizButton().click();
-    ManagerPage.toastSuccess().should("exist");
+    CommonPage.toastSuccess().should("exist");
 
     ManagerPage.getQuizIdByTitle(quiz.title).then((quizId) => {
       ManagerPage.quizItemByTitle(quiz.title).within(() => {
@@ -87,11 +88,11 @@ describe("User View Page", () => {
 
       logoutViaApi();
       loginViaApi(user);
-      cy.visit(frontendRoutes.User);
+      cy.visit(FrontendRoutes.User);
 
       UserViewPage.availableQuizItemByTitle(quiz.title).should("exist");
       UserViewPage.openQuizButtonByTitle(quiz.title).click();
-      cy.url().should("include", frontendRoutes.QuizView(quizId));
+      cy.url().should("include", FrontendRoutes.QuizView(quizId));
     });
   });
 
@@ -101,7 +102,7 @@ describe("User View Page", () => {
       statusCode: 200,
       body: [],
     });
-    cy.visit(frontendRoutes.User);
+    cy.visit(FrontendRoutes.User);
     UserViewPage.availableQuizList().should("contain", UserViewTexts.NoAvailableQuizzes);
   });
 
@@ -111,7 +112,7 @@ describe("User View Page", () => {
       statusCode: 200,
       body: [],
     });
-    cy.visit(frontendRoutes.User);
+    cy.visit(FrontendRoutes.User);
     UserViewPage.submittedQuizList().should("contain", UserViewTexts.NoSubmissions);
   });
 
@@ -124,7 +125,7 @@ describe("User View Page", () => {
     cy.intercept("GET", QuizManagerEndpoints.mySubmissions, { body: submissions });
     cy.intercept("GET", QuizManagerEndpoints.quiz(quizzes[0].id), { body: quizzes[0] });
 
-    cy.visit(frontendRoutes.User);
+    cy.visit(FrontendRoutes.User);
 
     UserViewPage.submittedQuizTitleById(submissions[0].id).should("contain", quizzes[0].title);
     UserViewPage.submittedQuizDateById(submissions[0].id).should("contain", SubmissionTexts.CreatedAt);
@@ -145,7 +146,7 @@ describe("User View Page", () => {
       cy.intercept("GET", QuizManagerEndpoints.quiz(quiz.id), { body: quiz });
     });
 
-    cy.visit(frontendRoutes.User);
+    cy.visit(FrontendRoutes.User);
 
     UserViewPage.editSubmissionButtonById(submissionActive.id).should("contain", QuizButtonTexts.Edit);
     UserViewPage.editSubmissionButtonById(submissionArchived.id).should("contain", QuizButtonTexts.View);
@@ -157,7 +158,7 @@ describe("User View Page", () => {
       statusCode: 500,
       body: { error: "Server crashed" },
     });
-    cy.visit(frontendRoutes.User);
-    UserViewPage.toastError().should("be.visible").should("contain", GeneralErrorMessages.QuizLoadError);
+    cy.visit(FrontendRoutes.User);
+    CommonPage.toastError().should("be.visible").should("contain", GeneralErrorMessages.QuizLoadError);
   });
 });

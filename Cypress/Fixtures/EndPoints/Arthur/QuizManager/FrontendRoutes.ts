@@ -1,13 +1,20 @@
-export const frontendRoutes = {
-  Login: "/fe/login.html",
-  Manager: "/fe/manager.html",
-  User: "/fe/user.html",
-  QuizView: (quizId?: string, submissionId?: string) => {
+export class FrontendRoutes {
+  static Login = "/fe/login.html";
+
+  static Manager = "/fe/manager.html";
+
+  static User = "/fe/user.html";
+
+  static QuizView = (quizId?: string, submissionId?: string): string => {
     const path = "/fe/quiz-view.html";
     const params = new URLSearchParams();
+
     if (quizId) params.append("quiz", quizId);
     if (submissionId) params.append("submission", submissionId);
-    return `${path}?${params.toString()}`;
-  },
-  ViewSubmissions: (quizId: string) => `/view-submissions.html?quiz=${quizId}`,
-};
+
+    const query = params.toString();
+    return query ? `${path}?${query}` : path;
+  };
+
+  static ViewSubmissions = (quizId: string): string => `/fe/view-submissions.html?quiz=${quizId}`;
+}
