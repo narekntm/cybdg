@@ -26,9 +26,11 @@ export function logout() {
   QuizManagerUserDashboardPage.logoutButton().click();
 }
 export function login(email: string, password: string) {
+  cy.intercept("POST", "/be/api/login").as("login");
   QuizManagerLoginPage.emailInput().type(email);
   QuizManagerLoginPage.passwordInput().type(password);
   QuizManagerLoginPage.loginBtn().click();
+  cy.wait("@login");
 }
 export function quizCreate(title: string, description: string, question: string, type: OptionType, assignTo: AssignTo): QuizCreation {
   return { title, description, question, type, assignTo };

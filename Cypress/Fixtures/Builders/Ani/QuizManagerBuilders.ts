@@ -24,4 +24,31 @@ export class QuizManagerBuilders {
       body: newUser,
     });
   };
+  static QuizPublish(id: string, token: string) {
+    return cy.request({
+      method: "PATCH",
+      url: QuizManagerEndpoints.publishQuiz(id),
+      headers: {
+        Authorization: token,
+      },
+    });
+  }
+  static QuizArchive(id: string, token: string) {
+    return cy.request({
+      method: "PATCH",
+      url: QuizManagerEndpoints.archiveQuiz(id),
+      headers: {
+        Authorization: token,
+      },
+    });
+  }
+  static QuizDelete(id: string, token: string) {
+    return cy.request({
+      method: "DELETE",
+      url: QuizManagerEndpoints.deleteQuiz(id),
+      headers: {
+        Authorization: token,
+      },
+    });
+  }
 }

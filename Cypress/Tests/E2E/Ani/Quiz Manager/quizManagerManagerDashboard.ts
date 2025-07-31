@@ -1,4 +1,4 @@
-import { creatQuiz, login, quizCreate, userCreate } from "Helper";
+import { login, quizCreate, userCreate } from "Helper";
 import { QuizCreation, Role } from "Models/Ani/QuizManagerModels";
 
 describe("E2E tests for the Quiz Manager Dashboard page", () => {

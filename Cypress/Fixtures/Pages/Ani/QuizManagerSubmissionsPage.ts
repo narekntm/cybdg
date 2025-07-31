@@ -1,6 +1,4 @@
 export class QuizManagerSubmissionsPage {
-  static pageTitle = () => cy.get("header h1");
-
   static logoutButton = () => cy.get("header #logout-btn");
 
   static quizInfoSection = () => cy.get("#quiz-info");
