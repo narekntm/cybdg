@@ -1,6 +1,4 @@
 export class QuizManagerManagerViewPage {
-  static logoutButton = () => cy.get("#logout-btn");
-
   static quizTitleInput = () => cy.get("#quiz-title");
 
   static quizDescriptionTextarea = () => cy.get("#quiz-description");
@@ -18,8 +16,6 @@ export class QuizManagerManagerViewPage {
   static assignModeSelect = () => cy.get("#assign-mode");
 
   static saveQuizButton = () => cy.get('#quiz-form button[type="submit"]');
-
-  static toastContainer = () => cy.get("#toast-container");
 
   static quizListSection = () => cy.get("#quiz-list");
 

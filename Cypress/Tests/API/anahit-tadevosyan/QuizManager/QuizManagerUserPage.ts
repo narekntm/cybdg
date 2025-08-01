@@ -1,50 +1,33 @@
 import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
 import { QuizManagerGenerators } from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
-import { generateUser } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
-import { Question, QuestionType, QuizData, QuizStatus, Role, User } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import { managerUser, regularUser1, setupTestUsers } from "Helpers/QuizManagerSetup";
+import { Question, QuestionType, QuizData, QuizStatus } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 
 describe("User View Submissions", () => {
   let quizId: string;
   let originalQuiz: QuizData;
   let submissionId: string;
-  let managerUser: User;
-  let regularUser1: User;
-  let regularUser2: User;
 
-  before("create users", () => {
-    QuizManagerBuilders.Auth().then(() => {
-      managerUser = generateUser(Role.Manager);
-      regularUser1 = generateUser(Role.User);
-      regularUser2 = generateUser(Role.User);
-
-      return Promise.all([
-        QuizManagerBuilders.User(managerUser),
-        QuizManagerBuilders.User(regularUser1),
-        QuizManagerBuilders.User(regularUser2),
-      ]);
-    });
+  before(() => {
+    setupTestUsers();
   });
 
   before("add a testing quiz", () => {
     QuizManagerBuilders.login(managerUser.email, managerUser.password).then(() => {
-      const fakeQuiz = QuizManagerGenerators.randomQuiz;
+      const fakeQuiz = QuizManagerGenerators.generateQuiz();
 
-      QuizManagerBuilders.getCurrentUser().then((response) => {
-        const managerId = response.body.id;
+      QuizManagerBuilders.createQuiz(fakeQuiz).then((response) => {
+        expect(response.status).to.eq(200);
+        expect(response.body).to.deep.include({
+          ...fakeQuiz,
+          status: QuizStatus.Draft,
+          createdBy: managerUser.id,
+        });
 
-        QuizManagerBuilders.createQuiz(fakeQuiz).then((response) => {
-          expect(response.status).to.eq(200);
-          expect(response.body).to.deep.include({
-            ...fakeQuiz,
-            status: QuizStatus.Draft,
-            createdBy: managerId,
-          });
+        quizId = response.body.id;
 
-          quizId = response.body.id;
-
-          QuizManagerBuilders.publishQuiz(quizId).then((publishRes) => {
-            expect(publishRes.status).to.eq(200);
-          });
+        QuizManagerBuilders.publishQuiz(quizId).then((publishRes) => {
+          expect(publishRes.status).to.eq(200);
         });
       });
     });

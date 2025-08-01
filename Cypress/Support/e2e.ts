@@ -16,3 +16,8 @@
 // Import commands.js using ES2015 syntax:
 //eslint-disable-next-line  no-restricted-imports
 import "./commands";
+import { setupTestUsers } from "Helpers/QuizManagerSetup";
+
+before(() => {
+  return setupTestUsers();
+});
