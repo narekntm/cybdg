@@ -71,27 +71,27 @@ describe("QuizManager Admin Page", () => {
     });
     it("Archives the quiz", () => {
       QuizManagerBuilders.archiveQuiz(quizId).then((archiveResponse) => {
-          expect(archiveResponse.status).to.eq(200);
-          expect(archiveResponse.body).to.include({ success: true });
+        expect(archiveResponse.status).to.eq(200);
+        expect(archiveResponse.body).to.include({ success: true });
       });
     });
 
     it("Publishes the quiz from Archived", () => {
       QuizManagerBuilders.publishQuiz(quizId).then((publishResponse) => {
-          expect(publishResponse.status).to.eq(200);
-          expect(publishResponse.body).to.include({ success: true });
+        expect(publishResponse.status).to.eq(200);
+        expect(publishResponse.body).to.include({ success: true });
       });
     });
 
     it("Publishes the quiz from Draft", () => {
       QuizManagerBuilders.publishQuiz(quizId).then((publishResponse) => {
-          expect(publishResponse.status).to.eq(200);
-          expect(publishResponse.body).to.include({ success: true });
+        expect(publishResponse.status).to.eq(200);
+        expect(publishResponse.body).to.include({ success: true });
 
-          QuizManagerBuilders.getQuizzes().then((newResponse) => {
-            const updatedQuizzes = newResponse.body;
-            const updated = updatedQuizzes.find((q: QuizData) => q.id === quizId);
-            expect(updated?.status).to.eq("active");
+        QuizManagerBuilders.getQuizzes().then((newResponse) => {
+          const updatedQuizzes = newResponse.body;
+          const updated = updatedQuizzes.find((q: QuizData) => q.id === quizId);
+          expect(updated?.status).to.eq("active");
         });
       });
     });

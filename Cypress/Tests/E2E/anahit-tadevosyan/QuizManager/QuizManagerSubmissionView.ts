@@ -1,8 +1,7 @@
-import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
 import Chance from "chance";
+import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
 import { QuizManagerEndpoints } from "EndPoints/anahit-tadevosyan/QuizManager/QuizManagerEndPoints";
 import { QuizManagerGenerators } from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
-import { login } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
 import { managerUser, regularUser1, setupTestUsers } from "Helpers/QuizManagerSetup";
 import { QuestionType, QuizData, QuizStatus } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 import { QuizManagerCommonPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerCommonPage";
@@ -20,7 +19,6 @@ describe("Manager views quiz submissions", () => {
 
   before(() => {
     setupTestUsers().then(() => {
-
       // This part should be in before not a separate test
       QuizManagerBuilders.login(managerUser.email, managerUser.password);
       const randomQuiz = QuizManagerGenerators.generateQuiz();
@@ -89,8 +87,8 @@ describe("Manager views quiz submissions", () => {
 
     // When doing login again cookie will be updated with new token
     // and when we visit manager page we will be able to see the submissions
-    QuizManagerBuilders.login(managerUser.email,managerUser.password);
-    cy.visit(baseUrl);    
+    QuizManagerBuilders.login(managerUser.email, managerUser.password);
+    cy.visit(baseUrl);
 
     QuizManagerSubmissionViewPage.viewSubmissions(createdQuiz.id).click();
     cy.url().should("include", `/view-submissions.html?quiz=${createdQuiz.id}`);

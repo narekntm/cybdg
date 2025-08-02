@@ -3,12 +3,7 @@ import { QuizManagerEndpoints } from "EndPoints/anahit-tadevosyan/QuizManager/Qu
 import { QuizManagerGenerators } from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
 import { createQuiz, login } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
 import { managerUser, regularUser1, regularUser2, setupTestUsers } from "Helpers/QuizManagerSetup";
-import {
-  QuizData,
-  QuizStatus,
-  QuizSuccessMessages,
-  ValidationErrorMessages
-} from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import { QuizData, QuizStatus, QuizSuccessMessages, ValidationErrorMessages } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 import { QuizManagerCommonPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerCommonPage";
 import { QuizManagerManagerViewPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerManagerViewPage";
 
