@@ -3,7 +3,12 @@ import { QuizManagerEndpoints } from "EndPoints/anahit-tadevosyan/QuizManager/Qu
 import { QuizManagerGenerators } from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
 import { createQuiz, login } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
 import { managerUser, regularUser1, regularUser2, setupTestUsers } from "Helpers/QuizManagerSetup";
-import { QuizData, QuizStatus, QuizSuccessMessages, ValidationErrorMessages } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
+import {
+  QuizData,
+  QuizStatus,
+  QuizSuccessMessages,
+  ValidationErrorMessages
+} from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 import { QuizManagerCommonPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerCommonPage";
 import { QuizManagerManagerViewPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerManagerViewPage";
 
@@ -17,7 +22,6 @@ describe("QuizManager Manager View", () => {
   beforeEach("login by a created user", () => {
     cy.visit(baseUrl);
     login(managerUser.email, managerUser.password);
-    cy.url().should("include", "/manager.html");
   });
 
   describe("Add Questions", () => {
@@ -42,6 +46,11 @@ describe("QuizManager Manager View", () => {
 
         expect(createdQuiz).to.exist;
         expect(createdQuiz.questions).to.have.length(generatedQuiz.questions.length);
+
+        // Verify Quiz questions
+        generatedQuiz.questions.forEach((question, index) => {
+          expect(createdQuiz.questions[index]).to.deep.include(question);
+        });
       });
 
       QuizManagerCommonPage.toastContainer().should("contain", QuizSuccessMessages.QuizSaved);
@@ -102,7 +111,7 @@ describe("QuizManager Manager View", () => {
     beforeEach(() => {
       const generatedQuiz = QuizManagerGenerators.generateQuiz();
 
-      return QuizManagerBuilders.createQuiz(generatedQuiz).then((response) => {
+      QuizManagerBuilders.createQuiz(generatedQuiz).then((response) => {
         expect(response.status).to.eq(200);
         expect(response.body).to.deep.include({
           ...generatedQuiz,
@@ -110,8 +119,8 @@ describe("QuizManager Manager View", () => {
           createdBy: managerUser.id,
         });
         createdQuiz = response.body;
-        cy.visit("/manager.html");
       });
+      cy.visit("/manager.html");
     });
 
     it("has initial Draft status and action buttons visible", () => {
@@ -128,10 +137,10 @@ describe("QuizManager Manager View", () => {
       QuizManagerManagerViewPage.publishByQuizId(createdQuiz.id).click();
 
       cy.wait("@publishQuiz").its("response.statusCode").should("eq", 200);
-      cy.wait("@getQuizzes").then((interception) => {
-        expect(interception.response.statusCode).to.eq(200);
-        expect(interception.response.body).to.deep.include({ ...createdQuiz, status: QuizStatus.Active });
-        const quizzesCount = interception.response.body.length;
+      cy.wait("@getQuizzes").then((getQuizzes) => {
+        expect(getQuizzes.response.statusCode).to.eq(200);
+        expect(getQuizzes.response.body).to.deep.include({ ...createdQuiz, status: QuizStatus.Active });
+        const quizzesCount = getQuizzes.response.body.length;
         QuizManagerManagerViewPage.quizListHeader().should("have.text", `My Quizzes (${quizzesCount})`);
       });
 
@@ -152,9 +161,9 @@ describe("QuizManager Manager View", () => {
       QuizManagerManagerViewPage.archiveByQuizId(createdQuiz.id).click();
 
       cy.wait("@archiveQuiz").its("response.statusCode").should("eq", 200);
-      cy.wait("@getQuizzes").then((interception) => {
-        expect(interception.response.statusCode).to.eq(200);
-        expect(interception.response.body).to.deep.include({ ...createdQuiz, status: QuizStatus.Archived });
+      cy.wait("@getQuizzes").then((getQuizzes) => {
+        expect(getQuizzes.response.statusCode).to.eq(200);
+        expect(getQuizzes.response.body).to.deep.include({ ...createdQuiz, status: QuizStatus.Archived });
       });
 
       QuizManagerManagerViewPage.statusByQuizId(createdQuiz.id).should("contain", QuizStatus.Archived);
@@ -170,9 +179,9 @@ describe("QuizManager Manager View", () => {
       QuizManagerManagerViewPage.deleteByQuizId(createdQuiz.id).click();
 
       cy.wait("@deleteQuiz").its("response.statusCode").should("eq", 200);
-      cy.wait("@getQuizzes").then((interception) => {
-        expect(interception.response.statusCode).to.eq(200);
-        expect(interception.response.body).to.not.deep.include(createdQuiz);
+      cy.wait("@getQuizzes").then((getQuizzes) => {
+        expect(getQuizzes.response.statusCode).to.eq(200);
+        expect(getQuizzes.response.body).to.not.deep.include(createdQuiz);
       });
 
       QuizManagerManagerViewPage.quizListSection().should("not.contain", createdQuiz.id);

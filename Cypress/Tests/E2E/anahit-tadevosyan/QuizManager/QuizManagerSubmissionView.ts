@@ -1,5 +1,5 @@
-import Chance from "chance";
 import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
+import Chance from "chance";
 import { QuizManagerEndpoints } from "EndPoints/anahit-tadevosyan/QuizManager/QuizManagerEndPoints";
 import { QuizManagerGenerators } from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
 import { login } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
@@ -19,33 +19,33 @@ describe("Manager views quiz submissions", () => {
   let quizId: string;
 
   before(() => {
-    setupTestUsers();
-  });
-  it("Manager creates and publishes a quiz", () => {
-    QuizManagerBuilders.login(managerUser.email, managerUser.password);
-    const randomQuiz = QuizManagerGenerators.generateQuiz();
+    setupTestUsers().then(() => {
 
-    QuizManagerBuilders.createQuiz(randomQuiz).then((response) => {
-      expect(response.status).to.eq(200);
-      expect(response.body).to.deep.include({
-        ...randomQuiz,
-        status: QuizStatus.Draft,
-        createdBy: managerUser.id,
-      });
-      quizId = response.body.id;
-      createdQuiz = response.body;
-      QuizManagerBuilders.publishQuiz(quizId).then((response) => {
+      // This part should be in before not a separate test
+      QuizManagerBuilders.login(managerUser.email, managerUser.password);
+      const randomQuiz = QuizManagerGenerators.generateQuiz();
+
+      QuizManagerBuilders.createQuiz(randomQuiz).then((response) => {
         expect(response.status).to.eq(200);
+        expect(response.body).to.deep.include({
+          ...randomQuiz,
+          status: QuizStatus.Draft,
+          createdBy: managerUser.id,
+        });
+        quizId = response.body.id;
+        createdQuiz = response.body;
+        QuizManagerBuilders.publishQuiz(quizId).then((response) => {
+          expect(response.status).to.eq(200);
+        });
       });
+      QuizManagerBuilders.logout();
     });
-    QuizManagerBuilders.logout();
   });
 
   it("User submits quiz", () => {
+    // Instead of login with UI we can du API login
+    QuizManagerBuilders.login(regularUser1.email, regularUser1.password);
     cy.visit(baseUrl);
-    cy.intercept("POST", QuizManagerEndpoints.login()).as("login");
-    login(regularUser1.email, regularUser1.password);
-    cy.url().should("include", "/user.html");
 
     QuizManagerUserViewPage.submitById(createdQuiz.id).click();
     cy.url().should("include", `/quiz-view.html?quiz=${createdQuiz.id}`);
@@ -86,16 +86,11 @@ describe("Manager views quiz submissions", () => {
     QuizManagerCommonPage.submitBtn().click();
     cy.url().should("include", "/user.html");
     cy.wait("@postSubmission").its("response.statusCode").should("eq", 200);
-    QuizManagerCommonPage.logoutButton().click();
-    cy.url().should("include", "/login.html");
-  });
 
-  it("Manager views submissions and verifies answers", () => {
-    cy.visit(baseUrl);
-    cy.intercept("POST", QuizManagerEndpoints.login()).as("login");
-    login(managerUser.email, managerUser.password);
-    cy.url().should("include", "/manager.html");
-    cy.wait("@login").its("response.statusCode").should("eq", 200);
+    // When doing login again cookie will be updated with new token
+    // and when we visit manager page we will be able to see the submissions
+    QuizManagerBuilders.login(managerUser.email,managerUser.password);
+    cy.visit(baseUrl);    
 
     QuizManagerSubmissionViewPage.viewSubmissions(createdQuiz.id).click();
     cy.url().should("include", `/view-submissions.html?quiz=${createdQuiz.id}`);

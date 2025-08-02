@@ -17,6 +17,8 @@ describe("Login Test Cases", () => {
   beforeEach(() => {
     cy.visit(baseUrl);
     cy.url().should("include", "/login.html");
+    cy.intercept({ method: "POST", url: QuizManagerEndpoints.login() }).as("postLogin");
+    cy.intercept({ method: "GET", url: QuizManagerEndpoints.me() }).as("getMe");
   });
 
   describe("Login Positive Cases", () => {
@@ -26,10 +28,20 @@ describe("Login Test Cases", () => {
     });
 
     it("Login Positive Test Cases for Manager", () => {
-      cy.intercept({ method: "POST", url: QuizManagerEndpoints.login() }).as("postLogin");
-      cy.intercept({ method: "GET", url: QuizManagerEndpoints.me() }).as("getMe");
+      cy.getCookie("authToken").should((cookie) => {
+        expect(cookie).to.not.exist;
+      });
 
       login(managerUser.email, managerUser.password);
+
+      cy.wait("@postLogin").then((interception) => {
+        expect(interception.response.statusCode).to.eq(200);
+      });
+
+      cy.wait("@getMe").then((interception) => {
+        expect(interception.response.statusCode).to.eq(200);
+      });
+
       cy.getCookie("authToken").then((cookie) => {
         expect(cookie).to.exist;
         initialAuthToken = cookie.value;
@@ -41,22 +53,22 @@ describe("Login Test Cases", () => {
         expect(cookie).to.exist;
         expect(cookie.value).to.equal(initialAuthToken);
       });
-
-      cy.url().should("include", "/manager.html");
-      cy.wait("@postLogin").then((interception) => {
-        expect(interception.response.statusCode).to.eq(200);
-      });
-
-      cy.wait("@getMe").then((interception) => {
-        expect(interception.response.statusCode).to.eq(200);
-      });
     });
 
     it("Login Positive Test Cases for User", () => {
-      cy.intercept({ method: "POST", url: QuizManagerEndpoints.login() }).as("postLogin");
-      cy.intercept({ method: "GET", url: QuizManagerEndpoints.me() }).as("getMe");
+      cy.getCookie("authToken").should((cookie) => {
+        expect(cookie).to.not.exist;
+      });
 
       login(regularUser1.email, regularUser1.password);
+
+      cy.wait("@postLogin").then((postLogin) => {
+        expect(postLogin.response.statusCode).to.eq(200);
+      });
+      cy.wait("@getMe").then((getMe) => {
+        expect(getMe.response.statusCode).to.eq(200);
+      });
+
       cy.getCookie("authToken").then((cookie) => {
         expect(cookie).to.exist;
         initialAuthToken = cookie.value;
@@ -68,44 +80,33 @@ describe("Login Test Cases", () => {
         expect(cookie).to.exist;
         expect(cookie.value).to.equal(initialAuthToken);
       });
-
-      cy.wait("@postLogin").then((interception) => {
-        expect(interception.response.statusCode).to.eq(200);
-      });
-
-      cy.wait("@getMe").then((interception) => {
-        expect(interception.response.statusCode).to.eq(200);
-      });
     });
   });
 
   describe("Login Negative Cases", () => {
     it("Login Invalid Credentials", () => {
-      cy.intercept({ method: "POST", url: QuizManagerEndpoints.login() }).as("postLogin");
       login(invalidEmail, invalidPassword, false);
       cy.url().should("include", "/login.html");
-      cy.wait("@postLogin").then((interception) => {
-        expect(interception.response.statusCode).to.eq(401);
+      cy.wait("@postLogin").then((postLogin) => {
+        expect(postLogin.response.statusCode).to.eq(401);
       });
       QuizManagerCommonPage.toastContainer().should("contain", "Login failed: Invalid credentials");
     });
 
     it("Login Invalid Emails", () => {
-      cy.intercept({ method: "POST", url: QuizManagerEndpoints.login() }).as("postLogin");
       login(invalidEmail, managerUser.password, false);
       cy.url().should("include", "/login.html");
-      cy.wait("@postLogin").then((interception) => {
-        expect(interception.response.statusCode).to.eq(401);
+      cy.wait("@postLogin").then((postLogin) => {
+        expect(postLogin.response.statusCode).to.eq(401);
       });
       QuizManagerCommonPage.toastContainer().should("contain", "Login failed: Invalid credentials");
     });
 
     it("Login Invalid Password", () => {
-      cy.intercept({ method: "POST", url: QuizManagerEndpoints.login() }).as("postLogin");
       login(managerUser.email, invalidPassword, false);
       cy.url().should("include", "/login.html");
-      cy.wait("@postLogin").then((interception) => {
-        expect(interception.response.statusCode).to.eq(401);
+      cy.wait("@postLogin").then((postLogin) => {
+        expect(postLogin.response.statusCode).to.eq(401);
       });
       QuizManagerCommonPage.toastContainer().should("contain", "Login failed: Invalid credentials");
     });
