@@ -23,12 +23,12 @@ export default defineConfig({
   },
   env: {},
   e2e: {
-    baseUrl: "http://127.0.0.1:5151/login.html",
+    baseUrl: "http://127.0.0.1:5353",
     experimentalRunAllSpecs: true,
     setupNodeEvents(on, config) {
       return plugin(on, config);
     },
-    specPattern: "Cypress/Tests/{E2E,API,UI}/**/*.ts",
+    specPattern: "Cypress/Tests/{E2E,API,UI}/**/QuizzManager/**/*.ts",
     supportFile: e2eOptions.supportFile,
   },
 });

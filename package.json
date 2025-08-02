@@ -4,14 +4,17 @@
   "description": "Cypress Automation Project",
   "main": "index.js",
   "scripts": {
-    "test": "npx cypress open --config-file config/test.config.ts --e2e -b electron",
+    "quizManagerTest": "npx cypress open --config-file config/quizManger.config.ts --e2e -b electron",
     "test:run": "npx cypress run --config-file config/test.config.ts --e2e -b electron --spec Cypress/Tests/API/DemoApi.ts",
     
     "serve:UI": "http-server -p 8080",
     "serve:UserManagement": "node ./Resources/htmls/user_management/server.js",
     "serve:UserManagementV2": "node ./Resources/htmls/user_management_v2/BE/server.js",
-    "serve:QuizzManager:BE": "node ./Resources/htmls/quiz_manager/BE/server.js",
-    "serve:QuizzManager:FE": "npx http-server Resources/htmls/quiz_manager/FE -p 8080",
+   
+    "serve:QuizzManager:FE": "http-server Resources/htmls/quiz_manager/FE -p 5151 --cors",
+    "serve:QuizzManager:BE": "node Resources/htmls/quiz_manager/BE/server.js",
+    "serve:proxy": "node ./Resources/htmls/quiz_manager/proxy-server.js",
+    "serve:QuizzManager:ALL": "concurrently -n FE,BE,PROXY -c green,blue,magenta \"npm run serve:QuizzManager:FE\" \"npm run serve:QuizzManager:BE\" \"npm run serve:proxy\"",
     
     "prettier": "prettier --config .prettierrc --ignore-path .prettierignore",
     "eslint": "eslint --config .eslintrc.json --ignore-path .eslintignore",
@@ -31,6 +34,7 @@
     "@types/node": "^22.13.1",
     "@typescript-eslint/eslint-plugin": "^8.24.1",
     "@typescript-eslint/parser": "^8.24.1",
+    "concurrently": "^9.2.0",
     "eslint": "8.57.1",
     "eslint-config-prettier": "^10.0.1",
     "eslint-import-resolver-typescript": "^3.8.3",
@@ -42,6 +46,7 @@
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.1.0",
     "globals": "^16.0.0",
+    "http-proxy-middleware": "^3.0.5",
     "http-server": "^14.1.1",
     "mocha": "^11.1.0",
     "prettier": "^3.3.2",

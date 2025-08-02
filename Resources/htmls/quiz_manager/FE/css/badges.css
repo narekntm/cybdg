@@ -1,0 +1,24 @@
+﻿/* ========== Status Badges ========== */
+.status-badge {
+  display: inline-block;
+  padding: 0.2em 0.6em;
+  font-size: 0.75rem;
+  border-radius: 0.25rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status-badge.active {
+  background-color: #2f7660;
+  color: #ffffff;
+}
+
+.status-badge.archived {
+  background-color: #b38b49;
+  color: #ffffff;
+}
+
+.status-badge.draft {
+  border: 2px solid #b38b49;
+  color: #254260;
+}
