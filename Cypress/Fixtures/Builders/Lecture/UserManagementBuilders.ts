@@ -1,6 +1,7 @@
 ﻿import { UserManagementEndpoints } from "EndPoints/Lecture/UserManagementEndpoints";
 import { UserManagementGenerators } from "Generators/Lecture/UserManagementGenerators";
 import { UserManagementModels } from "Models/Lecture/UserManagementModels";
+import { QuizzManagerEndpoints } from "EndPoints/Anna/QuizzManagerEndpoints/QuizzManagerEndpoints";
 
 export class UserManagementBuilders {
   /**
