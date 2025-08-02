@@ -3,5 +3,5 @@ export class QuizManagerLoginPage {
 
   static passwordInput = () => cy.get("#password");
 
-  static loginButton = () => cy.get('button[type = "submit"');
+  static loginButton = () => cy.get('button[type = "submit"]');
 }

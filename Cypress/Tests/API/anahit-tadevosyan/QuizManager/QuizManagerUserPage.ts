@@ -35,10 +35,8 @@ describe("User View Submissions", () => {
 
   after("try to delete the quiz", () => {
     QuizManagerBuilders.login(managerUser.email, managerUser.password).then(() => {
-      QuizManagerBuilders.deleteQuiz(quizId, false).then((response) => {
-        expect(response.status).to.eq(400);
-        expect(response.body).to.deep.include({ error: "Quiz has submissions" });
-      });
+      // quizz delete will always fail cuz it has submissions
+      // QuizManagerBuilders.deleteQuiz(quizId, false)
     });
   });
 

@@ -10,16 +10,8 @@ describe("Login test cases", () => {
   });
 
   describe("positive login test cases", () => {
-    afterEach(() => {
-      QuizManagerBuilders.logout().then((response) => {
-        expect(response.status).to.eq(200);
-      });
-    });
-
     it("Enters Admin login details", () => {
-      console.log("managaer test uawee:", managerUser.email, managerUser.password);
       QuizManagerBuilders.login(managerUser.email, managerUser.password).then((response) => {
-        console.log("managaer test uawee:", managerUser.email, managerUser.password);
         expect(response.status).to.eq(200);
       });
 

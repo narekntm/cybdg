@@ -70,37 +70,28 @@ describe("QuizManager Admin Page", () => {
       });
     });
     it("Archives the quiz", () => {
-      QuizManagerBuilders.getQuizzes().then((response) => {
-        expect(response.status).to.eq(200);
-        QuizManagerBuilders.archiveQuiz(quizId).then((archiveResponse) => {
-          expect(archiveResponse.status).to.eq(200);
-          expect(archiveResponse.body).to.include({ success: true });
-        });
+      QuizManagerBuilders.archiveQuiz(quizId).then((archiveResponse) => {
+        expect(archiveResponse.status).to.eq(200);
+        expect(archiveResponse.body).to.include({ success: true });
       });
     });
 
     it("Publishes the quiz from Archived", () => {
-      QuizManagerBuilders.getQuizzes().then((response) => {
-        expect(response.status).to.eq(200);
-        QuizManagerBuilders.publishQuiz(quizId).then((publishResponse) => {
-          expect(publishResponse.status).to.eq(200);
-          expect(publishResponse.body).to.include({ success: true });
-        });
+      QuizManagerBuilders.publishQuiz(quizId).then((publishResponse) => {
+        expect(publishResponse.status).to.eq(200);
+        expect(publishResponse.body).to.include({ success: true });
       });
     });
 
     it("Publishes the quiz from Draft", () => {
-      QuizManagerBuilders.getQuizzes().then((response) => {
-        expect(response.status).to.eq(200);
-        QuizManagerBuilders.publishQuiz(quizId).then((publishResponse) => {
-          expect(publishResponse.status).to.eq(200);
-          expect(publishResponse.body).to.include({ success: true });
+      QuizManagerBuilders.publishQuiz(quizId).then((publishResponse) => {
+        expect(publishResponse.status).to.eq(200);
+        expect(publishResponse.body).to.include({ success: true });
 
-          QuizManagerBuilders.getQuizzes().then((newResponse) => {
-            const updatedQuizzes = newResponse.body;
-            const updated = updatedQuizzes.find((q: QuizData) => q.id === quizId);
-            expect(updated?.status).to.eq("active");
-          });
+        QuizManagerBuilders.getQuizzes().then((newResponse) => {
+          const updatedQuizzes = newResponse.body;
+          const updated = updatedQuizzes.find((q: QuizData) => q.id === quizId);
+          expect(updated?.status).to.eq("active");
         });
       });
     });

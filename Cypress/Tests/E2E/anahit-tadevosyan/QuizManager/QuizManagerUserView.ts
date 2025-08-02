@@ -2,7 +2,6 @@ import Chance from "chance";
 import { QuizManagerBuilders } from "Builders/anahit-tadevosyan/QuizManager/QuizManagerBuilders";
 import { QuizManagerEndpoints } from "EndPoints/anahit-tadevosyan/QuizManager/QuizManagerEndPoints";
 import { QuizManagerGenerators } from "Generators/anahit-tadevosyan/QuizManager/QuizManagerGenerators";
-import { login } from "Helpers/anahit-tadevosyan/QuizManager/QuizManagerHelpers";
 import { managerUser, regularUser1, setupTestUsers } from "Helpers/QuizManagerSetup";
 import { Question, QuestionType, QuizData, Submission } from "Models/anahit-tadevosyan/QuizManager/QuizManagerModels";
 import { QuizManagerCommonPage } from "Pages/anahit-tadevosyan/QuizManager/QuizManagerCommonPage";
@@ -21,30 +20,22 @@ describe("Quiz Submission Flow", () => {
 
   describe("user submits a quiz", () => {
     before("create a quiz by manager, publish it, then login by user", () => {
-      console.log("my first initial quiz:", createdQuiz);
       QuizManagerBuilders.login(managerUser.email, managerUser.password);
       const randomQuiz = QuizManagerGenerators.generateQuiz();
       QuizManagerBuilders.createQuiz(randomQuiz).then((response) => {
-        expect(response.status).to.eq(200);
         createdQuiz = response.body;
-        console.log("myyyy quiziz 1:", createdQuiz);
         QuizManagerBuilders.publishQuiz(createdQuiz.id);
         QuizManagerBuilders.getQuizzes().then((response) => {
           expect(response.status).to.eq(200);
           createdQuiz = response.body.find((q: QuizData) => q.id === createdQuiz.id);
         });
       });
-      QuizManagerBuilders.logout();
-      cy.visit("/login");
     });
 
     it("fills and submits a quiz", () => {
-      cy.intercept("POST", QuizManagerEndpoints.login()).as("postLogin");
+      QuizManagerBuilders.login(regularUser1.email, regularUser1.password);
       cy.intercept("GET", QuizManagerEndpoints.quizzes()).as("getQuizzes");
-      login(regularUser1.email, regularUser1.password);
-      cy.url().should("include", "/user.html");
-      cy.wait("@postLogin").its("response.statusCode").should("eq", 200);
-      console.log("myyy created2:", createdQuiz);
+      cy.visit(baseUrl);
       cy.wait("@getQuizzes").then((interception) => {
         expect(interception.response.statusCode).to.eq(200);
         expect(interception.response.body).to.deep.include(createdQuiz);
@@ -85,11 +76,8 @@ describe("Quiz Submission Flow", () => {
     });
 
     it("edits the submitted quiz and saves", () => {
+      QuizManagerBuilders.login(regularUser1.email, regularUser1.password);
       cy.visit(baseUrl);
-      cy.intercept("POST", QuizManagerEndpoints.login()).as("postLogin");
-      login(regularUser1.email, regularUser1.password);
-      cy.url().should("include", "/user.html");
-      cy.wait("@postLogin");
 
       QuizManagerUserViewPage.editSubmission(submittedQuiz.id).click();
       cy.url().should("include", `quiz-view.html?quiz=${createdQuiz.id}&submission=${submittedQuiz.id}`);

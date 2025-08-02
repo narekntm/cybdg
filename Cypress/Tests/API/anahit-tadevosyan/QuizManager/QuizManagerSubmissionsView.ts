@@ -30,10 +30,8 @@ describe("QuizManager View Submissions", () => {
         const created = response.body.find((quiz: QuizData) => quiz.title === randomQuiz.title);
         expect(response.status).to.eq(200);
         expect(created).to.exist;
-      });
 
-      QuizManagerBuilders.getQuizzes().then((response) => {
-        expect(response.status).to.eq(200);
+        // no need to do getQuizzes again
         QuizManagerBuilders.getQuizSubmissions(quizId).then((newResponse) => {
           expect(newResponse.status).to.eq(200);
 
@@ -49,11 +47,8 @@ describe("QuizManager View Submissions", () => {
       QuizManagerBuilders.login(regularUser1.email, regularUser1.password).then((response) => {
         expect(response.status).to.eq(200);
       });
-      QuizManagerBuilders.getQuizzes().then((response) => {
-        expect(response.status).to.eq(200);
-        QuizManagerBuilders.getQuizSubmissions(quizId, false).then((newResponse) => {
-          expect(newResponse.status).to.eq(403);
-        });
+      QuizManagerBuilders.getQuizSubmissions(quizId, false).then((newResponse) => {
+        expect(newResponse.status).to.eq(403);
       });
     });
   });
